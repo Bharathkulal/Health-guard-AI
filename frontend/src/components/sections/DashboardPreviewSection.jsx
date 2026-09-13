@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Activity, Heart, Shield, TrendingUp, Sparkles, User, Bell, Search, Gauge, ArrowUpRight, BarChart2, CheckCircle2 } from 'lucide-react';
+import { Activity, Heart, Shield, TrendingUp, Sparkles, User, Bell, Search, Gauge, ArrowUpRight, BarChart2, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export function DashboardPreviewSection() {
@@ -44,16 +45,17 @@ export function DashboardPreviewSection() {
         </div>
 
         {/* 3D Perspective Interactive Dashboard Mockup */}
-        <div
+        <Link
+          to="/dashboard"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{ perspective: 1200 }}
-          className="relative max-w-5xl mx-auto cursor-pointer"
+          className="relative max-w-5xl mx-auto block cursor-pointer group"
         >
           <motion.div
             animate={{ rotateX, rotateY }}
             transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-            className={`rounded-3xl border overflow-hidden shadow-2xl transition-shadow duration-300 ${
+            className={`rounded-3xl border overflow-hidden shadow-2xl transition-all duration-300 group-hover:border-emerald-400/50 ${
               isDark
                 ? 'bg-[#040c08] border-emerald-500/30 shadow-[0_20px_70px_-15px_rgba(16,185,129,0.3)]'
                 : 'bg-white border-slate-300 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)]'
@@ -73,7 +75,7 @@ export function DashboardPreviewSection() {
               </div>
               <div className="flex items-center gap-3 text-xs">
                 <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[11px] border border-emerald-500/20">
-                  Live Assessment Mode
+                  Live Interactive Mode
                 </span>
               </div>
             </div>
@@ -226,6 +228,17 @@ export function DashboardPreviewSection() {
 
             </div>
           </motion.div>
+        </Link>
+
+        {/* Action Button below Preview */}
+        <div className="mt-8 text-center">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-soft transition-all transform hover:-translate-y-0.5"
+          >
+            <span>Enter Live Application Dashboard</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
       </div>

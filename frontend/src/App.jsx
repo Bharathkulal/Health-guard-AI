@@ -1,33 +1,42 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
-import { Navbar } from './components/common/Navbar';
-import { HeroSection } from './components/sections/HeroSection';
-import { HealthDataStorySection } from './components/sections/HealthDataStorySection';
-import { AIAnalysisPipelineSection } from './components/sections/AIAnalysisPipelineSection';
-import { RiskAssessmentSection } from './components/sections/RiskAssessmentSection';
-import { ExplainableAISection } from './components/sections/ExplainableAISection';
-import { PersonalizedGuidanceSection } from './components/sections/PersonalizedGuidanceSection';
-import { DashboardPreviewSection } from './components/sections/DashboardPreviewSection';
-import { FinalCtaSection } from './components/sections/FinalCtaSection';
-import { Footer } from './components/common/Footer';
+import { HealthProvider } from './context/HealthContext';
+import { LandingPage } from './pages/LandingPage';
+import { AppShell } from './components/layout/AppShell';
+import { DashboardPage } from './pages/DashboardPage';
+import { AssessmentPage } from './pages/AssessmentPage';
+import { ResultsPage } from './pages/ResultsPage';
+import { TrendsPage } from './pages/TrendsPage';
+import { RecommendationsPage } from './pages/RecommendationsPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
-        <Navbar />
-        <main>
-          <HeroSection />
-          <HealthDataStorySection />
-          <AIAnalysisPipelineSection />
-          <RiskAssessmentSection />
-          <ExplainableAISection />
-          <PersonalizedGuidanceSection />
-          <DashboardPreviewSection />
-          <FinalCtaSection />
-        </main>
-        <Footer />
-      </div>
+      <HealthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+
+            {/* Authenticated Application App Shell & Routes */}
+            <Route element={<AppShell />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/assessment" element={<AssessmentPage />} />
+              <Route path="/results" element={<ResultsPage />} />
+              <Route path="/trends" element={<TrendsPage />} />
+              <Route path="/recommendations" element={<RecommendationsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+
+            {/* Fallback Redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </HealthProvider>
     </ThemeProvider>
   );
 }

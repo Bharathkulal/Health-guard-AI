@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Code2, Sparkles, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Code2, Sparkles, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -38,25 +39,25 @@ export function FinalCtaSection() {
             </p>
 
             <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="#explainable-ai"
+              <Link
+                to="/assessment"
                 className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full text-sm font-semibold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-lg transition-all duration-300 transform hover:-translate-y-0.5"
               >
-                <span>Explore HealthGuard AI</span>
+                <span>Start Risk Assessment</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
 
-              <a
-                href="#pipeline"
+              <Link
+                to="/dashboard"
                 className={`inline-flex items-center gap-2 px-6 py-4 rounded-full text-sm font-semibold border transition-all ${
                   isDark
                     ? 'border-emerald-500/30 text-slate-200 bg-emerald-950/20 hover:bg-emerald-900/30 hover:border-emerald-400/50'
                     : 'border-slate-300 text-slate-800 bg-white hover:bg-slate-100 hover:border-emerald-500'
                 }`}
               >
-                <Code2 className="w-4 h-4 text-emerald-400" />
-                <span>View ML Architecture</span>
-              </a>
+                <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+                <span>Launch Dashboard</span>
+              </Link>
             </div>
           </div>
         </div>

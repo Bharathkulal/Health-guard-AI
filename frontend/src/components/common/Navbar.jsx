@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 import { Activity, ShieldCheck, Menu, X, ArrowRight } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -68,13 +69,13 @@ export function Navbar() {
           {/* Right Controls: Theme Toggle & CTA */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
-            <a
-              href="#assessment-flow"
+            <Link
+              to="/dashboard"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-soft transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
             >
-              <span>Explore HealthGuard</span>
+              <span>Launch Dashboard</span>
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Hamburger Button */}
@@ -121,14 +122,14 @@ export function Navbar() {
               </a>
             ))}
             <div className="pt-2">
-              <a
-                href="#assessment-flow"
+              <Link
+                to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-full text-sm font-semibold bg-emerald-500 text-black hover:bg-emerald-400"
               >
-                <span>Explore HealthGuard</span>
+                <span>Launch Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
