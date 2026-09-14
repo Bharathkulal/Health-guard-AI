@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, ShieldCheck, Sparkles, Cpu, CheckCircle2 } from 'lucide-react';
+import { Activity, ShieldCheck, Database, CheckCircle2, Lock } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
-const STAGES = [
-  { id: 1, label: 'Preparing health biometrics & normalizations...', icon: Activity, duration: 800 },
-  { id: 2, label: 'Analyzing physiological risk indicators...', icon: Cpu, duration: 900 },
-  { id: 3, label: 'Evaluating multi-condition ML risk patterns...', icon: Sparkles, duration: 900 },
-  { id: 4, label: 'Generating explainable SHAP factor attributions...', icon: ShieldCheck, duration: 800 },
+const LOADING_STAGES = [
+  { id: 1, label: 'Preparing your assessment...', detail: 'Validating clinical ranges & calculating standard BMI', icon: Activity, duration: 900 },
+  { id: 2, label: 'Securely processing your health information...', detail: 'Encrypting payload & transmitting to FastAPI backend', icon: Lock, duration: 1000 },
+  { id: 3, label: 'Assessment received', detail: 'Persisting record in MongoDB database for ML pipeline', icon: Database, duration: 800 },
 ];
 
 export function LoadingOverlay({ onComplete, isSubmitting = true }) {
@@ -16,11 +15,11 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
 
   useEffect(() => {
     let timer;
-    if (currentStageIndex < STAGES.length - 1) {
+    if (currentStageIndex < LOADING_STAGES.length - 1) {
       timer = setTimeout(() => {
         setCurrentStageIndex((prev) => prev + 1);
-      }, STAGES[currentStageIndex].duration);
-    } else if (currentStageIndex === STAGES.length - 1) {
+      }, LOADING_STAGES[currentStageIndex].duration);
+    } else if (currentStageIndex === LOADING_STAGES.length - 1) {
       timer = setTimeout(() => {
         if (onComplete) onComplete();
       }, 700);
@@ -28,10 +27,10 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
     return () => clearTimeout(timer);
   }, [currentStageIndex, onComplete]);
 
-  const progressPercent = Math.min(100, Math.round(((currentStageIndex + 1) / STAGES.length) * 100));
+  const progressPercent = Math.min(100, Math.round(((currentStageIndex + 1) / LOADING_STAGES.length) * 100));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300">
       <div
         className={`w-full max-w-lg rounded-3xl p-6 sm:p-10 border shadow-2xl relative overflow-hidden ${
           isDark
@@ -39,43 +38,43 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
             : 'bg-white border-slate-200 shadow-2xl'
         }`}
       >
-        {/* Ambient Top Glow */}
+        {/* Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-emerald-500/20 blur-3xl -z-10 pointer-events-none" />
 
         <div className="text-center space-y-6">
-          {/* Animated Core Icon */}
+          {/* Animated Spinner Core */}
           <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+              transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
               className="absolute inset-0 rounded-full border-2 border-dashed border-emerald-500/40"
             />
             <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
+              animate={{ scale: [1, 1.08, 1] }}
               transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
               className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center"
             >
-              <Sparkles className="w-7 h-7 text-emerald-400" />
+              <ShieldCheck className="w-7 h-7 text-emerald-400" />
             </motion.div>
           </div>
 
           {/* Heading */}
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <span>ML Analysis in Progress</span>
+              <span>Secure Clinical Transmission</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
-              Analyzing Health Risk Baseline
+              {LOADING_STAGES[currentStageIndex].label}
             </h3>
             <p className="text-xs text-slate-400">
-              Evaluating your physiological metrics with explainable decision support models.
+              {LOADING_STAGES[currentStageIndex].detail}
             </p>
           </div>
 
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs font-mono text-slate-400">
-              <span>Phase {currentStageIndex + 1} of {STAGES.length}</span>
+              <span>Step {currentStageIndex + 1} of {LOADING_STAGES.length}</span>
               <span className="text-emerald-400 font-bold">{progressPercent}%</span>
             </div>
             <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -88,22 +87,21 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
             </div>
           </div>
 
-          {/* Sequential Stage Items */}
-          <div className="space-y-2.5 text-left pt-2">
-            {STAGES.map((stage, idx) => {
+          {/* Step Sequence Checklist */}
+          <div className="space-y-2 text-left pt-2">
+            {LOADING_STAGES.map((stage, idx) => {
               const isDone = idx < currentStageIndex;
               const isCurrent = idx === currentStageIndex;
-              const isPending = idx > currentStageIndex;
 
               return (
                 <div
                   key={stage.id}
-                  className={`flex items-center gap-3 p-2.5 rounded-xl border text-xs transition-all duration-300 ${
+                  className={`flex items-center gap-3 p-3 rounded-xl border text-xs transition-all duration-300 ${
                     isCurrent
-                      ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                      ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-sm'
                       : isDone
-                      ? 'bg-emerald-950/10 border-emerald-500/20 text-slate-400'
-                      : 'bg-transparent border-transparent text-slate-500 opacity-60'
+                      ? 'bg-emerald-950/20 border-emerald-500/20 text-slate-400'
+                      : 'bg-transparent border-transparent text-slate-600 opacity-60'
                   }`}
                 >
                   <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
@@ -112,7 +110,7 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
                     ) : isCurrent ? (
                       <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
                         className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full"
                       />
                     ) : (
@@ -127,9 +125,8 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
             })}
           </div>
 
-          {/* Clinical Note */}
           <p className="text-[11px] text-slate-500 leading-tight">
-            Decision support risk inference. No diagnosis is performed.
+            Data secured with End-to-End Encryption. No clinical diagnosis is performed at this stage.
           </p>
         </div>
       </div>

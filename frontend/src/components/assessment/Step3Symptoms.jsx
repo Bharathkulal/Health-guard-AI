@@ -1,34 +1,49 @@
 import React from 'react';
-import { Activity, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Activity, CheckCircle2, AlertCircle, ShieldAlert, Check } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 const SYMPTOM_OPTIONS = [
-  { id: 'fatigue', label: 'Persistent Fatigue / Low Energy', category: 'Metabolic / General' },
-  { id: 'excessive_thirst', label: 'Excessive Thirst (Polydipsia)', category: 'Glycemic' },
-  { id: 'frequent_urination', label: 'Frequent Urination (Polyuria)', category: 'Glycemic' },
-  { id: 'chest_discomfort', label: 'Chest Discomfort / Tightness', category: 'Cardiovascular' },
-  { id: 'shortness_of_breath', label: 'Shortness of Breath on Exertion', category: 'Cardiorespiratory' },
-  { id: 'dizziness', label: 'Dizziness or Lightheadedness', category: 'Vascular' },
-  { id: 'headache', label: 'Morning Headaches or Tension', category: 'Hypertensive' },
-  { id: 'blurred_vision', label: 'Episodes of Blurred Vision', category: 'Glycemic / Vascular' },
-  { id: 'palpitations', label: 'Heart Palpitations / Irregular Beats', category: 'Cardiovascular' },
+  { id: 'fatigue', label: 'Fatigue', desc: 'Persistent low energy or exhaustion', category: 'Metabolic' },
+  { id: 'excessive_thirst', label: 'Excessive Thirst', desc: 'Polydipsia / constant dry throat', category: 'Glycemic' },
+  { id: 'frequent_urination', label: 'Frequent Urination', desc: 'Polyuria / frequent nighttime waking', category: 'Glycemic' },
+  { id: 'increased_hunger', label: 'Increased Hunger', desc: 'Polyphagia / persistent appetite after meals', category: 'Metabolic' },
+  { id: 'shortness_of_breath', label: 'Shortness of Breath', desc: 'Dyspnea on light exertion or rest', category: 'Cardiorespiratory' },
+  { id: 'chest_discomfort', label: 'Chest Discomfort', desc: 'Tightness, pressure, or dull ache', category: 'Cardiovascular' },
+  { id: 'dizziness', label: 'Dizziness', desc: 'Lightheadedness or postural unsteadiness', category: 'Vascular' },
+  { id: 'headache', label: 'Headache', desc: 'Frequent morning or tension headaches', category: 'Hypertensive' },
+  { id: 'swelling', label: 'Swelling', desc: 'Peripheral edema in ankles, feet, or hands', category: 'Vascular' },
+  { id: 'none', label: 'None (Asymptomatic)', desc: 'No active symptoms to report currently', category: 'General' },
 ];
 
 export function Step3Symptoms({ data, onChange }) {
   const { isDark } = useTheme();
   const selectedSymptoms = data.symptoms || [];
 
+  const isNoneSelected = selectedSymptoms.includes('none') || selectedSymptoms.length === 0;
+
   const toggleSymptom = (id) => {
-    if (selectedSymptoms.includes(id)) {
-      onChange({ symptoms: selectedSymptoms.filter((s) => s !== id) });
+    if (id === 'none') {
+      // If clicking "None", reset to empty/none
+      onChange({ symptoms: ['none'] });
+      return;
+    }
+
+    // If selecting any active symptom, remove 'none'
+    const withoutNone = selectedSymptoms.filter((s) => s !== 'none');
+
+    if (withoutNone.includes(id)) {
+      const next = withoutNone.filter((s) => s !== id);
+      onChange({ symptoms: next.length === 0 ? ['none'] : next });
     } else {
-      onChange({ symptoms: [...selectedSymptoms, id] });
+      onChange({ symptoms: [...withoutNone, id] });
     }
   };
 
-  const clearSymptoms = () => {
-    onChange({ symptoms: [] });
+  const handleSelectNone = () => {
+    onChange({ symptoms: ['none'] });
   };
+
+  const activeSymptomCount = selectedSymptoms.filter((s) => s !== 'none').length;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -36,28 +51,32 @@ export function Step3Symptoms({ data, onChange }) {
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-emerald-400" />
-            <span>Presenting Symptoms & Sensations</span>
+            <span>Presenting Symptoms & Clinical Sensations</span>
           </h2>
           <p className="text-xs text-slate-400">
-            Select any recurring symptoms experienced in the last 30 days. Multiple items may be selected.
+            Select any symptoms you have experienced in the past 30 days. You may select multiple items, or choose &quot;None&quot;.
           </p>
         </div>
 
-        {selectedSymptoms.length > 0 && (
+        {activeSymptomCount > 0 && (
           <button
             type="button"
-            onClick={clearSymptoms}
+            onClick={handleSelectNone}
             className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline self-start sm:self-auto"
           >
-            Clear all ({selectedSymptoms.length} selected)
+            Clear and set to None ({activeSymptomCount} selected)
           </button>
         )}
       </div>
 
-      {/* Symptom Chips Grid */}
+      {/* Symptom Multi-Select Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
         {SYMPTOM_OPTIONS.map((option) => {
-          const isSelected = selectedSymptoms.includes(option.id);
+          const isSelected = option.id === 'none'
+            ? selectedSymptoms.includes('none') || selectedSymptoms.length === 0
+            : selectedSymptoms.includes(option.id) && !selectedSymptoms.includes('none');
+
+          const isNoneCard = option.id === 'none';
 
           return (
             <button
@@ -66,7 +85,11 @@ export function Step3Symptoms({ data, onChange }) {
               onClick={() => toggleSymptom(option.id)}
               className={`p-4 rounded-2xl border text-left transition-all duration-200 flex items-start justify-between gap-3 ${
                 isSelected
-                  ? isDark
+                  ? isNoneCard
+                    ? isDark
+                      ? 'bg-slate-800/80 border-slate-500 text-slate-100 ring-1 ring-slate-400/30'
+                      : 'bg-slate-100 border-slate-400 text-slate-900'
+                    : isDark
                     ? 'bg-emerald-950/40 border-emerald-400 text-slate-100 shadow-emerald-soft ring-1 ring-emerald-400/40'
                     : 'bg-emerald-50 border-emerald-500 text-slate-900 shadow-sm'
                   : isDark
@@ -76,41 +99,47 @@ export function Step3Symptoms({ data, onChange }) {
               aria-pressed={isSelected}
             >
               <div className="space-y-1">
-                <span className="text-xs font-mono uppercase tracking-wider text-emerald-400/80 text-[10px]">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400/80">
                   {option.category}
                 </span>
                 <p className="text-xs sm:text-sm font-semibold text-slate-100">
                   {option.label}
+                </p>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  {option.desc}
                 </p>
               </div>
 
               <div
                 className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors mt-0.5 ${
                   isSelected
-                    ? 'bg-emerald-500 text-black'
+                    ? isNoneCard
+                      ? 'bg-slate-400 text-black'
+                      : 'bg-emerald-500 text-black'
                     : 'border border-slate-600 bg-slate-800/40'
                 }`}
               >
-                {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
+                {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* No symptoms quick option */}
-      <div className="pt-2 flex justify-center">
-        <button
-          type="button"
-          onClick={clearSymptoms}
-          className={`px-4 py-2 rounded-xl border text-xs font-semibold transition-all ${
-            selectedSymptoms.length === 0
-              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-              : 'border-slate-700 text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          ✓ Currently Asymptomatic (No active symptoms to report)
-        </button>
+      {/* Helper Notification */}
+      <div
+        className={`p-3.5 rounded-xl border flex items-center gap-2.5 text-xs ${
+          isDark
+            ? 'bg-slate-900/50 border-emerald-500/15 text-slate-400'
+            : 'bg-slate-50 border-slate-200 text-slate-600'
+        }`}
+      >
+        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+        <span>
+          {activeSymptomCount > 0
+            ? `${activeSymptomCount} clinical symptom(s) will be structured as individual risk factors for assessment.`
+            : 'Currently marked as Asymptomatic (None). No active acute symptoms reported.'}
+        </span>
       </div>
     </div>
   );

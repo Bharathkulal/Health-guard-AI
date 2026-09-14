@@ -8,8 +8,11 @@
  */
 
 import { analyzeHealthRisk, calculateBMI } from './assessmentEngine';
+import { assessmentService } from './assessmentService';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+export { assessmentService };
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '/api';
 const STORAGE_KEY_USER = 'hg_user_profile';
 const STORAGE_KEY_ASSESSMENTS = 'hg_assessment_history';
 const STORAGE_KEY_LATEST = 'hg_latest_result';
@@ -267,12 +270,15 @@ function getStoredLatestResult() {
 export const healthApi = {
   /**
    * Fetches current authenticated user profile.
-   * `GET /api/profile`
+   * `GET /api/profile` or `GET /api/users/profile`
    */
   async getProfile() {
     try {
-      const res = await fetch(`${API_BASE}/profile`);
-      if (res.ok) return await res.json();
+      const res = await fetch(`${API_BASE}/users/profile`);
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || json;
+      }
     } catch (e) {
       // Backend not running, use local store
     }
@@ -282,7 +288,7 @@ export const healthApi = {
 
   /**
    * Updates user profile details.
-   * `PUT /api/profile`
+   * `PUT /api/users/profile`
    */
   async updateProfile(updates) {
     const current = getStoredUser();
@@ -292,12 +298,15 @@ export const healthApi = {
       bmi: calculateBMI(updates.heightCm || current.heightCm, updates.weightKg || current.weightKg),
     };
     try {
-      const res = await fetch(`${API_BASE}/profile`, {
+      const res = await fetch(`${API_BASE}/users/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || json;
+      }
     } catch (e) {
       // Fallback to local
     }
@@ -306,53 +315,44 @@ export const healthApi = {
   },
 
   /**
-   * Submits a full multi-step health assessment for ML analysis.
-   * `POST /api/assessment`
+   * Submits a full multi-step health assessment for storage and ML preparation.
    * 
-   * @param {import('../types/health').AssessmentInput} assessmentData 
-   * @returns {Promise<import('../types/health').RiskAssessmentResult>}
+   * @param {Object} assessmentData 
    */
   async submitAssessment(assessmentData) {
-    let result = null;
     try {
-      const res = await fetch(`${API_BASE}/assessment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(assessmentData),
-      });
-      if (res.ok) {
-        result = await res.json();
+      // Direct call to assessment service POST /api/assessments
+      const savedDoc = await assessmentService.createAssessment(assessmentData);
+
+      // Also compute deterministic decision support baseline for local demo continuity if needed
+      const decisionSupportResult = analyzeHealthRisk(assessmentData);
+      decisionSupportResult.id = savedDoc.assessment_id || decisionSupportResult.id;
+
+      // Save to local storage history
+      const history = getStoredAssessments();
+      const updatedHistory = [decisionSupportResult, ...history];
+      localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(updatedHistory));
+      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(decisionSupportResult));
+
+      // Also update user vitals snapshot in profile
+      if (assessmentData.vitals) {
+        const user = getStoredUser();
+        user.heightCm = assessmentData.vitals.heightCm || user.heightCm;
+        user.weightKg = assessmentData.vitals.weightKg || user.weightKg;
+        user.bmi = assessmentData.vitals.bmi || calculateBMI(user.heightCm, user.weightKg);
+        localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
       }
-    } catch (e) {
-      // Offline fallback
+
+      return savedDoc;
+    } catch (err) {
+      console.error('API submit assessment error:', err);
+      throw err;
     }
-
-    if (!result) {
-      // Compute via local deterministic ML decision support engine
-      result = analyzeHealthRisk(assessmentData);
-    }
-
-    // Save to local storage history
-    const history = getStoredAssessments();
-    const updatedHistory = [result, ...history];
-    localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(updatedHistory));
-    localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(result));
-
-    // Also update user vitals snapshot in profile
-    if (assessmentData.vitals) {
-      const user = getStoredUser();
-      user.heightCm = assessmentData.vitals.heightCm || user.heightCm;
-      user.weightKg = assessmentData.vitals.weightKg || user.weightKg;
-      user.bmi = assessmentData.vitals.bmi || calculateBMI(user.heightCm, user.weightKg);
-      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
-    }
-
-    return result;
   },
 
   /**
    * Fetches latest computed risk assessment.
-   * `GET /api/risk/latest` or `GET /api/assessment/latest`
+   * `GET /api/risk/latest`
    */
   async getLatestRiskResult() {
     try {
@@ -367,12 +367,17 @@ export const healthApi = {
 
   /**
    * Fetches complete historical assessments log.
-   * `GET /api/assessment/history`
+   * `GET /api/assessments`
    */
   async getAssessmentHistory() {
     try {
-      const res = await fetch(`${API_BASE}/assessment/history`);
-      if (res.ok) return await res.json();
+      const res = await fetch(`${API_BASE}/assessments`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          return json.data;
+        }
+      }
     } catch (e) {
       // Fallback
     }
@@ -399,17 +404,17 @@ export const healthApi = {
       .reverse()
       .map((item, idx) => ({
         id: item.id || `pt-${idx}`,
-        date: item.date,
-        shortDate: item.date.split(' ').slice(0, 2).join(' '),
-        overallRisk: item.overallScore,
+        date: item.date || 'Recent',
+        shortDate: (item.date || 'Recent').split(' ').slice(0, 2).join(' '),
+        overallRisk: item.overallScore || 50,
         diabetesRisk: item.categories?.diabetes?.score || 50,
         cardiovascularRisk: item.categories?.cardiovascular?.score || 50,
         hypertensionRisk: item.categories?.hypertension?.score || 50,
-        systolicBP: item.vitalsSnapshot?.systolicBP || 120,
-        diastolicBP: item.vitalsSnapshot?.diastolicBP || 80,
-        fastingBloodSugar: item.vitalsSnapshot?.fastingBloodSugar || 95,
-        bmi: item.vitalsSnapshot?.bmi || 23.5,
-        heartRate: item.vitalsSnapshot?.heartRate || 72,
+        systolicBP: item.vitalsSnapshot?.systolicBP || item.systolic_bp || 120,
+        diastolicBP: item.vitalsSnapshot?.diastolicBP || item.diastolic_bp || 80,
+        fastingBloodSugar: item.vitalsSnapshot?.fastingBloodSugar || item.blood_sugar || 95,
+        bmi: item.vitalsSnapshot?.bmi || item.bmi || 23.5,
+        heartRate: item.vitalsSnapshot?.heartRate || item.heart_rate || 72,
       }));
   },
 
@@ -435,6 +440,8 @@ export const healthApi = {
     localStorage.removeItem(STORAGE_KEY_USER);
     localStorage.removeItem(STORAGE_KEY_ASSESSMENTS);
     localStorage.removeItem(STORAGE_KEY_LATEST);
+    localStorage.removeItem('hg_stored_assessments');
+    localStorage.removeItem('hg_last_submitted_assessment');
     return { success: true };
   }
 };
