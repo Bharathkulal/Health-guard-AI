@@ -1,0 +1,296 @@
+{
+  "diabetes": {
+    "LogisticRegression": {
+      "cv_metrics_mean": {
+        "accuracy": 0.7766,
+        "recall": 0.7631,
+        "precision": 0.1035,
+        "f1": 0.1823,
+        "roc_auc": 0.8536
+      },
+      "test_metrics": {
+        "accuracy": 0.7806,
+        "precision": 0.1088,
+        "recall": 0.7905,
+        "specificity": 0.7803,
+        "f1": 0.1912,
+        "roc_auc": 0.8797,
+        "confusion_matrix": {
+          "true_negatives": 2415,
+          "false_positives": 680,
+          "false_negatives": 22,
+          "true_positives": 83
+        }
+      },
+      "clinical_selection_score": 0.6375
+    },
+    "DecisionTree": {
+      "cv_metrics_mean": {
+        "accuracy": 0.7554,
+        "recall": 0.6866,
+        "precision": 0.088,
+        "f1": 0.1557,
+        "roc_auc": 0.7679
+      },
+      "test_metrics": {
+        "accuracy": 0.7294,
+        "precision": 0.073,
+        "recall": 0.619,
+        "specificity": 0.7331,
+        "f1": 0.1305,
+        "roc_auc": 0.6961,
+        "confusion_matrix": {
+          "true_negatives": 2269,
+          "false_positives": 826,
+          "false_negatives": 40,
+          "true_positives": 65
+        }
+      },
+      "clinical_selection_score": 0.4956
+    },
+    "RandomForest": {
+      "cv_metrics_mean": {
+        "accuracy": 0.8803,
+        "recall": 0.5527,
+        "precision": 0.1469,
+        "f1": 0.2319,
+        "roc_auc": 0.8326
+      },
+      "test_metrics": {
+        "accuracy": 0.8638,
+        "precision": 0.1247,
+        "recall": 0.5238,
+        "specificity": 0.8753,
+        "f1": 0.2015,
+        "roc_auc": 0.8442,
+        "confusion_matrix": {
+          "true_negatives": 2709,
+          "false_positives": 386,
+          "false_negatives": 50,
+          "true_positives": 55
+        }
+      },
+      "clinical_selection_score": 0.5232
+    },
+    "GradientBoosting": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9656,
+        "recall": 0.0838,
+        "precision": 0.3784,
+        "f1": 0.1352,
+        "roc_auc": 0.8344
+      },
+      "test_metrics": {
+        "accuracy": 0.9694,
+        "precision": 0.6667,
+        "recall": 0.1333,
+        "specificity": 0.9977,
+        "f1": 0.2222,
+        "roc_auc": 0.8567,
+        "confusion_matrix": {
+          "true_negatives": 3088,
+          "false_positives": 7,
+          "false_negatives": 91,
+          "true_positives": 14
+        }
+      },
+      "clinical_selection_score": 0.377
+    }
+  },
+  "cardiovascular": {
+    "LogisticRegression": {
+      "cv_metrics_mean": {
+        "accuracy": 0.7252,
+        "recall": 0.7148,
+        "precision": 0.043,
+        "f1": 0.0812,
+        "roc_auc": 0.7934
+      },
+      "test_metrics": {
+        "accuracy": 0.7322,
+        "precision": 0.0433,
+        "recall": 0.6909,
+        "specificity": 0.7329,
+        "f1": 0.0815,
+        "roc_auc": 0.7804,
+        "confusion_matrix": {
+          "true_negatives": 2305,
+          "false_positives": 840,
+          "false_negatives": 17,
+          "true_positives": 38
+        }
+      },
+      "clinical_selection_score": 0.5349
+    },
+    "DecisionTree": {
+      "cv_metrics_mean": {
+        "accuracy": 0.7138,
+        "recall": 0.5677,
+        "precision": 0.0339,
+        "f1": 0.0639,
+        "roc_auc": 0.6401
+      },
+      "test_metrics": {
+        "accuracy": 0.725,
+        "precision": 0.0328,
+        "recall": 0.5273,
+        "specificity": 0.7285,
+        "f1": 0.0618,
+        "roc_auc": 0.6328,
+        "confusion_matrix": {
+          "true_negatives": 2291,
+          "false_positives": 854,
+          "false_negatives": 26,
+          "true_positives": 29
+        }
+      },
+      "clinical_selection_score": 0.4193
+    },
+    "RandomForest": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9019,
+        "recall": 0.2837,
+        "precision": 0.0528,
+        "f1": 0.089,
+        "roc_auc": 0.7553
+      },
+      "test_metrics": {
+        "accuracy": 0.8953,
+        "precision": 0.0652,
+        "recall": 0.3818,
+        "specificity": 0.9043,
+        "f1": 0.1114,
+        "roc_auc": 0.7559,
+        "confusion_matrix": {
+          "true_negatives": 2844,
+          "false_positives": 301,
+          "false_negatives": 34,
+          "true_positives": 21
+        }
+      },
+      "clinical_selection_score": 0.4129
+    },
+    "GradientBoosting": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9812,
+        "recall": 0.0092,
+        "precision": 0.0508,
+        "f1": 0.0155,
+        "roc_auc": 0.7556
+      },
+      "test_metrics": {
+        "accuracy": 0.9803,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 0.9975,
+        "f1": 0.0,
+        "roc_auc": 0.768,
+        "confusion_matrix": {
+          "true_negatives": 3137,
+          "false_positives": 8,
+          "false_negatives": 55,
+          "true_positives": 0
+        }
+      },
+      "clinical_selection_score": 0.2304
+    }
+  },
+  "hypertension": {
+    "LogisticRegression": {
+      "cv_metrics_mean": {
+        "accuracy": 0.8074,
+        "recall": 0.8109,
+        "precision": 0.6892,
+        "f1": 0.745,
+        "roc_auc": 0.8944
+      },
+      "test_metrics": {
+        "accuracy": 0.8034,
+        "precision": 0.6757,
+        "recall": 0.8333,
+        "specificity": 0.7876,
+        "f1": 0.7463,
+        "roc_auc": 0.9025,
+        "confusion_matrix": {
+          "true_negatives": 1646,
+          "false_positives": 444,
+          "false_negatives": 185,
+          "true_positives": 925
+        }
+      },
+      "clinical_selection_score": 0.828
+    },
+    "DecisionTree": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9062,
+        "recall": 0.7753,
+        "precision": 0.9454,
+        "f1": 0.8516,
+        "roc_auc": 0.9264
+      },
+      "test_metrics": {
+        "accuracy": 0.9122,
+        "precision": 0.9191,
+        "recall": 0.8189,
+        "specificity": 0.9617,
+        "f1": 0.8661,
+        "roc_auc": 0.9315,
+        "confusion_matrix": {
+          "true_negatives": 2010,
+          "false_positives": 80,
+          "false_negatives": 201,
+          "true_positives": 909
+        }
+      },
+      "clinical_selection_score": 0.8668
+    },
+    "RandomForest": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9145,
+        "recall": 0.7663,
+        "precision": 0.9835,
+        "f1": 0.8614,
+        "roc_auc": 0.9408
+      },
+      "test_metrics": {
+        "accuracy": 0.9275,
+        "precision": 0.99,
+        "recall": 0.7991,
+        "specificity": 0.9957,
+        "f1": 0.8843,
+        "roc_auc": 0.9504,
+        "confusion_matrix": {
+          "true_negatives": 2081,
+          "false_positives": 9,
+          "false_negatives": 223,
+          "true_positives": 887
+        }
+      },
+      "clinical_selection_score": 0.87
+    },
+    "GradientBoosting": {
+      "cv_metrics_mean": {
+        "accuracy": 0.9134,
+        "recall": 0.766,
+        "precision": 0.9801,
+        "f1": 0.8599,
+        "roc_auc": 0.9416
+      },
+      "test_metrics": {
+        "accuracy": 0.925,
+        "precision": 0.9844,
+        "recall": 0.7964,
+        "specificity": 0.9933,
+        "f1": 0.8805,
+        "roc_auc": 0.9494,
+        "confusion_matrix": {
+          "true_negatives": 2076,
+          "false_positives": 14,
+          "false_negatives": 226,
+          "true_positives": 884
+        }
+      },
+      "clinical_selection_score": 0.8675
+    }
+  }
+}

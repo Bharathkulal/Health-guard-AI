@@ -1,0 +1,102 @@
+{
+  "condition": "hypertension",
+  "model_name": "RandomForest",
+  "version": "1.0",
+  "training_date": "2026-09-14T08:48:27.262985+00:00",
+  "dataset_sample_size": 16000,
+  "train_samples": 12800,
+  "test_samples": 3200,
+  "positive_class_prevalence": 0.3469,
+  "features": [
+    "age",
+    "gender",
+    "bmi",
+    "systolic_bp",
+    "diastolic_bp",
+    "heart_rate",
+    "sleep_hours",
+    "physical_activity",
+    "smoking",
+    "alcohol",
+    "family_history_hypertension"
+  ],
+  "feature_importances": [
+    {
+      "feature": "systolic_bp",
+      "importance": 0.6106,
+      "label": "Systolic Bp"
+    },
+    {
+      "feature": "diastolic_bp",
+      "importance": 0.2285,
+      "label": "Diastolic Bp"
+    },
+    {
+      "feature": "age",
+      "importance": 0.0726,
+      "label": "Age"
+    },
+    {
+      "feature": "bmi",
+      "importance": 0.0578,
+      "label": "Bmi"
+    },
+    {
+      "feature": "sleep_hours",
+      "importance": 0.0093,
+      "label": "Sleep Hours"
+    },
+    {
+      "feature": "heart_rate",
+      "importance": 0.0066,
+      "label": "Heart Rate"
+    },
+    {
+      "feature": "family_history_hypertension",
+      "importance": 0.0055,
+      "label": "Family History Hypertension"
+    },
+    {
+      "feature": "physical_activity",
+      "importance": 0.0035,
+      "label": "Physical Activity"
+    },
+    {
+      "feature": "smoking",
+      "importance": 0.0035,
+      "label": "Smoking"
+    },
+    {
+      "feature": "alcohol",
+      "importance": 0.0012,
+      "label": "Alcohol"
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0009,
+      "label": "Gender"
+    }
+  ],
+  "test_metrics": {
+    "accuracy": 0.9275,
+    "precision": 0.99,
+    "recall": 0.7991,
+    "specificity": 0.9957,
+    "f1": 0.8843,
+    "roc_auc": 0.9504,
+    "confusion_matrix": {
+      "true_negatives": 2081,
+      "false_positives": 9,
+      "false_negatives": 223,
+      "true_positives": 887
+    }
+  },
+  "cv_metrics": {
+    "accuracy": 0.9145,
+    "recall": 0.7663,
+    "precision": 0.9835,
+    "f1": 0.8614,
+    "roc_auc": 0.9408
+  },
+  "pipeline_file": "hypertension_pipeline.joblib"
+}

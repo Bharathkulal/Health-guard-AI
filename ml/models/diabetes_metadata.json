@@ -1,0 +1,114 @@
+{
+  "condition": "diabetes",
+  "model_name": "LogisticRegression",
+  "version": "1.0",
+  "training_date": "2026-09-14T08:48:08.771974+00:00",
+  "dataset_sample_size": 16000,
+  "train_samples": 12800,
+  "test_samples": 3200,
+  "positive_class_prevalence": 0.0327,
+  "features": [
+    "age",
+    "gender",
+    "bmi",
+    "systolic_bp",
+    "diastolic_bp",
+    "blood_sugar",
+    "heart_rate",
+    "physical_activity",
+    "smoking",
+    "alcohol",
+    "sleep_hours",
+    "family_history_diabetes",
+    "symptoms_count"
+  ],
+  "feature_importances": [
+    {
+      "feature": "bmi",
+      "importance": 0.2266,
+      "label": "Bmi"
+    },
+    {
+      "feature": "blood_sugar",
+      "importance": 0.1982,
+      "label": "Blood Sugar"
+    },
+    {
+      "feature": "age",
+      "importance": 0.1894,
+      "label": "Age"
+    },
+    {
+      "feature": "family_history_diabetes",
+      "importance": 0.12,
+      "label": "Family History Diabetes"
+    },
+    {
+      "feature": "physical_activity",
+      "importance": 0.0824,
+      "label": "Physical Activity"
+    },
+    {
+      "feature": "systolic_bp",
+      "importance": 0.067,
+      "label": "Systolic Bp"
+    },
+    {
+      "feature": "smoking",
+      "importance": 0.0483,
+      "label": "Smoking"
+    },
+    {
+      "feature": "heart_rate",
+      "importance": 0.0333,
+      "label": "Heart Rate"
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0212,
+      "label": "Gender"
+    },
+    {
+      "feature": "symptoms_count",
+      "importance": 0.0069,
+      "label": "Symptoms Count"
+    },
+    {
+      "feature": "sleep_hours",
+      "importance": 0.0043,
+      "label": "Sleep Hours"
+    },
+    {
+      "feature": "diastolic_bp",
+      "importance": 0.0024,
+      "label": "Diastolic Bp"
+    },
+    {
+      "feature": "alcohol",
+      "importance": 0.0,
+      "label": "Alcohol"
+    }
+  ],
+  "test_metrics": {
+    "accuracy": 0.7806,
+    "precision": 0.1088,
+    "recall": 0.7905,
+    "specificity": 0.7803,
+    "f1": 0.1912,
+    "roc_auc": 0.8797,
+    "confusion_matrix": {
+      "true_negatives": 2415,
+      "false_positives": 680,
+      "false_negatives": 22,
+      "true_positives": 83
+    }
+  },
+  "cv_metrics": {
+    "accuracy": 0.7766,
+    "recall": 0.7631,
+    "precision": 0.1035,
+    "f1": 0.1823,
+    "roc_auc": 0.8536
+  },
+  "pipeline_file": "diabetes_pipeline.joblib"
+}

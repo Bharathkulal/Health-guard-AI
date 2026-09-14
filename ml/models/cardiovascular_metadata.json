@@ -1,0 +1,114 @@
+{
+  "condition": "cardiovascular",
+  "model_name": "LogisticRegression",
+  "version": "1.0",
+  "training_date": "2026-09-14T08:48:19.402362+00:00",
+  "dataset_sample_size": 16000,
+  "train_samples": 12800,
+  "test_samples": 3200,
+  "positive_class_prevalence": 0.0171,
+  "features": [
+    "age",
+    "gender",
+    "height_cm",
+    "weight_kg",
+    "bmi",
+    "systolic_bp",
+    "diastolic_bp",
+    "blood_sugar",
+    "heart_rate",
+    "smoking",
+    "alcohol",
+    "physical_activity",
+    "family_history_cardio"
+  ],
+  "feature_importances": [
+    {
+      "feature": "bmi",
+      "importance": 0.1863,
+      "label": "Bmi"
+    },
+    {
+      "feature": "age",
+      "importance": 0.1595,
+      "label": "Age"
+    },
+    {
+      "feature": "weight_kg",
+      "importance": 0.1069,
+      "label": "Weight Kg"
+    },
+    {
+      "feature": "smoking",
+      "importance": 0.0987,
+      "label": "Smoking"
+    },
+    {
+      "feature": "height_cm",
+      "importance": 0.0852,
+      "label": "Height Cm"
+    },
+    {
+      "feature": "systolic_bp",
+      "importance": 0.082,
+      "label": "Systolic Bp"
+    },
+    {
+      "feature": "diastolic_bp",
+      "importance": 0.0698,
+      "label": "Diastolic Bp"
+    },
+    {
+      "feature": "family_history_cardio",
+      "importance": 0.0601,
+      "label": "Family History Cardio"
+    },
+    {
+      "feature": "blood_sugar",
+      "importance": 0.054,
+      "label": "Blood Sugar"
+    },
+    {
+      "feature": "physical_activity",
+      "importance": 0.0486,
+      "label": "Physical Activity"
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0267,
+      "label": "Gender"
+    },
+    {
+      "feature": "heart_rate",
+      "importance": 0.0166,
+      "label": "Heart Rate"
+    },
+    {
+      "feature": "alcohol",
+      "importance": 0.0055,
+      "label": "Alcohol"
+    }
+  ],
+  "test_metrics": {
+    "accuracy": 0.7322,
+    "precision": 0.0433,
+    "recall": 0.6909,
+    "specificity": 0.7329,
+    "f1": 0.0815,
+    "roc_auc": 0.7804,
+    "confusion_matrix": {
+      "true_negatives": 2305,
+      "false_positives": 840,
+      "false_negatives": 17,
+      "true_positives": 38
+    }
+  },
+  "cv_metrics": {
+    "accuracy": 0.7252,
+    "recall": 0.7148,
+    "precision": 0.043,
+    "f1": 0.0812,
+    "roc_auc": 0.7934
+  },
+  "pipeline_file": "cardiovascular_pipeline.joblib"
+}

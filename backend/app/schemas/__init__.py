@@ -7,6 +7,12 @@ from .assessment import (
     FamilyHistorySchema,
 )
 from .user import UserProfileBase, UserProfileUpdate
+from .prediction import (
+    ConditionRiskDetail,
+    ExplainableFactor,
+    ActionableRecommendation,
+    RiskAssessmentResponse,
+)
 
 __all__ = [
     "APIResponse",
@@ -18,4 +24,8 @@ __all__ = [
     "FamilyHistorySchema",
     "UserProfileBase",
     "UserProfileUpdate",
+    "ConditionRiskDetail",
+    "ExplainableFactor",
+    "ActionableRecommendation",
+    "RiskAssessmentResponse",
 ]
