@@ -173,6 +173,84 @@ export const assessmentService = {
   },
 
   /**
+   * Submits assessment to ML prediction engine for real-time risk stratification.
+   * `POST /api/predict`
+   * 
+   * @param {Object} formData
+   * @returns {Promise<Object>} Calculated ML risk prediction result
+   */
+  async predictRisk(formData) {
+    const payload = formatAssessmentPayload(formData);
+
+    try {
+      const response = await fetch(`${API_BASE}/predict`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const resJson = await response.json();
+
+      if (!response.ok) {
+        const errorMsg = resJson.message || resJson.detail || 'Failed to compute ML risk prediction.';
+        throw new Error(errorMsg);
+      }
+
+      if (resJson.data) {
+        try {
+          localStorage.setItem('hg_latest_result', JSON.stringify(resJson.data));
+          const existingHistory = JSON.parse(localStorage.getItem('hg_assessment_history') || '[]');
+          localStorage.setItem('hg_assessment_history', JSON.stringify([resJson.data, ...existingHistory]));
+        } catch (e) {}
+      }
+
+      return resJson.data;
+    } catch (err) {
+      console.error('[AssessmentService] Predict error:', err);
+      throw err;
+    }
+  },
+
+  /**
+   * Fetches latest ML risk prediction.
+   * `GET /api/predict/latest`
+   */
+  async getLatestPrediction(userId) {
+    try {
+      const url = new URL(`${API_BASE}/predict/latest`, window.location.origin);
+      if (userId) url.searchParams.set('user_id', userId);
+      const response = await fetch(url.toString());
+      if (response.ok) {
+        const resJson = await response.json();
+        return resJson.data;
+      }
+    } catch (err) {
+      console.warn('[AssessmentService] Failed to fetch latest prediction:', err);
+    }
+    return null;
+  },
+
+  /**
+   * Fetches active ML model metadata and test set evaluation metrics.
+   * `GET /api/predict/models`
+   */
+  async getModelsMetadata() {
+    try {
+      const response = await fetch(`${API_BASE}/predict/models`);
+      if (response.ok) {
+        const resJson = await response.json();
+        return resJson.data;
+      }
+    } catch (err) {
+      console.warn('[AssessmentService] Failed to fetch models metadata:', err);
+    }
+    return null;
+  },
+
+  /**
    * Checks backend vitality and database status.
    * `GET /api/health`
    */
@@ -188,3 +266,4 @@ export const assessmentService = {
     }
   },
 };
+

@@ -2,11 +2,11 @@
   "condition": "cardiovascular",
   "model_name": "LogisticRegression",
   "version": "1.0",
-  "training_date": "2026-09-14T08:48:19.402362+00:00",
+  "training_date": "2026-09-15T14:24:04.126019+00:00",
   "dataset_sample_size": 16000,
   "train_samples": 12800,
   "test_samples": 3200,
-  "positive_class_prevalence": 0.0171,
+  "positive_class_prevalence": 0.2311,
   "features": [
     "age",
     "gender",
@@ -24,91 +24,91 @@
   ],
   "feature_importances": [
     {
-      "feature": "bmi",
-      "importance": 0.1863,
-      "label": "Bmi"
-    },
-    {
       "feature": "age",
-      "importance": 0.1595,
+      "importance": 0.2132,
       "label": "Age"
     },
     {
-      "feature": "weight_kg",
-      "importance": 0.1069,
-      "label": "Weight Kg"
-    },
-    {
-      "feature": "smoking",
-      "importance": 0.0987,
-      "label": "Smoking"
-    },
-    {
-      "feature": "height_cm",
-      "importance": 0.0852,
-      "label": "Height Cm"
+      "feature": "bmi",
+      "importance": 0.1522,
+      "label": "Bmi"
     },
     {
       "feature": "systolic_bp",
-      "importance": 0.082,
+      "importance": 0.1344,
       "label": "Systolic Bp"
     },
     {
-      "feature": "diastolic_bp",
-      "importance": 0.0698,
-      "label": "Diastolic Bp"
-    },
-    {
       "feature": "family_history_cardio",
-      "importance": 0.0601,
+      "importance": 0.1085,
       "label": "Family History Cardio"
     },
     {
-      "feature": "blood_sugar",
-      "importance": 0.054,
-      "label": "Blood Sugar"
-    },
-    {
-      "feature": "physical_activity",
-      "importance": 0.0486,
-      "label": "Physical Activity"
+      "feature": "smoking",
+      "importance": 0.0856,
+      "label": "Smoking"
     },
     {
       "feature": "gender",
-      "importance": 0.0267,
+      "importance": 0.0678,
       "label": "Gender"
     },
     {
+      "feature": "diastolic_bp",
+      "importance": 0.0623,
+      "label": "Diastolic Bp"
+    },
+    {
+      "feature": "physical_activity",
+      "importance": 0.0616,
+      "label": "Physical Activity"
+    },
+    {
+      "feature": "weight_kg",
+      "importance": 0.0519,
+      "label": "Weight Kg"
+    },
+    {
+      "feature": "blood_sugar",
+      "importance": 0.0336,
+      "label": "Blood Sugar"
+    },
+    {
+      "feature": "height_cm",
+      "importance": 0.0235,
+      "label": "Height Cm"
+    },
+    {
       "feature": "heart_rate",
-      "importance": 0.0166,
+      "importance": 0.0026,
       "label": "Heart Rate"
     },
     {
       "feature": "alcohol",
-      "importance": 0.0055,
+      "importance": 0.0026,
       "label": "Alcohol"
     }
   ],
   "test_metrics": {
-    "accuracy": 0.7322,
-    "precision": 0.0433,
-    "recall": 0.6909,
-    "specificity": 0.7329,
-    "f1": 0.0815,
-    "roc_auc": 0.7804,
+    "accuracy": 0.7031,
+    "precision": 0.4174,
+    "recall": 0.7212,
+    "specificity": 0.6977,
+    "f1": 0.5288,
+    "roc_auc": 0.7747,
     "confusion_matrix": {
-      "true_negatives": 2305,
-      "false_positives": 840,
-      "false_negatives": 17,
-      "true_positives": 38
+      "true_negatives": 1717,
+      "false_positives": 744,
+      "false_negatives": 206,
+      "true_positives": 533
     }
   },
   "cv_metrics": {
-    "accuracy": 0.7252,
-    "recall": 0.7148,
-    "precision": 0.043,
-    "f1": 0.0812,
-    "roc_auc": 0.7934
+    "accuracy": 0.6934,
+    "recall": 0.6934,
+    "precision": 0.4049,
+    "f1": 0.5112,
+    "roc_auc": 0.7639
   },
   "pipeline_file": "cardiovascular_pipeline.joblib"
 }

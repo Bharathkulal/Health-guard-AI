@@ -124,33 +124,38 @@ def extract_features_from_assessment(assessment_dict: Dict[str, Any]) -> Dict[st
     Transforms an assessment dictionary (from frontend/database) into formatted single-row
     Pandas DataFrames ready for inference on Diabetes, Cardiovascular, and Hypertension pipelines.
     """
-    vitals = assessment_dict.get("vitals", {})
-    lifestyle = assessment_dict.get("lifestyle", {})
-    family = assessment_dict.get("family_history", {})
+    vitals = assessment_dict.get("vitals", {}) if isinstance(assessment_dict.get("vitals"), dict) else {}
+    lifestyle = assessment_dict.get("lifestyle", {}) if isinstance(assessment_dict.get("lifestyle"), dict) else {}
+    family = assessment_dict.get("family_history", {}) if isinstance(assessment_dict.get("family_history"), dict) else {}
     symptoms = assessment_dict.get("symptoms", [])
 
     age = int(assessment_dict.get("age", 40))
     gender = map_gender_to_numeric(assessment_dict.get("gender") or assessment_dict.get("sex", "male"))
 
-    height_cm = float(vitals.get("height_cm") or vitals.get("heightCm") or 170.0)
-    weight_kg = float(vitals.get("weight_kg") or vitals.get("weightKg") or 70.0)
-    bmi = float(vitals.get("bmi") or compute_bmi(height_cm, weight_kg))
+    height_cm = float(assessment_dict.get("height_cm") or vitals.get("height_cm") or vitals.get("heightCm") or 170.0)
+    weight_kg = float(assessment_dict.get("weight_kg") or vitals.get("weight_kg") or vitals.get("weightKg") or 70.0)
+    bmi = float(assessment_dict.get("bmi") or vitals.get("bmi") or compute_bmi(height_cm, weight_kg))
 
-    systolic_bp = int(vitals.get("systolic_bp") or vitals.get("systolicBP") or 120)
-    diastolic_bp = int(vitals.get("diastolic_bp") or vitals.get("diastolicBP") or 80)
-    blood_sugar = float(vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95.0)
-    heart_rate = int(vitals.get("heart_rate") or vitals.get("heartRate") or 72)
+    systolic_bp = int(assessment_dict.get("systolic_bp") or vitals.get("systolic_bp") or vitals.get("systolicBP") or 120)
+    diastolic_bp = int(assessment_dict.get("diastolic_bp") or vitals.get("diastolic_bp") or vitals.get("diastolicBP") or 80)
+    blood_sugar = float(assessment_dict.get("blood_sugar") or vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95.0)
+    heart_rate = int(assessment_dict.get("heart_rate") or vitals.get("heart_rate") or vitals.get("heartRate") or 72)
 
-    activity_num = map_activity_to_numeric(lifestyle.get("physical_activity") or lifestyle.get("physicalActivity") or "moderate")
-    smoking_num = map_smoking_to_numeric(lifestyle.get("smoking") or "never")
-    alcohol_num = map_alcohol_to_numeric(lifestyle.get("alcohol") or "occasional")
-    sleep_hours = float(lifestyle.get("sleep_hours") or lifestyle.get("sleepHours") or 7.0)
+    activity_raw = lifestyle.get("physical_activity") or lifestyle.get("physicalActivity") or assessment_dict.get("physical_activity") or "moderate"
+    smoking_raw = lifestyle.get("smoking") or assessment_dict.get("smoking") or "never"
+    alcohol_raw = lifestyle.get("alcohol") or assessment_dict.get("alcohol") or "occasional"
+    sleep_raw = lifestyle.get("sleep_hours") or lifestyle.get("sleepHours") or assessment_dict.get("sleep_hours") or 7.0
 
-    fam_diab = 1 if family.get("diabetes") else 0
-    fam_cardio = 1 if (family.get("heart_disease") or family.get("cardiovascular") or family.get("early_heart_attack")) else 0
-    fam_htn = 1 if family.get("hypertension") else 0
+    activity_num = map_activity_to_numeric(activity_raw)
+    smoking_num = map_smoking_to_numeric(smoking_raw)
+    alcohol_num = map_alcohol_to_numeric(alcohol_raw)
+    sleep_hours = float(sleep_raw)
 
-    symptoms_count = len([s for s in symptoms if s and s != "none"])
+    fam_diab = 1 if (family.get("diabetes") or assessment_dict.get("family_history_diabetes")) else 0
+    fam_cardio = 1 if (family.get("heart_disease") or family.get("cardiovascular") or family.get("early_heart_attack") or assessment_dict.get("family_history_cardio")) else 0
+    fam_htn = 1 if (family.get("hypertension") or assessment_dict.get("family_history_hypertension")) else 0
+
+    symptoms_count = len([s for s in symptoms if s and s != "none"]) if isinstance(symptoms, list) else int(assessment_dict.get("symptoms_count", 0))
 
     # Build DataFrames matching exact training column signatures
     df_diabetes = pd.DataFrame([{

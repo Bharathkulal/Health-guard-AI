@@ -52,8 +52,13 @@ export function CategoryRiskCard({ category, className = '' }) {
               <h3 className="text-base font-bold text-slate-100">
                 {name}
               </h3>
-              <p className="text-[11px] text-slate-400 font-mono">
-                Multi-Factor ML Index
+              <p className="text-[11px] text-emerald-400 font-mono flex items-center gap-1.5">
+                <span>{category.model_name || 'Scikit-Learn'} v{category.model_version || '1.0'}</span>
+                {category.model_roc_auc && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                    AUC: {typeof category.model_roc_auc === 'number' ? category.model_roc_auc.toFixed(2) : category.model_roc_auc}
+                  </span>
+                )}
               </p>
             </div>
           </div>

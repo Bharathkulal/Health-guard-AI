@@ -39,7 +39,7 @@ const STEP_TITLES = [
 
 export function AssessmentPage() {
   const { isDark } = useTheme();
-  const { activeDraft, updateDraft, resetDraft } = useHealth();
+  const { activeDraft, updateDraft, resetDraft, submitAssessment } = useHealth();
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -110,8 +110,8 @@ export function AssessmentPage() {
     setShowLoadingOverlay(true);
 
     try {
-      // Direct call to assessmentService (POST /api/assessments)
-      const result = await assessmentService.createAssessment(activeDraft);
+      // Execute ML Prediction & Persistence pipeline via HealthContext
+      const result = await submitAssessment(activeDraft);
       setSubmissionResult(result);
     } catch (err) {
       console.error('Submission failed:', err);
@@ -234,20 +234,29 @@ export function AssessmentPage() {
             <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
               <button
                 type="button"
-                onClick={() => navigate('/dashboard')}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-all flex items-center justify-center gap-2"
+                onClick={() => navigate('/results')}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-emerald-soft"
               >
-                <span>Return to Dashboard</span>
+                <Sparkles className="w-4 h-4" />
+                <span>View ML Risk Analysis & Report</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 type="button"
-                onClick={handleStartNew}
+                onClick={() => navigate('/dashboard')}
                 className="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-700 text-slate-300 font-semibold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>Submit Another Assessment</span>
+                <span>Dashboard</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleStartNew}
+                className="w-full sm:w-auto px-4 py-3 rounded-xl text-slate-400 font-semibold text-xs hover:text-slate-200 transition-all flex items-center justify-center gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>New Assessment</span>
               </button>
             </div>
           </div>

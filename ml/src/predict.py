@@ -1,10 +1,10 @@
-"""
-Prediction & Explainability Inference Engine for HealthGuard AI.
-Loads persisted ML pipelines, computes multi-condition disease probabilities,
-generates explainable factor contributions, and structures output for backend/frontend consumption.
-"""
-
+import sys
 import os
+
+ML_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ML_ROOT not in sys.path:
+    sys.path.insert(0, ML_ROOT)
+
 import json
 import logging
 from typing import Dict, Any, List, Optional
@@ -152,38 +152,38 @@ class MLPredictionEngine:
 
     def _extract_condition_key_drivers(self, condition: str, assessment: Dict[str, Any], prob: float) -> List[str]:
         """Extracts key biomarkers influencing this specific condition."""
-        vitals = assessment.get("vitals", {})
-        lifestyle = assessment.get("lifestyle", {})
-        family = assessment.get("family_history", {})
+        vitals = assessment.get("vitals", {}) if isinstance(assessment.get("vitals"), dict) else {}
+        lifestyle = assessment.get("lifestyle", {}) if isinstance(assessment.get("lifestyle"), dict) else {}
+        family = assessment.get("family_history", {}) if isinstance(assessment.get("family_history"), dict) else {}
         drivers = []
 
         if condition == "diabetes":
-            glu = vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95
-            bmi = vitals.get("bmi") or 24.5
+            glu = assessment.get("blood_sugar") or vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95
+            bmi = assessment.get("bmi") or vitals.get("bmi") or 24.5
             drivers.append(f"Fasting Glucose ({glu} mg/dL)")
             drivers.append(f"BMI ({bmi})")
-            if family.get("diabetes"):
+            if family.get("diabetes") or assessment.get("family_history_diabetes"):
                 drivers.append("Family History of Type 2 Diabetes")
             else:
                 drivers.append("No Hereditary Diabetes History")
 
         elif condition == "cardiovascular":
-            sbp = vitals.get("systolic_bp") or vitals.get("systolicBP") or 120
-            smoke = lifestyle.get("smoking") or "never"
+            sbp = assessment.get("systolic_bp") or vitals.get("systolic_bp") or vitals.get("systolicBP") or 120
+            smoke = lifestyle.get("smoking") or assessment.get("smoking") or "never"
             drivers.append(f"Systolic Pressure ({sbp} mmHg)")
-            drivers.append("Non-Smoker" if smoke == "never" else f"Smoking: {smoke.capitalize()}")
-            if family.get("heart_disease") or family.get("cardiovascular"):
+            drivers.append("Non-Smoker" if smoke == "never" else f"Smoking: {str(smoke).capitalize()}")
+            if family.get("heart_disease") or family.get("cardiovascular") or assessment.get("family_history_cardio"):
                 drivers.append("Family History of CVD")
             else:
                 drivers.append("Aerobic Lifestyle Baseline")
 
         elif condition == "hypertension":
-            sbp = vitals.get("systolic_bp") or vitals.get("systolicBP") or 120
-            dbp = vitals.get("diastolic_bp") or vitals.get("diastolicBP") or 80
-            sleep = lifestyle.get("sleep_hours") or lifestyle.get("sleepHours") or 7.0
+            sbp = assessment.get("systolic_bp") or vitals.get("systolic_bp") or vitals.get("systolicBP") or 120
+            dbp = assessment.get("diastolic_bp") or vitals.get("diastolic_bp") or vitals.get("diastolicBP") or 80
+            sleep = lifestyle.get("sleep_hours") or lifestyle.get("sleepHours") or assessment.get("sleep_hours") or 7.0
             drivers.append(f"Blood Pressure ({sbp}/{dbp} mmHg)")
             drivers.append(f"Average Sleep ({sleep}h)")
-            if family.get("hypertension"):
+            if family.get("hypertension") or assessment.get("family_history_hypertension"):
                 drivers.append("Family History of Hypertension")
 
         return drivers[:3]
@@ -200,14 +200,14 @@ class MLPredictionEngine:
 
     def _generate_explainable_factors(self, assessment: Dict[str, Any], condition_results: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Generates explainable factor attribution cards for the patient."""
-        vitals = assessment.get("vitals", {})
-        lifestyle = assessment.get("lifestyle", {})
+        vitals = assessment.get("vitals", {}) if isinstance(assessment.get("vitals"), dict) else {}
+        lifestyle = assessment.get("lifestyle", {}) if isinstance(assessment.get("lifestyle"), dict) else {}
 
         factors = []
-        sbp = int(vitals.get("systolic_bp") or vitals.get("systolicBP") or 120)
-        bmi = float(vitals.get("bmi") or 24.5)
-        glu = float(vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95)
-        smoke = str(lifestyle.get("smoking") or "never").lower()
+        sbp = int(assessment.get("systolic_bp") or vitals.get("systolic_bp") or vitals.get("systolicBP") or 120)
+        bmi = float(assessment.get("bmi") or vitals.get("bmi") or 24.5)
+        glu = float(assessment.get("blood_sugar") or vitals.get("blood_sugar") or vitals.get("fastingBloodSugar") or 95)
+        smoke = str(lifestyle.get("smoking") or assessment.get("smoking") or "never").lower()
 
         # 1. Blood Pressure
         if sbp >= 130:

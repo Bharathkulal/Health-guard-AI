@@ -18,8 +18,8 @@ class APIResponse(BaseModel, Generic[T]):
 
 class HealthCheckResponse(BaseModel):
     """System health check payload."""
-    status: str = Field(..., example="ok")
-    service: str = Field(..., example="healthguard-api")
-    version: str = Field(..., example="1.0.0")
-    database: str = Field(..., example="connected")
+    status: str = Field(..., examples=["ok"])
+    service: str = Field(..., examples=["healthguard-api"])
+    version: str = Field(..., examples=["1.0.0"])
+    database: str = Field(..., examples=["connected"])
     timestamp: str = Field(..., description="Current ISO-8601 UTC server timestamp")

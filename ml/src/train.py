@@ -1,9 +1,10 @@
-"""
-End-to-End Model Training, Cross-Validation, Comparison, and Artifact Export Pipeline.
-Trains clinical screening models for Diabetes, Cardiovascular Disease, and Hypertension.
-"""
-
+import sys
 import os
+
+ML_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ML_ROOT not in sys.path:
+    sys.path.insert(0, ML_ROOT)
+
 import json
 import logging
 from datetime import datetime, timezone

@@ -2,7 +2,7 @@
   "condition": "hypertension",
   "model_name": "RandomForest",
   "version": "1.0",
-  "training_date": "2026-09-14T08:48:27.262985+00:00",
+  "training_date": "2026-09-15T14:24:13.887975+00:00",
   "dataset_sample_size": 16000,
   "train_samples": 12800,
   "test_samples": 3200,

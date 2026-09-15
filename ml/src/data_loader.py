@@ -1,9 +1,10 @@
-"""
-Data Loader Module for HealthGuard AI Machine Learning Pipelines.
-Loads and caches raw public datasets for Diabetes, Cardiovascular Disease, and Hypertension risk profiling.
-"""
-
+import sys
 import os
+
+ML_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ML_ROOT not in sys.path:
+    sys.path.insert(0, ML_ROOT)
+
 import logging
 from typing import Tuple, Dict, Any
 import numpy as np
@@ -18,7 +19,7 @@ os.makedirs(RAW_DATA_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 
 
-def load_diabetes_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd.DataFrame:
+def load_diabetes_dataset(sample_size: int = 16000, random_seed: int = 42, force_reload: bool = False) -> pd.DataFrame:
     """
     Loads the Diabetes Risk Dataset based on CDC BRFSS (Behavioral Risk Factor Surveillance System)
     and clinical metabolic research distributions.
@@ -42,7 +43,7 @@ def load_diabetes_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd
     - diabetes (0=No Diabetes, 1=Prediabetic / Diabetic)
     """
     file_path = os.path.join(RAW_DATA_DIR, "diabetes_data.csv")
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not force_reload:
         logger.info(f"Loading existing diabetes dataset from {file_path}")
         df = pd.read_csv(file_path)
         return df
@@ -81,15 +82,14 @@ def load_diabetes_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd
     # Target generation using authentic clinical logistic hazard
     # ADA Risk score formulation: age + BMI + high glucose + BP + family history + physical inactivity
     logit = (
-        -7.8
-        + 0.048 * age
-        + 0.12 * (bmi - 24)
-        + 0.042 * (blood_sugar - 100)
+        -4.6
+        + 0.045 * age
+        + 0.11 * (bmi - 24)
+        + 0.040 * (blood_sugar - 100)
         + 0.015 * (systolic_bp - 120)
         + 0.85 * family_history_diabetes
         - 0.35 * physical_activity
         + 0.25 * smoking
-        + (0.4 if np.random.rand() < 0.5 else 0)
     )
     prob = 1.0 / (1.0 + np.exp(-logit))
     # Add symptoms correlated with true metabolic disturbance
@@ -121,7 +121,7 @@ def load_diabetes_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd
     return df
 
 
-def load_cardiovascular_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd.DataFrame:
+def load_cardiovascular_dataset(sample_size: int = 16000, random_seed: int = 42, force_reload: bool = False) -> pd.DataFrame:
     """
     Loads Cardiovascular Disease Dataset modeled on the 70,000 patient clinical examination dataset
     (Sulmanova et al. / Framingham CVD study).
@@ -145,7 +145,7 @@ def load_cardiovascular_dataset(sample_size: int = 15000, random_seed: int = 42)
     - cardio (0=No CVD, 1=Presence of Cardiovascular Disease)
     """
     file_path = os.path.join(RAW_DATA_DIR, "cardiovascular_data.csv")
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not force_reload:
         logger.info(f"Loading existing cardiovascular dataset from {file_path}")
         df = pd.read_csv(file_path)
         return df
@@ -185,12 +185,12 @@ def load_cardiovascular_dataset(sample_size: int = 15000, random_seed: int = 42)
 
     # Framingham / ASCVD Risk equation approximation
     logit = (
-        -8.2
-        + 0.055 * age
-        + 0.028 * (systolic_bp - 120)
-        + 0.018 * (diastolic_bp - 80)
-        + 0.065 * (bmi - 24)
-        + 0.45 * gender
+        -4.8
+        + 0.052 * age
+        + 0.026 * (systolic_bp - 120)
+        + 0.016 * (diastolic_bp - 80)
+        + 0.060 * (bmi - 24)
+        + 0.40 * gender
         + 0.65 * smoking
         + 0.72 * family_history_cardio
         + 0.012 * (blood_sugar - 95).clip(0, None)
@@ -221,7 +221,7 @@ def load_cardiovascular_dataset(sample_size: int = 15000, random_seed: int = 42)
     return df
 
 
-def load_hypertension_dataset(sample_size: int = 15000, random_seed: int = 42) -> pd.DataFrame:
+def load_hypertension_dataset(sample_size: int = 16000, random_seed: int = 42, force_reload: bool = False) -> pd.DataFrame:
     """
     Loads Essential Hypertension Risk Dataset (NHANES / Vascular risk cohorts).
 
@@ -242,7 +242,7 @@ def load_hypertension_dataset(sample_size: int = 15000, random_seed: int = 42) -
     - hypertension (0=Normal/Optimal, 1=Hypertensive)
     """
     file_path = os.path.join(RAW_DATA_DIR, "hypertension_data.csv")
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not force_reload:
         logger.info(f"Loading existing hypertension dataset from {file_path}")
         df = pd.read_csv(file_path)
         return df

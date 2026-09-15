@@ -67,11 +67,13 @@ class PredictionService:
             "modelsUsed": prediction_result["modelsUsed"],
             "clinicalDisclaimer": prediction_result["clinicalDisclaimer"],
             "vitalsSnapshot": {
-                "systolicBP": assessment_data.get("vitals", {}).get("systolic_bp") or assessment_data.get("vitals", {}).get("systolicBP") or 120,
-                "diastolicBP": assessment_data.get("vitals", {}).get("diastolic_bp") or assessment_data.get("vitals", {}).get("diastolicBP") or 80,
-                "fastingBloodSugar": assessment_data.get("vitals", {}).get("blood_sugar") or assessment_data.get("vitals", {}).get("fastingBloodSugar") or 95,
-                "heartRate": assessment_data.get("vitals", {}).get("heart_rate") or assessment_data.get("vitals", {}).get("heartRate") or 72,
-                "bmi": assessment_data.get("vitals", {}).get("bmi") or 24.5,
+                "systolicBP": assessment_data.get("systolic_bp") or assessment_data.get("vitals", {}).get("systolic_bp") or assessment_data.get("vitals", {}).get("systolicBP") or 120,
+                "diastolicBP": assessment_data.get("diastolic_bp") or assessment_data.get("vitals", {}).get("diastolic_bp") or assessment_data.get("vitals", {}).get("diastolicBP") or 80,
+                "fastingBloodSugar": assessment_data.get("blood_sugar") or assessment_data.get("vitals", {}).get("blood_sugar") or assessment_data.get("vitals", {}).get("fastingBloodSugar") or 95,
+                "heartRate": assessment_data.get("heart_rate") or assessment_data.get("vitals", {}).get("heart_rate") or assessment_data.get("vitals", {}).get("heartRate") or 72,
+                "bmi": assessment_data.get("bmi") or assessment_data.get("vitals", {}).get("bmi") or 24.5,
+                "heightCm": assessment_data.get("height_cm") or assessment_data.get("vitals", {}).get("height_cm") or assessment_data.get("vitals", {}).get("heightCm") or 170,
+                "weightKg": assessment_data.get("weight_kg") or assessment_data.get("vitals", {}).get("weight_kg") or assessment_data.get("vitals", {}).get("weightKg") or 70,
             },
         }
 

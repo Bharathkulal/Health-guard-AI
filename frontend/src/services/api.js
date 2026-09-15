@@ -315,26 +315,51 @@ export const healthApi = {
   },
 
   /**
-   * Submits a full multi-step health assessment for storage and ML preparation.
+   * Submits a full multi-step health assessment for storage and ML prediction.
+   * Calls POST /api/predict to execute trained Machine Learning models and persist to MongoDB.
    * 
    * @param {Object} assessmentData 
    */
   async submitAssessment(assessmentData) {
     try {
-      // Direct call to assessment service POST /api/assessments
-      const savedDoc = await assessmentService.createAssessment(assessmentData);
+      // 1. Execute live inference on real ML pipelines (POST /api/predict)
+      let predictionDoc;
+      try {
+        predictionDoc = await assessmentService.predictRisk(assessmentData);
+      } catch (mlErr) {
+        console.warn('Direct predict API unreachable, falling back to assessment ingestion:', mlErr);
+        predictionDoc = null;
+      }
 
-      // Also compute deterministic decision support baseline for local demo continuity if needed
-      const decisionSupportResult = analyzeHealthRisk(assessmentData);
-      decisionSupportResult.id = savedDoc.assessment_id || decisionSupportResult.id;
+      // 2. Also persist raw assessment document (POST /api/assessments)
+      let savedAssessment;
+      try {
+        savedAssessment = await assessmentService.createAssessment(assessmentData);
+      } catch (saveErr) {
+        console.warn('Assessment save endpoint warning:', saveErr);
+      }
+
+      // If ML prediction succeeded, use genuine ML result
+      let finalResult;
+      if (predictionDoc && predictionDoc.categories) {
+        finalResult = {
+          ...predictionDoc,
+          id: predictionDoc.assessment_id || savedAssessment?.assessment_id || `HG-${Math.floor(1000 + Math.random() * 9000)}`,
+          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        };
+      } else {
+        // Fallback calculation if server offline
+        finalResult = analyzeHealthRisk(assessmentData);
+        finalResult.id = savedAssessment?.assessment_id || finalResult.id;
+      }
 
       // Save to local storage history
       const history = getStoredAssessments();
-      const updatedHistory = [decisionSupportResult, ...history];
+      const updatedHistory = [finalResult, ...history.filter(h => h.id !== finalResult.id)];
       localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(updatedHistory));
-      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(decisionSupportResult));
+      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(finalResult));
 
-      // Also update user vitals snapshot in profile
+      // Update user vitals snapshot in profile
       if (assessmentData.vitals) {
         const user = getStoredUser();
         user.heightCm = assessmentData.vitals.heightCm || user.heightCm;
@@ -343,7 +368,7 @@ export const healthApi = {
         localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
       }
 
-      return savedDoc;
+      return finalResult;
     } catch (err) {
       console.error('API submit assessment error:', err);
       throw err;
@@ -351,13 +376,23 @@ export const healthApi = {
   },
 
   /**
-   * Fetches latest computed risk assessment.
-   * `GET /api/risk/latest`
+   * Fetches latest computed risk assessment from real ML model pipeline or storage.
+   * `GET /api/predict/latest`
    */
   async getLatestRiskResult() {
     try {
-      const res = await fetch(`${API_BASE}/risk/latest`);
-      if (res.ok) return await res.json();
+      const res = await fetch(`${API_BASE}/predict/latest`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.categories) {
+          const doc = json.data;
+          return {
+            ...doc,
+            id: doc.assessment_id || 'HG-8942',
+            date: doc.created_at ? new Date(doc.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent',
+          };
+        }
+      }
     } catch (e) {
       // Fallback
     }
