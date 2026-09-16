@@ -10,16 +10,15 @@ import {
   Settings,
   Activity,
   LogOut,
-  ExternalLink,
   ChevronRight,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-import { useHealth } from '../../context/HealthContext';
+import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 
 export function Sidebar({ className = '' }) {
   const { isDark } = useTheme();
-  const { user } = useHealth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
@@ -31,6 +30,21 @@ export function Sidebar({ className = '' }) {
     { name: 'Profile', path: '/profile', icon: User },
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
+  };
+
+  const displayName = user?.name || 'Patient User';
+  const displayEmail = user?.email || 'patient@healthguard.ai';
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'HG';
 
   return (
     <aside
@@ -113,31 +127,32 @@ export function Sidebar({ className = '' }) {
         >
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
-              {user?.name ? user.name.split(' ').map(n => n[0]).join('') : 'AC'}
+              {initials}
             </div>
             <div className="overflow-hidden text-left">
               <p className="text-xs font-bold text-slate-100 truncate">
-                {user?.name || 'Alex Chen'}
+                {displayName}
               </p>
               <p className="text-[10px] text-slate-400 truncate">
-                {user?.email || 'alex.chen@healthguard.ai'}
+                {displayEmail}
               </p>
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
         </Link>
 
-        {/* Footer controls: Theme toggle + Exit to Landing */}
+        {/* Footer controls: Theme toggle + Logout */}
         <div className="flex items-center justify-between px-1 pt-1">
           <ThemeToggle />
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors px-2 py-1 rounded-lg hover:bg-emerald-950/20"
-            title="Return to Public Landing Page"
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-rose-400/80 hover:text-rose-400 transition-colors px-2 py-1 rounded-lg hover:bg-rose-950/20"
+            title="Log Out of Session"
           >
-            <span>Landing</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+            <span>Log Out</span>
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </aside>

@@ -2,11 +2,11 @@
  * @file assessmentService.js
  * Dedicated API Service Layer for HealthGuard AI Health Assessment Endpoints.
  * 
- * Communicates with the FastAPI backend (/api/assessments).
- * Handles robust network error reporting, data sanitization, and fallback support.
+ * Communicates with the FastAPI backend (/api/assessments, /api/predict).
+ * Uses centralized apiClient with automatic JWT Bearer injection, error handling, and offline fallback.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '/api';
+import { apiClient } from './apiClient';
 
 /**
  * Normalizes assessment form data for FastAPI backend ingestion.
@@ -26,17 +26,16 @@ export function formatAssessmentPayload(rawFormData) {
   const calculatedBMI = height > 0 ? parseFloat((weight / Math.pow(height / 100, 2)).toFixed(1)) : 24.0;
 
   return {
-    user_id: rawFormData.userId || 'usr_alex_chen_892',
-    age: parseInt(rawFormData.age, 10),
+    age: parseInt(rawFormData.age, 10) || 30,
     gender: String(rawFormData.gender || rawFormData.sex || 'other').toLowerCase(),
     height_cm: height,
     weight_kg: weight,
     bmi: vitals.bmi || calculatedBMI,
-    systolic_bp: parseInt(vitals.systolicBP, 10),
-    diastolic_bp: parseInt(vitals.diastolicBP, 10),
-    blood_sugar: parseFloat(vitals.fastingBloodSugar || vitals.bloodSugar),
-    heart_rate: parseInt(vitals.heartRate, 10),
-    symptoms: symptoms.filter(s => s !== 'none'),
+    systolic_bp: parseInt(vitals.systolicBP, 10) || 120,
+    diastolic_bp: parseInt(vitals.diastolicBP, 10) || 80,
+    blood_sugar: parseFloat(vitals.fastingBloodSugar || vitals.bloodSugar) || 95,
+    heart_rate: parseInt(vitals.heartRate, 10) || 72,
+    symptoms: symptoms.filter((s) => s !== 'none'),
     lifestyle: {
       physical_activity: String(lifestyle.physicalActivity || 'moderate').toLowerCase(),
       smoking: String(lifestyle.smoking || 'never').toLowerCase(),
@@ -69,42 +68,25 @@ export const assessmentService = {
     const payload = formatAssessmentPayload(formData);
 
     try {
-      const response = await fetch(`${API_BASE}/assessments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const resJson = await response.json();
-
-      if (!response.ok) {
-        const errorMsg = resJson.message || resJson.detail || 'Failed to submit health assessment.';
-        const errObj = new Error(errorMsg);
-        errObj.errors = resJson.errors || [];
-        errObj.status = response.status;
-        throw errObj;
-      }
+      const data = await apiClient.post('/assessments', payload);
 
       // Store latest assessment in local backup cache
-      if (resJson.data) {
+      if (data) {
         try {
           const existing = JSON.parse(localStorage.getItem('hg_stored_assessments') || '[]');
-          localStorage.setItem('hg_stored_assessments', JSON.stringify([resJson.data, ...existing]));
-          localStorage.setItem('hg_last_submitted_assessment', JSON.stringify(resJson.data));
+          localStorage.setItem('hg_stored_assessments', JSON.stringify([data, ...existing]));
+          localStorage.setItem('hg_last_submitted_assessment', JSON.stringify(data));
         } catch (e) {
           // ignore local storage errors
         }
       }
 
-      return resJson.data;
+      return data;
     } catch (err) {
       console.error('[AssessmentService] Submission error:', err);
 
-      // If backend is unavailable, construct local fallback record to prevent user blocking
-      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+      // If backend is unreachable or offline, construct local fallback
+      if (err.isNetworkError) {
         console.warn('[AssessmentService] Backend unavailable. Creating local offline receipt.');
         const offlineReceipt = {
           assessment_id: `HG-OFFLINE-${Date.now().toString(36).toUpperCase()}`,
@@ -132,42 +114,29 @@ export const assessmentService = {
    */
   async getAssessment(assessmentId) {
     try {
-      const response = await fetch(`${API_BASE}/assessments/${assessmentId}`);
-      if (!response.ok) {
-        throw new Error(`Assessment ${assessmentId} not found`);
-      }
-      const resJson = await response.json();
-      return resJson.data;
+      return await apiClient.get(`/assessments/${assessmentId}`);
     } catch (err) {
       console.error('[AssessmentService] Get assessment error:', err);
       // Fallback to local storage
       const cached = JSON.parse(localStorage.getItem('hg_stored_assessments') || '[]');
-      const found = cached.find(a => a.assessment_id === assessmentId);
+      const found = cached.find((a) => a.assessment_id === assessmentId);
       if (found) return found;
       throw err;
     }
   },
 
   /**
-   * Retrieves assessment history.
+   * Retrieves assessment history for authenticated caller.
    * `GET /api/assessments`
    * 
-   * @param {string} [userId]
    * @param {number} [limit=50]
    */
-  async getAssessmentHistory(userId, limit = 50) {
+  async getAssessmentHistory(limit = 50) {
     try {
-      const url = new URL(`${API_BASE}/assessments`, window.location.origin);
-      if (userId) url.searchParams.set('user_id', userId);
-      url.searchParams.set('limit', String(limit));
-
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error('Failed to fetch assessment history');
-      const resJson = await response.json();
-      return resJson.data || [];
+      const data = await apiClient.get(`/assessments?limit=${limit}`);
+      return data || [];
     } catch (err) {
       console.error('[AssessmentService] History fetch error:', err);
-      // Return local cache
       return JSON.parse(localStorage.getItem('hg_stored_assessments') || '[]');
     }
   },
@@ -183,31 +152,17 @@ export const assessmentService = {
     const payload = formatAssessmentPayload(formData);
 
     try {
-      const response = await fetch(`${API_BASE}/predict`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const data = await apiClient.post('/predict', payload);
 
-      const resJson = await response.json();
-
-      if (!response.ok) {
-        const errorMsg = resJson.message || resJson.detail || 'Failed to compute ML risk prediction.';
-        throw new Error(errorMsg);
-      }
-
-      if (resJson.data) {
+      if (data) {
         try {
-          localStorage.setItem('hg_latest_result', JSON.stringify(resJson.data));
+          localStorage.setItem('hg_latest_result', JSON.stringify(data));
           const existingHistory = JSON.parse(localStorage.getItem('hg_assessment_history') || '[]');
-          localStorage.setItem('hg_assessment_history', JSON.stringify([resJson.data, ...existingHistory]));
+          localStorage.setItem('hg_assessment_history', JSON.stringify([data, ...existingHistory]));
         } catch (e) {}
       }
 
-      return resJson.data;
+      return data;
     } catch (err) {
       console.error('[AssessmentService] Predict error:', err);
       throw err;
@@ -215,18 +170,12 @@ export const assessmentService = {
   },
 
   /**
-   * Fetches latest ML risk prediction.
+   * Fetches authenticated user's latest ML risk prediction.
    * `GET /api/predict/latest`
    */
-  async getLatestPrediction(userId) {
+  async getLatestPrediction() {
     try {
-      const url = new URL(`${API_BASE}/predict/latest`, window.location.origin);
-      if (userId) url.searchParams.set('user_id', userId);
-      const response = await fetch(url.toString());
-      if (response.ok) {
-        const resJson = await response.json();
-        return resJson.data;
-      }
+      return await apiClient.get('/predict/latest');
     } catch (err) {
       console.warn('[AssessmentService] Failed to fetch latest prediction:', err);
     }
@@ -239,11 +188,7 @@ export const assessmentService = {
    */
   async getModelsMetadata() {
     try {
-      const response = await fetch(`${API_BASE}/predict/models`);
-      if (response.ok) {
-        const resJson = await response.json();
-        return resJson.data;
-      }
+      return await apiClient.get('/predict/models');
     } catch (err) {
       console.warn('[AssessmentService] Failed to fetch models metadata:', err);
     }
@@ -256,14 +201,9 @@ export const assessmentService = {
    */
   async checkHealth() {
     try {
-      const response = await fetch(`${API_BASE}/health`);
-      if (response.ok) {
-        return await response.json();
-      }
-      return { status: 'error', database: 'unknown' };
+      return await apiClient.get('/health');
     } catch (err) {
       return { status: 'offline', database: 'unreachable' };
     }
   },
 };
-

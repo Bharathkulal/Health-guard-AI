@@ -3,62 +3,45 @@ User Profile and Demographics API Endpoints.
 """
 
 from typing import Dict, Any
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, status
+from app.core.dependencies import get_current_user
 from app.schemas.response import APIResponse
-from app.schemas.user import UserProfileBase, UserProfileUpdate
+from app.schemas.user import UserResponse, UserProfileUpdate
+from app.services.auth_service import auth_service
 
 router = APIRouter()
-
-# Default mock user profile in fallback store
-_DEFAULT_USER_PROFILE = {
-    "user_id": "usr_alex_chen_892",
-    "name": "Alex Chen",
-    "email": "alex.chen@healthguard.ai",
-    "age": 38,
-    "gender": "male",
-    "height_cm": 178.0,
-    "weight_kg": 78.0,
-    "bmi": 24.6,
-    "baseline_activity": "moderate",
-    "blood_type": "A+",
-    "emergency_contact": "+1 (555) 234-8901",
-    "member_since": "March 2025",
-}
 
 
 @router.get(
     "/profile",
-    summary="Get User Profile",
-    description="Retrieves the current user's profile and baseline biometric calibrations.",
-    response_model=APIResponse[Dict[str, Any]],
+    summary="Get Authenticated User Profile",
+    description="Retrieves the current authenticated user's profile and baseline biometric calibrations.",
+    response_model=APIResponse[UserResponse],
 )
-async def get_user_profile():
+async def get_user_profile(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Retrieves profile of the authenticated caller."""
+    profile = await auth_service.get_current_user_profile(current_user["user_id"])
     return APIResponse(
         success=True,
-        data=_DEFAULT_USER_PROFILE,
+        data=profile,
         message="User profile retrieved successfully",
     )
 
 
 @router.put(
     "/profile",
-    summary="Update User Profile",
-    description="Updates user profile attributes.",
-    response_model=APIResponse[Dict[str, Any]],
+    summary="Update Authenticated User Profile",
+    description="Updates user demographic and baseline biometric parameters.",
+    response_model=APIResponse[UserResponse],
 )
-async def update_user_profile(updates: UserProfileUpdate):
-    for key, value in updates.model_dump(exclude_unset=True).items():
-        if value is not None:
-            _DEFAULT_USER_PROFILE[key] = value
-
-    # Recalculate BMI if height or weight changed
-    h = _DEFAULT_USER_PROFILE.get("height_cm")
-    w = _DEFAULT_USER_PROFILE.get("weight_kg")
-    if h and w and h > 0 and w > 0:
-        _DEFAULT_USER_PROFILE["bmi"] = round(w / ((h / 100.0) ** 2), 1)
-
+async def update_user_profile(
+    updates: UserProfileUpdate,
+    current_user: Dict[str, Any] = Depends(get_current_user),
+):
+    """Updates profile attributes for the authenticated caller."""
+    updated = await auth_service.update_user_profile(current_user["user_id"], updates)
     return APIResponse(
         success=True,
-        data=_DEFAULT_USER_PROFILE,
+        data=updated,
         message="User profile updated successfully",
     )

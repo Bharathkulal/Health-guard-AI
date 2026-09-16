@@ -28,7 +28,7 @@ db_manager = MongoDBManager()
 async def connect_to_mongo() -> bool:
     """
     Initializes the Motor async MongoDB client and tests connectivity.
-    Creates necessary indexes for performant healthcare data querying.
+    Creates necessary indexes for performant healthcare data querying and uniqueness constraints.
     """
     logger.info(f"Connecting to MongoDB at {settings.MONGODB_URI} (database: {settings.DATABASE_NAME})...")
     try:
@@ -55,23 +55,29 @@ async def connect_to_mongo() -> bool:
 
 
 async def _setup_indexes():
-    """Configures database indexes for fast query resolution and uniqueness constraints."""
+    """Configures database indexes for fast query resolution, uniqueness constraints, and user isolation."""
     if not db_manager.connected or db_manager.db is None:
         return
 
     try:
+        # Users collection
+        users_col = db_manager.db[COLLECTION_USERS]
+        await users_col.create_index("user_id", unique=True)
+        await users_col.create_index("email", unique=True)
+
+        # Health Assessments collection
         assessments_col = db_manager.db[COLLECTION_HEALTH_ASSESSMENTS]
-        # Index assessment_id as unique
         await assessments_col.create_index("assessment_id", unique=True)
-        # Index user_id and created_at for historical lookups
         await assessments_col.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
         await assessments_col.create_index("created_at", direction=pymongo.DESCENDING)
 
-        users_col = db_manager.db[COLLECTION_USERS]
-        await users_col.create_index("user_id", unique=True)
-        await users_col.create_index("email", unique=True, sparse=True)
+        # Risk Assessments collection
+        risk_col = db_manager.db[COLLECTION_RISK_ASSESSMENTS]
+        await risk_col.create_index("assessment_id", unique=True)
+        await risk_col.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
+        await risk_col.create_index("created_at", direction=pymongo.DESCENDING)
 
-        logger.info("MongoDB indexes verified successfully.")
+        logger.info("MongoDB security and user-isolation indexes verified successfully.")
     except Exception as exc:
         logger.warning(f"Failed to create some MongoDB indexes: {exc}")
 

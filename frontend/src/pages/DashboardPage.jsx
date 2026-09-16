@@ -34,7 +34,7 @@ export function DashboardPage() {
     return 'Good evening';
   };
 
-  const userName = user?.name || 'Alex Chen';
+  const userName = user?.name || 'Patient';
   const vitals = latestResult?.vitalsSnapshot || user || {};
 
   return (

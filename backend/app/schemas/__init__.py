@@ -6,7 +6,15 @@ from .assessment import (
     LifestyleSchema,
     FamilyHistorySchema,
 )
-from .user import UserProfileBase, UserProfileUpdate
+from .user import (
+    UserRegisterRequest,
+    UserLoginRequest,
+    UserResponse,
+    UserAuthResponse,
+    PasswordChangeRequest,
+    AccountDeleteRequest,
+    UserProfileUpdate,
+)
 from .prediction import (
     ConditionRiskDetail,
     ExplainableFactor,
@@ -22,7 +30,12 @@ __all__ = [
     "HealthAssessmentListItem",
     "LifestyleSchema",
     "FamilyHistorySchema",
-    "UserProfileBase",
+    "UserRegisterRequest",
+    "UserLoginRequest",
+    "UserResponse",
+    "UserAuthResponse",
+    "PasswordChangeRequest",
+    "AccountDeleteRequest",
     "UserProfileUpdate",
     "ConditionRiskDetail",
     "ExplainableFactor",

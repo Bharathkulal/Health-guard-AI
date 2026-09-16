@@ -3,9 +3,12 @@ Main API Router aggregating sub-routes with tags and prefixes.
 """
 
 from fastapi import APIRouter
-from app.api.routes import health, assessments, users, predictions
+from app.api.routes import health, auth, assessments, users, predictions
 
 api_router = APIRouter()
+
+# Authentication & Identity
+api_router.include_router(auth.router, prefix="/auth", tags=["Authentication & Security"])
 
 # Health & diagnostics
 api_router.include_router(health.router, tags=["Health & Diagnostics"])
@@ -19,5 +22,5 @@ api_router.include_router(predictions.router, prefix="/risk", tags=["Machine Lea
 
 # User Profiles
 api_router.include_router(users.router, prefix="/users", tags=["Users & Profiles"])
-# Legacy compatibility alias for profile
+# Root alias for /profile
 api_router.include_router(users.router, tags=["Users & Profiles"])

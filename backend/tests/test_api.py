@@ -4,12 +4,24 @@ Integration and Unit Tests for HealthGuard AI FastAPI Endpoints.
 
 import os
 import sys
+import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+
+
+def get_auth_token():
+    """Helper to register and obtain access token for testing."""
+    email = f"apitest.{uuid.uuid4().hex[:8]}@example.com"
+    pwd = "ApiTestPassword2026!"
+    res = client.post(
+        "/api/auth/register",
+        json={"name": "API Tester", "email": email, "password": pwd, "confirm_password": pwd},
+    )
+    return res.json()["data"]["access_token"]
 
 
 def test_health_endpoint():
@@ -24,8 +36,10 @@ def test_health_endpoint():
 
 def test_create_valid_assessment():
     """Verify POST /api/assessments validates and stores health assessment."""
+    token = get_auth_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
     payload = {
-        "user_id": "usr_test_123",
         "age": 42,
         "gender": "female",
         "height_cm": 165.0,
@@ -50,7 +64,7 @@ def test_create_valid_assessment():
         }
     }
 
-    response = client.post("/api/assessments", json=payload)
+    response = client.post("/api/assessments", json=payload, headers=headers)
     assert response.status_code == 201
     res_json = response.json()
     assert res_json["success"] is True
@@ -65,14 +79,14 @@ def test_create_valid_assessment():
     assessment_id = data["assessment_id"]
 
     # Test GET by ID
-    get_res = client.get(f"/api/assessments/{assessment_id}")
+    get_res = client.get(f"/api/assessments/{assessment_id}", headers=headers)
     assert get_res.status_code == 200
     get_json = get_res.json()
     assert get_json["success"] is True
     assert get_json["data"]["assessment_id"] == assessment_id
 
     # Test GET history
-    history_res = client.get("/api/assessments")
+    history_res = client.get("/api/assessments", headers=headers)
     assert history_res.status_code == 200
     history_json = history_res.json()
     assert history_json["success"] is True
@@ -81,6 +95,9 @@ def test_create_valid_assessment():
 
 def test_validation_errors():
     """Verify invalid health data receives structured 422 errors."""
+    token = get_auth_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
     invalid_payload = {
         "age": 10,  # Below adult threshold 18
         "gender": "female",
@@ -92,7 +109,7 @@ def test_validation_errors():
         "heart_rate": 76,
     }
 
-    response = client.post("/api/assessments", json=invalid_payload)
+    response = client.post("/api/assessments", json=invalid_payload, headers=headers)
     assert response.status_code == 422
     res_json = response.json()
     assert res_json["success"] is False

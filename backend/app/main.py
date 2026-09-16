@@ -1,17 +1,18 @@
 """
 HealthGuard AI - FastAPI Application Entrypoint.
 Production-grade foundation for clinical assessment ingestion, MongoDB persistence,
-and ML risk stratification pipelines.
+ML risk stratification pipelines, and JWT authentication & authorization.
 """
 
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.core.config import settings
+from app.core.middleware import SecurityHeadersMiddleware
 from app.database.mongodb import connect_to_mongo, close_mongo_connection
 from app.api.router import api_router
 
@@ -51,6 +52,9 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+# Apply Security Headers Middleware
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Configure Cross-Origin Resource Sharing (CORS)
 app.add_middleware(
     CORSMiddleware,
@@ -60,7 +64,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Custom Exception Handlers for Unified API Response Envelope
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """Formats FastAPI HTTPExceptions into standardized envelope with headers preserved."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        headers=exc.headers,
+        content={
+            "success": False,
+            "message": exc.detail if isinstance(exc.detail, str) else "Request error",
+            "data": None,
+            "errors": [exc.detail] if isinstance(exc.detail, str) else exc.detail,
+        },
+    )
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Formats Pydantic validation errors into standard API envelope."""
@@ -77,7 +97,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "success": False,
-            "message": "Validation failed on health assessment inputs.",
+            "message": "Validation failed on input parameters.",
             "data": None,
             "errors": error_details,
         },

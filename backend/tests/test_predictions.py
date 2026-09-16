@@ -4,12 +4,24 @@ Integration and Unit Tests for HealthGuard AI Machine Learning & Prediction Endp
 
 import os
 import sys
+import uuid
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+
+
+def get_auth_token():
+    """Helper to register and obtain access token for testing."""
+    email = f"predtest.{uuid.uuid4().hex[:8]}@example.com"
+    pwd = "PredTestPassword2026!"
+    res = client.post(
+        "/api/auth/register",
+        json={"name": "ML Pred Tester", "email": email, "password": pwd, "confirm_password": pwd},
+    )
+    return res.json()["data"]["access_token"]
 
 
 def test_predict_models_metadata():
@@ -28,8 +40,10 @@ def test_predict_models_metadata():
 
 def test_real_ml_prediction_endpoint():
     """Verify POST /api/predict runs ML inference and returns genuine structured risk assessment."""
+    token = get_auth_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
     sample_assessment = {
-        "user_id": "usr_alex_chen_892",
         "age": 45,
         "gender": "male",
         "height_cm": 178.0,
@@ -54,7 +68,7 @@ def test_real_ml_prediction_endpoint():
         }
     }
 
-    response = client.post("/api/predict", json=sample_assessment)
+    response = client.post("/api/predict", json=sample_assessment, headers=headers)
     assert response.status_code == 200
     res_json = response.json()
     assert res_json["success"] is True
@@ -72,7 +86,7 @@ def test_real_ml_prediction_endpoint():
     assert len(data["recommendations"]) >= 2
 
     # Test GET /api/predict/latest
-    latest_res = client.get("/api/predict/latest")
+    latest_res = client.get("/api/predict/latest", headers=headers)
     assert latest_res.status_code == 200
     latest_json = latest_res.json()
     assert latest_json["success"] is True

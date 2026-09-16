@@ -1,12 +1,11 @@
 """
 Backend Prediction Service Layer for HealthGuard AI.
 Bridges FastAPI request lifecycles with the trained ML pipelines in ml/models,
-persisting calculated risk assessments into MongoDB collection 'risk_assessments'.
+persisting authenticated user risk assessments into MongoDB collection 'risk_assessments'.
 """
 
 import os
 import sys
-import json
 import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
@@ -27,7 +26,7 @@ _IN_MEMORY_RISK_ASSESSMENTS: List[Dict[str, Any]] = []
 
 
 class PredictionService:
-    """Service orchestrating multi-factor ML predictions and MongoDB persistence."""
+    """Service orchestrating multi-factor ML predictions and user-isolated MongoDB persistence."""
 
     def __init__(self):
         models_dir = os.path.join(ML_ROOT, "models")
@@ -40,14 +39,14 @@ class PredictionService:
     async def predict_and_store(
         self,
         assessment_data: Dict[str, Any],
-        assessment_id: Optional[str] = None
+        user_id: str,
+        assessment_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Executes real-time inference on the trained ML pipelines for Diabetes, Cardiovascular Disease,
-        and Hypertension, and stores the comprehensive prediction output in MongoDB.
+        and Hypertension, and stores the comprehensive prediction output in MongoDB tied to user_id.
         """
         rec_id = assessment_id or assessment_data.get("assessment_id") or generate_assessment_id()
-        user_id = assessment_data.get("user_id", "usr_alex_chen_892")
 
         # 1. Run inference through ML engine
         prediction_result = self.engine.predict_risk(assessment_data)
@@ -83,7 +82,7 @@ class PredictionService:
             if collection is not None:
                 try:
                     await collection.insert_one(dict(risk_doc))
-                    logger.info(f"Persisted ML risk assessment {rec_id} into MongoDB '{COLLECTION_RISK_ASSESSMENTS}'")
+                    logger.info(f"Persisted ML risk assessment {rec_id} for user {user_id} into MongoDB.")
                 except Exception as exc:
                     logger.error(f"Failed to insert risk assessment {rec_id} into MongoDB: {exc}")
                     _IN_MEMORY_RISK_ASSESSMENTS.insert(0, risk_doc)
@@ -99,16 +98,13 @@ class PredictionService:
 
         return response_data
 
-    async def get_latest_risk_assessment(self, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
-        """Retrieves the most recent ML risk assessment from MongoDB or cache."""
+    async def get_latest_risk_assessment(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves the most recent ML risk assessment strictly for the authenticated user."""
         if is_database_connected():
             collection = get_collection(COLLECTION_RISK_ASSESSMENTS)
             if collection is not None:
                 try:
-                    query = {}
-                    if user_id:
-                        query["user_id"] = user_id
-                    doc = await collection.find_one(query, sort=[("created_at", -1)])
+                    doc = await collection.find_one({"user_id": user_id}, sort=[("created_at", -1)])
                     if doc:
                         clean = dict(doc)
                         if "_id" in clean:
@@ -117,16 +113,17 @@ class PredictionService:
                             clean["created_at"] = clean["created_at"].isoformat()
                         return clean
                 except Exception as exc:
-                    logger.error(f"Error fetching latest risk assessment from MongoDB: {exc}")
+                    logger.error(f"Error fetching latest risk assessment for user {user_id}: {exc}")
 
         # Fallback memory cache
-        if _IN_MEMORY_RISK_ASSESSMENTS:
-            clean = dict(_IN_MEMORY_RISK_ASSESSMENTS[0])
-            if "_id" in clean:
-                clean["_id"] = str(clean["_id"])
-            if isinstance(clean.get("created_at"), datetime):
-                clean["created_at"] = clean["created_at"].isoformat()
-            return clean
+        for item in _IN_MEMORY_RISK_ASSESSMENTS:
+            if item.get("user_id") == user_id:
+                clean = dict(item)
+                if "_id" in clean:
+                    clean["_id"] = str(clean["_id"])
+                if isinstance(clean.get("created_at"), datetime):
+                    clean["created_at"] = clean["created_at"].isoformat()
+                return clean
 
         return None
 

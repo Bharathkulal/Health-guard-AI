@@ -85,7 +85,15 @@ export function Topbar({ onMenuClick = null }) {
           className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-xs font-bold text-emerald-400 hover:scale-105 transition-transform"
           title={user?.name || 'User Profile'}
         >
-          {user?.name ? user.name.split(' ').map(n => n[0]).join('') : 'AC'}
+          {user?.name
+            ? user.name
+                .split(' ')
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2)
+            : 'HG'}
         </Link>
       </div>
     </header>

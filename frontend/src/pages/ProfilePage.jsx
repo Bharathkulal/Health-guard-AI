@@ -19,19 +19,36 @@ import { calculateBMI, getBMICategory } from '../services/assessmentEngine';
 
 export function ProfilePage() {
   const { isDark } = useTheme();
-  const { user, updateUserProfile } = useHealth();
+  const { user, updateUserProfile, history } = useHealth();
 
   const [formData, setFormData] = useState({
-    name: user?.name || 'Alex Chen',
-    email: user?.email || 'alex.chen@healthguard.ai',
-    age: user?.age || 38,
-    sex: user?.sex || 'male',
-    heightCm: user?.heightCm || 178,
-    weightKg: user?.weightKg || 78,
-    baselineActivity: user?.baselineActivity || 'moderate',
-    bloodType: user?.bloodType || 'A+',
-    emergencyContact: user?.emergencyContact || '+1 (555) 234-8901',
+    name: user?.name || '',
+    email: user?.email || '',
+    age: user?.age || 35,
+    sex: user?.gender || user?.sex || 'male',
+    heightCm: user?.height_cm || user?.heightCm || 175,
+    weightKg: user?.weight_kg || user?.weightKg || 75,
+    baselineActivity: user?.baseline_activity || user?.baselineActivity || 'moderate',
+    bloodType: user?.blood_type || user?.bloodType || 'A+',
+    emergencyContact: user?.emergency_contact || user?.emergencyContact || '',
   });
+
+  // Sync state when user profile is fetched
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        age: user.age || 35,
+        sex: user.gender || user.sex || 'male',
+        heightCm: user.height_cm || user.heightCm || 175,
+        weightKg: user.weight_kg || user.weightKg || 75,
+        baselineActivity: user.baseline_activity || user.baselineActivity || 'moderate',
+        bloodType: user.blood_type || user.bloodType || 'A+',
+        emergencyContact: user.emergency_contact || user.emergencyContact || '',
+      });
+    }
+  }, [user]);
 
   const [savedStatus, setSavedStatus] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -61,6 +78,8 @@ export function ProfilePage() {
     }
   };
 
+  const assessmentCount = user?.assessment_count ?? history?.length ?? 0;
+
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
       {/* Top Header Card */}
@@ -74,14 +93,14 @@ export function ProfilePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-extrabold text-xl shadow-emerald-soft">
-              {formData.name ? formData.name.split(' ').map((n) => n[0]).join('') : 'AC'}
+              {formData.name ? formData.name.split(' ').map((n) => n[0]).join('') : 'HG'}
             </div>
             <div className="space-y-0.5">
               <h1 className="text-xl sm:text-2xl font-bold text-slate-100">
                 {formData.name || 'User Profile'}
               </h1>
               <p className="text-xs text-slate-400 font-mono">
-                Member Since {user?.memberSince || 'March 2025'} • ID: #{user?.id || 'usr_892'}
+                Member Since {user?.member_since || user?.memberSince || 'Recent'} • {assessmentCount} {assessmentCount === 1 ? 'Assessment' : 'Assessments'} • ID: #{user?.user_id || user?.id || 'usr_active'}
               </p>
             </div>
           </div>

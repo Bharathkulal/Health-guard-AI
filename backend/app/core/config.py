@@ -3,7 +3,7 @@ Application Configuration and Environment Settings.
 """
 
 from typing import List, Union
-from pydantic import AnyHttpUrl, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import json
 
@@ -22,6 +22,19 @@ class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017"
     DATABASE_NAME: str = "healthguard"
     MONGODB_SERVER_SELECTION_TIMEOUT_MS: int = 3000
+
+    # JWT Authentication Settings
+    JWT_SECRET_KEY: str = "healthguard-ai-dev-secret-key-super-secure-change-in-prod-3829472"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
+    COOKIE_NAME: str = "hg_access_token"
+    COOKIE_SECURE: bool = False  # Set to True in production with HTTPS
+    COOKIE_SAMESITE: str = "lax"
+
+    # Rate Limiting Settings
+    RATE_LIMIT_ENABLED: bool = True
+    AUTH_RATE_LIMIT_PER_MINUTE: int = 15
+    API_RATE_LIMIT_PER_MINUTE: int = 120
 
     # CORS Configuration
     CORS_ORIGINS: Union[List[str], str] = [

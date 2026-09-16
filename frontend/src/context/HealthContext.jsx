@@ -1,36 +1,38 @@
 /**
  * @file HealthContext.jsx
  * Central State Management Provider for HealthGuard AI
+ * Synchronizes with authenticated user session to isolate clinical telemetry per account.
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { healthApi } from '../services/api';
 import { calculateBMI } from '../services/assessmentEngine';
+import { useAuth } from './AuthContext';
 
 const HealthContext = createContext(null);
 
 const INITIAL_DRAFT = {
-  age: 38,
+  age: 35,
   sex: 'male',
   vitals: {
-    systolicBP: 124,
-    diastolicBP: 82,
-    fastingBloodSugar: 96,
+    systolicBP: 120,
+    diastolicBP: 80,
+    fastingBloodSugar: 95,
     heartRate: 72,
-    heightCm: 178,
-    weightKg: 78,
-    bmi: 24.6,
+    heightCm: 175,
+    weightKg: 75,
+    bmi: 24.5,
   },
   symptoms: [],
   lifestyle: {
     physicalActivity: 'moderate',
     smoking: 'never',
     alcohol: 'occasional',
-    sleepHours: 7,
+    sleepHours: 7.5,
     dietPattern: 'balanced',
   },
   familyHistory: {
-    diabetes: true,
+    diabetes: false,
     hypertension: false,
     cardiovascular: false,
     earlyHeartAttack: false,
@@ -38,6 +40,8 @@ const INITIAL_DRAFT = {
 };
 
 export function HealthProvider({ children }) {
+  const { user: authUser, isAuthenticated } = useAuth();
+
   const [user, setUser] = useState(null);
   const [latestResult, setLatestResult] = useState(null);
   const [history, setHistory] = useState([]);
@@ -54,8 +58,24 @@ export function HealthProvider({ children }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load initial data from service layer
-  const loadInitialData = useCallback(async () => {
+  // Sync auth user to health user
+  useEffect(() => {
+    if (authUser) {
+      setUser(authUser);
+    }
+  }, [authUser]);
+
+  // Load user data whenever authentication changes
+  const loadUserData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setUser(null);
+      setLatestResult(null);
+      setHistory([]);
+      setTrends([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -65,27 +85,26 @@ export function HealthProvider({ children }) {
         healthApi.getAssessmentHistory(),
         healthApi.getHealthTrends('6m'),
       ]);
-      setUser(profileData);
+      if (profileData) setUser(profileData);
       setLatestResult(latestData);
-      setHistory(historyData);
-      setTrends(trendsData);
+      setHistory(historyData || []);
+      setTrends(trendsData || []);
     } catch (err) {
-      console.error('Failed to load HealthGuard data:', err);
-      setError('Unable to fetch latest health data. Using cached offline mode.');
+      console.warn('Failed to load user-isolated HealthGuard data:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
+    loadUserData();
+  }, [loadUserData]);
 
   // Persist draft changes
   const updateDraft = useCallback((updater) => {
     setActiveDraft((prev) => {
       const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
-      
+
       // Auto-recalculate BMI if height or weight modified in vitals
       if (next.vitals) {
         const height = next.vitals.heightCm;
@@ -110,32 +129,35 @@ export function HealthProvider({ children }) {
   }, []);
 
   // Submit complete assessment
-  const submitAssessment = useCallback(async (customData = null) => {
-    setSubmitting(true);
-    setError(null);
-    try {
-      const payload = customData || activeDraft;
-      const result = await healthApi.submitAssessment(payload);
-      setLatestResult(result);
-      
-      // Refresh history and trends
-      const [newHistory, newTrends, newProfile] = await Promise.all([
-        healthApi.getAssessmentHistory(),
-        healthApi.getHealthTrends('6m'),
-        healthApi.getProfile(),
-      ]);
-      setHistory(newHistory);
-      setTrends(newTrends);
-      setUser(newProfile);
-      return result;
-    } catch (err) {
-      console.error('Assessment submission error:', err);
-      setError('Failed to compute risk assessment. Please check your inputs and retry.');
-      throw err;
-    } finally {
-      setSubmitting(false);
-    }
-  }, [activeDraft]);
+  const submitAssessment = useCallback(
+    async (customData = null) => {
+      setSubmitting(true);
+      setError(null);
+      try {
+        const payload = customData || activeDraft;
+        const result = await healthApi.submitAssessment(payload);
+        setLatestResult(result);
+
+        // Refresh user-scoped history, trends, and profile
+        const [newHistory, newTrends, newProfile] = await Promise.all([
+          healthApi.getAssessmentHistory(),
+          healthApi.getHealthTrends('6m'),
+          healthApi.getProfile(),
+        ]);
+        setHistory(newHistory || []);
+        setTrends(newTrends || []);
+        if (newProfile) setUser(newProfile);
+        return result;
+      } catch (err) {
+        console.error('Assessment submission error:', err);
+        setError('Failed to compute risk assessment. Please check your inputs and retry.');
+        throw err;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [activeDraft]
+  );
 
   // Update user profile
   const updateUserProfile = useCallback(async (profileUpdates) => {
@@ -150,21 +172,26 @@ export function HealthProvider({ children }) {
   }, []);
 
   // Inspect past assessment result
-  const viewHistoricalAssessment = useCallback((assessmentId) => {
-    const found = history.find((item) => item.id === assessmentId);
-    if (found) {
-      setLatestResult(found);
-      return found;
-    }
-    return null;
-  }, [history]);
+  const viewHistoricalAssessment = useCallback(
+    (assessmentId) => {
+      const found = history.find(
+        (item) => item.assessment_id === assessmentId || item.id === assessmentId
+      );
+      if (found) {
+        setLatestResult(found);
+        return found;
+      }
+      return null;
+    },
+    [history]
+  );
 
-  // Reset all local demo data
+  // Reset local data
   const resetAllData = useCallback(() => {
     healthApi.resetLocalData();
     localStorage.removeItem('hg_active_draft');
-    loadInitialData();
-  }, [loadInitialData]);
+    loadUserData();
+  }, [loadUserData]);
 
   const value = {
     user,
@@ -180,7 +207,7 @@ export function HealthProvider({ children }) {
     submitAssessment,
     updateUserProfile,
     viewHistoricalAssessment,
-    refreshData: loadInitialData,
+    refreshData: loadUserData,
     resetAllData,
   };
 

@@ -1,9 +1,13 @@
 """
 Machine Learning Risk Prediction Endpoints for HealthGuard AI.
+Provides authenticated, rate-limited ML risk inference and user-isolated predictions retrieval.
 """
 
 from typing import Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.core.dependencies import get_current_user
+from app.core.rate_limiter import rate_limit_prediction
 from app.schemas.response import APIResponse
 from app.schemas.assessment import HealthAssessmentCreate
 from app.services.prediction_service import prediction_service
@@ -20,15 +24,22 @@ router = APIRouter()
         "Diabetes, Cardiovascular, and Hypertension models, and saves the calibrated result to MongoDB."
     ),
     response_model=APIResponse[Dict[str, Any]],
+    dependencies=[Depends(rate_limit_prediction)],
 )
-async def predict_health_risk(assessment_data: HealthAssessmentCreate):
+async def predict_health_risk(
+    assessment_data: HealthAssessmentCreate,
+    current_user: Dict[str, Any] = Depends(get_current_user),
+):
     """
-    Computes genuine ML risk probabilities and factor attributions for a given assessment.
+    Computes genuine ML risk probabilities and factor attributions for an authenticated assessment.
+    Enforces user identity derived from the verified JWT context.
     """
     try:
-        # Convert Pydantic model to dict
         raw_dict = assessment_data.model_dump()
-        result = await prediction_service.predict_and_store(raw_dict)
+        result = await prediction_service.predict_and_store(
+            assessment_data=raw_dict,
+            user_id=current_user["user_id"],
+        )
         return APIResponse(
             success=True,
             data=result,
@@ -43,15 +54,13 @@ async def predict_health_risk(assessment_data: HealthAssessmentCreate):
 
 @router.get(
     "/latest",
-    summary="Get Latest ML Risk Prediction",
-    description="Fetches the most recent calculated risk assessment from MongoDB.",
+    summary="Get Latest Authenticated ML Risk Prediction",
+    description="Fetches the most recent calculated risk assessment strictly for the authenticated user.",
     response_model=APIResponse[Optional[Dict[str, Any]]],
 )
-async def get_latest_prediction(
-    user_id: Optional[str] = Query(None, description="Optional user ID filter")
-):
-    """Retrieves the latest ML risk result."""
-    result = await prediction_service.get_latest_risk_assessment(user_id=user_id)
+async def get_latest_prediction(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Retrieves the authenticated user's latest ML risk result."""
+    result = await prediction_service.get_latest_risk_assessment(user_id=current_user["user_id"])
     if not result:
         return APIResponse(
             success=True,
