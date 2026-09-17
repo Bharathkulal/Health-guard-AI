@@ -1,7 +1,7 @@
 {
   "heart": {
-    "model_name": "RandomForest",
-    "training_date": "2026-09-17T05:45:03.824992+00:00",
+    "model_name": "LogisticRegression",
+    "training_date": "2026-09-17T09:04:34.054205+00:00",
     "dataset_name": "UCI Heart Disease (Cleveland)",
     "dataset_url": "https://archive.ics.uci.edu/dataset/45/heart+disease",
     "feature_names": [
@@ -27,7 +27,7 @@
       "recall": 0.9643,
       "specificity": 0.8182,
       "f1": 0.8852,
-      "roc_auc": 0.9567,
+      "roc_auc": 0.9513,
       "confusion_matrix": {
         "true_negatives": 27,
         "false_positives": 6,
@@ -35,12 +35,12 @@
         "true_positives": 27
       }
     },
-    "sklearn_version": "1.6.1",
+    "sklearn_version": "1.9.1",
     "pipeline_file": "heart_model.joblib"
   },
   "diabetes": {
     "model_name": "RandomForest",
-    "training_date": "2026-09-17T05:45:35.263433+00:00",
+    "training_date": "2026-09-17T09:04:51.167578+00:00",
     "dataset_name": "Pima Indians Diabetes Database",
     "dataset_url": "https://archive.ics.uci.edu/dataset/34/diabetes",
     "feature_names": [
@@ -56,20 +56,20 @@
     "target_definition": "Tested positive for diabetes (binary: 0=negative, 1=positive)",
     "preprocessing_description": "Zero-value replacement with NaN for impossible values (Glucose, BP, SkinThickness, Insulin, BMI), median imputation, StandardScaler",
     "evaluation_metrics": {
-      "accuracy": 0.7338,
-      "precision": 0.6102,
-      "recall": 0.6667,
+      "accuracy": 0.7597,
+      "precision": 0.6349,
+      "recall": 0.7407,
       "specificity": 0.77,
-      "f1": 0.6372,
-      "roc_auc": 0.8202,
+      "f1": 0.6838,
+      "roc_auc": 0.8237,
       "confusion_matrix": {
         "true_negatives": 77,
         "false_positives": 23,
-        "false_negatives": 18,
-        "true_positives": 36
+        "false_negatives": 14,
+        "true_positives": 40
       }
     },
-    "sklearn_version": "1.6.1",
+    "sklearn_version": "1.9.1",
     "pipeline_file": "diabetes_model.joblib",
     "population_note": "Pima Indian females aged >= 21. Model may not generalize to other populations."
   }

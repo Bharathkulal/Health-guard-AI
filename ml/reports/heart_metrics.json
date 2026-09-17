@@ -1,5 +1,5 @@
 {
-  "model_name": "RandomForest",
+  "model_name": "LogisticRegression",
   "dataset": "UCI Heart Disease (Cleveland)",
   "dataset_url": "https://archive.ics.uci.edu/dataset/45/heart+disease",
   "dataset_size": 303,
@@ -25,8 +25,8 @@
   "target_definition": "Presence of heart disease (binary: 0=absent, 1=present from original 0-4 scale)",
   "preprocessing_description": "Median imputation for missing values + StandardScaler normalization",
   "selection_strategy": "Composite: 0.40*Recall + 0.30*ROC-AUC + 0.30*F1 (screening-oriented)",
-  "training_date": "2026-09-17T05:45:03.824992+00:00",
-  "sklearn_version": "1.6.1",
+  "training_date": "2026-09-17T09:04:34.054205+00:00",
+  "sklearn_version": "1.9.1",
   "random_state": 42,
   "test_metrics": {
     "accuracy": 0.8852,
@@ -34,7 +34,7 @@
     "recall": 0.9643,
     "specificity": 0.8182,
     "f1": 0.8852,
-    "roc_auc": 0.9567,
+    "roc_auc": 0.9513,
     "confusion_matrix": {
       "true_negatives": 27,
       "false_positives": 6,
@@ -44,69 +44,69 @@
   },
   "feature_importances": [
     {
-      "feature": "thal",
-      "importance": 0.1995,
-      "label": "Thal"
-    },
-    {
-      "feature": "thalach",
-      "importance": 0.1114,
-      "label": "Thalach"
-    },
-    {
-      "feature": "cp",
-      "importance": 0.102,
-      "label": "Cp"
-    },
-    {
-      "feature": "oldpeak",
-      "importance": 0.1005,
-      "label": "Oldpeak"
-    },
-    {
       "feature": "ca",
-      "importance": 0.0989,
+      "importance": 0.1823,
       "label": "Ca"
     },
     {
-      "feature": "age",
-      "importance": 0.089,
-      "label": "Age"
-    },
-    {
-      "feature": "chol",
-      "importance": 0.0699,
-      "label": "Chol"
-    },
-    {
-      "feature": "trestbps",
-      "importance": 0.0593,
-      "label": "Trestbps"
-    },
-    {
-      "feature": "slope",
-      "importance": 0.0565,
-      "label": "Slope"
-    },
-    {
-      "feature": "exang",
-      "importance": 0.0546,
-      "label": "Exang"
-    },
-    {
       "feature": "sex",
-      "importance": 0.0348,
+      "importance": 0.1376,
       "label": "Sex"
     },
     {
-      "feature": "restecg",
-      "importance": 0.0152,
-      "label": "Restecg"
+      "feature": "thal",
+      "importance": 0.1357,
+      "label": "Thal"
+    },
+    {
+      "feature": "cp",
+      "importance": 0.0935,
+      "label": "Cp"
+    },
+    {
+      "feature": "slope",
+      "importance": 0.0834,
+      "label": "Slope"
+    },
+    {
+      "feature": "trestbps",
+      "importance": 0.0806,
+      "label": "Trestbps"
+    },
+    {
+      "feature": "exang",
+      "importance": 0.0735,
+      "label": "Exang"
+    },
+    {
+      "feature": "thalach",
+      "importance": 0.0634,
+      "label": "Thalach"
+    },
+    {
+      "feature": "chol",
+      "importance": 0.0607,
+      "label": "Chol"
     },
     {
       "feature": "fbs",
-      "importance": 0.0084,
+      "importance": 0.0507,
       "label": "Fbs"
+    },
+    {
+      "feature": "age",
+      "importance": 0.0193,
+      "label": "Age"
+    },
+    {
+      "feature": "restecg",
+      "importance": 0.0159,
+      "label": "Restecg"
+    },
+    {
+      "feature": "oldpeak",
+      "importance": 0.0034,
+      "label": "Oldpeak"
     }
   ],
   "model_comparison": {
@@ -129,20 +129,20 @@
     },
     "RandomForest": {
       "validation_metrics": {
-        "accuracy": 0.8197,
-        "precision": 0.7931,
+        "accuracy": 0.7869,
+        "precision": 0.7419,
         "recall": 0.8214,
-        "specificity": 0.8182,
-        "f1": 0.807,
-        "roc_auc": 0.9188,
+        "specificity": 0.7576,
+        "f1": 0.7797,
+        "roc_auc": 0.908,
         "confusion_matrix": {
-          "true_negatives": 27,
-          "false_positives": 6,
+          "true_negatives": 25,
+          "false_positives": 8,
           "false_negatives": 5,
           "true_positives": 23
         }
       },
-      "selection_score": 0.8463
+      "selection_score": 0.8349
     }
   },
   "cleaning_report": {

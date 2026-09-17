@@ -81,11 +81,15 @@ async def assess_health_risk(
         assessment_id = generate_assessment_id()
         user_id = current_user["user_id"]
 
+        # Ensure models are loaded
+        if not predictor.is_ready():
+            predictor.reload_models()
+
         # 1. Run heart disease model
         try:
             heart_result = predictor.predict_heart_risk(raw_data)
-        except RuntimeError as exc:
-            logger.error(f"Heart model error: {exc}")
+        except Exception as exc:
+            logger.error(f"Heart model error: {exc}", exc_info=True)
             heart_result = {
                 "prediction": -1,
                 "probability": 0.0,
@@ -97,8 +101,8 @@ async def assess_health_risk(
         # 2. Run diabetes model
         try:
             diabetes_result = predictor.predict_diabetes_risk(raw_data)
-        except RuntimeError as exc:
-            logger.error(f"Diabetes model error: {exc}")
+        except Exception as exc:
+            logger.error(f"Diabetes model error: {exc}", exc_info=True)
             diabetes_result = {
                 "prediction": -1,
                 "probability": 0.0,
@@ -144,7 +148,7 @@ async def assess_health_risk(
                 level, color = "Elevated", "rose"
 
             # Build key drivers from top importances
-            drivers = [imp["label"] for imp in importances[:3]] if importances else []
+            drivers = [imp.get("label") or imp.get("feature", "") for imp in importances[:3]] if importances else []
 
             return {
                 "id": cond_id,
@@ -167,6 +171,8 @@ async def assess_health_risk(
             "heart": _build_category("heart", "Heart Disease Risk", heart_result, heart_importances),
             "diabetes": _build_category("diabetes", "Diabetes Risk", diabetes_result, diabetes_importances),
         }
+        # Backward/forward compatibility for components expecting cardiovascular
+        categories["cardiovascular"] = categories["heart"]
 
         response_data = {
             "assessment_id": assessment_id,
@@ -222,6 +228,13 @@ async def assess_health_risk(
             "created_at": now,
             **response_data,
         }
+
+        if not is_database_connected():
+            from app.database.mongodb import connect_to_mongo
+            try:
+                await connect_to_mongo()
+            except Exception as conn_err:
+                logger.warning(f"Could not connect to database during assessment persistence: {conn_err}")
 
         if is_database_connected():
             collection = get_collection(COLLECTION_RISK_ASSESSMENTS)

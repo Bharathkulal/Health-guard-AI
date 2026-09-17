@@ -77,6 +77,11 @@ class HealthRiskPredictor:
             except Exception as exc:
                 logger.error(f"Failed to load metadata: {exc}")
 
+    def reload_models(self) -> bool:
+        """Forces reloading of pipeline artifacts and metadata from disk."""
+        self._load_models()
+        return self.is_ready()
+
     def is_ready(self) -> bool:
         """Returns True if both models are loaded."""
         return self.heart_pipeline is not None and self.diabetes_pipeline is not None
@@ -107,6 +112,8 @@ class HealthRiskPredictor:
                 "features_imputed": int
             }
         """
+        if self.heart_pipeline is None:
+            self._load_models()
         if self.heart_pipeline is None:
             raise RuntimeError("Heart disease model not loaded. Run train_heart.py first.")
 
@@ -196,6 +203,8 @@ class HealthRiskPredictor:
                 "features_imputed": int
             }
         """
+        if self.diabetes_pipeline is None:
+            self._load_models()
         if self.diabetes_pipeline is None:
             raise RuntimeError("Diabetes model not loaded. Run train_diabetes.py first.")
 

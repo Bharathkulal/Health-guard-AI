@@ -2,10 +2,14 @@
 Application Configuration and Environment Settings.
 """
 
+import os
 from typing import List, Union
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import json
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ENV_FILE_PATH = os.path.join(BASE_DIR, ".env")
 
 
 class Settings(BaseSettings):
@@ -14,6 +18,10 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     API_V1_STR: str = "/api"
 
+    # Admin Credentials
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "admin"
+
     # Server binding
     HOST: str = "127.0.0.1"
     PORT: int = 8000
@@ -21,7 +29,7 @@ class Settings(BaseSettings):
     # MongoDB Database Settings
     MONGODB_URI: str = "mongodb://localhost:27017"
     DATABASE_NAME: str = "healthguard"
-    MONGODB_SERVER_SELECTION_TIMEOUT_MS: int = 3000
+    MONGODB_SERVER_SELECTION_TIMEOUT_MS: int = 10000
 
     # JWT Authentication Settings
     JWT_SECRET_KEY: str = "healthguard-ai-dev-secret-key-super-secure-change-in-prod-3829472"
@@ -60,7 +68,7 @@ class Settings(BaseSettings):
         return ["*"]
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(ENV_FILE_PATH, ".env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore"

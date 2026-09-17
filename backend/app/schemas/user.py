@@ -41,7 +41,7 @@ class UserRegisterRequest(BaseModel):
 
 
 class UserLoginRequest(BaseModel):
-    email: EmailStr = Field(..., description="Account Email")
+    email: str = Field(..., description="Account Email or Username")
     password: str = Field(..., min_length=1, description="Account Password")
 
 
@@ -78,7 +78,7 @@ class AccountDeleteRequest(BaseModel):
 class UserResponse(BaseModel):
     user_id: str
     name: str
-    email: EmailStr
+    email: str
     created_at: Optional[str] = None
     member_since: Optional[str] = None
     age: Optional[int] = Field(default=None, ge=18, le=120)

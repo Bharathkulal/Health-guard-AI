@@ -100,6 +100,13 @@ class PredictionService:
 
     async def get_latest_risk_assessment(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Retrieves the most recent ML risk assessment strictly for the authenticated user."""
+        if not is_database_connected():
+            from app.database.mongodb import connect_to_mongo
+            try:
+                await connect_to_mongo()
+            except Exception as conn_err:
+                logger.warning(f"Lazy MongoDB connection attempt failed in get_latest_risk_assessment: {conn_err}")
+
         if is_database_connected():
             collection = get_collection(COLLECTION_RISK_ASSESSMENTS)
             if collection is not None:

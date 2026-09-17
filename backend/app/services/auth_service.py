@@ -103,6 +103,13 @@ class AuthService:
         """Finds a user document by normalized lowercase email."""
         norm_email = email.strip().lower()
 
+        if not is_database_connected():
+            from app.database.mongodb import connect_to_mongo
+            try:
+                await connect_to_mongo()
+            except Exception as exc:
+                logger.warning(f"Lazy MongoDB connection attempt failed in find_user_by_email: {exc}")
+
         if is_database_connected():
             col = get_collection(COLLECTION_USERS)
             if col is not None:
@@ -122,6 +129,13 @@ class AuthService:
 
     async def find_user_by_id(self, user_id: str, include_sensitive: bool = False) -> Optional[Dict[str, Any]]:
         """Finds a user document by unique user_id."""
+        if not is_database_connected():
+            from app.database.mongodb import connect_to_mongo
+            try:
+                await connect_to_mongo()
+            except Exception as exc:
+                logger.warning(f"Lazy MongoDB connection attempt failed in find_user_by_id: {exc}")
+
         if is_database_connected():
             col = get_collection(COLLECTION_USERS)
             if col is not None:
@@ -199,6 +213,45 @@ class AuthService:
         Uses generic error details to prevent account enumeration.
         """
         norm_email = login_in.email.strip().lower()
+
+        # Admin Intercept
+        from app.core.config import settings
+        if norm_email == settings.ADMIN_USERNAME.lower():
+            if login_in.password != settings.ADMIN_PASSWORD:
+                logger.warning(f"Failed admin authentication attempt.")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid email or password.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            
+            user_id = "admin_user"
+            token = create_access_token(
+                subject=user_id, 
+                email=norm_email, 
+                additional_claims={"role": "admin"}
+            )
+            
+            # Mock an admin response profile
+            admin_user_res = UserResponse(
+                user_id=user_id,
+                name="System Administrator",
+                email=norm_email,
+                created_at=datetime.now(timezone.utc).isoformat(),
+                member_since="System Init",
+                age=None,
+                gender="other",
+                height_cm=None,
+                weight_kg=None,
+                bmi=None,
+                baseline_activity="moderate",
+                blood_type="A+",
+                emergency_contact=None,
+                assessment_count=0
+            )
+            logger.info("Admin login successful.")
+            return UserAuthResponse(access_token=token, token_type="bearer", user=admin_user_res)
+
         user_doc = await self.find_user_by_email(norm_email, include_sensitive=True)
 
         if not user_doc or not verify_password(login_in.password, user_doc.get("hashed_password", "")):
@@ -210,7 +263,14 @@ class AuthService:
             )
 
         user_id = user_doc["user_id"]
-        token = create_access_token(subject=user_id, email=norm_email)
+        # Check if this user happens to be manually configured as admin in the DB, though normally we use the intercept above
+        role = user_doc.get("role", "user")
+        
+        token = create_access_token(
+            subject=user_id, 
+            email=norm_email,
+            additional_claims={"role": role}
+        )
         count = await self.get_user_assessment_count(user_id)
         user_res = self._format_user_response(user_doc, count=count)
         logger.info(f"User login successful: {user_id} ({norm_email})")
