@@ -5,6 +5,7 @@ MongoDB Async Database Connection and Lifecycle Management using Motor.
 import logging
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+import certifi
 import pymongo
 from app.core.config import settings
 
@@ -29,12 +30,28 @@ async def connect_to_mongo() -> bool:
     """
     Initializes the Motor async MongoDB client and tests connectivity.
     Creates necessary indexes for performant healthcare data querying and uniqueness constraints.
+    Supports local MongoDB as well as cloud MongoDB Atlas connections.
     """
-    logger.info(f"Connecting to MongoDB at {settings.MONGODB_URI} (database: {settings.DATABASE_NAME})...")
+    # Mask password for logging if credentials are in URI
+    log_uri = settings.MONGODB_URI
+    if "@" in log_uri and "://" in log_uri:
+        prefix, rest = log_uri.split("://", 1)
+        creds, host_part = rest.split("@", 1)
+        user = creds.split(":")[0] if ":" in creds else creds
+        log_uri = f"{prefix}://{user}:****@{host_part}"
+
+    logger.info(f"Connecting to MongoDB at {log_uri} (database: {settings.DATABASE_NAME})...")
     try:
+        client_kwargs = {
+            "serverSelectionTimeoutMS": settings.MONGODB_SERVER_SELECTION_TIMEOUT_MS,
+        }
+        # Provide certifi CA bundle for Atlas TLS connections to prevent Windows SSL verify failures
+        if "mongodb+srv" in settings.MONGODB_URI or "ssl=true" in settings.MONGODB_URI.lower() or "tls=true" in settings.MONGODB_URI.lower():
+            client_kwargs["tlsCAFile"] = certifi.where()
+
         db_manager.client = AsyncIOMotorClient(
             settings.MONGODB_URI,
-            serverSelectionTimeoutMS=settings.MONGODB_SERVER_SELECTION_TIMEOUT_MS,
+            **client_kwargs,
         )
         # Verify server availability with a ping command
         await db_manager.client.admin.command("ping")
@@ -69,13 +86,13 @@ async def _setup_indexes():
         assessments_col = db_manager.db[COLLECTION_HEALTH_ASSESSMENTS]
         await assessments_col.create_index("assessment_id", unique=True)
         await assessments_col.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
-        await assessments_col.create_index("created_at", direction=pymongo.DESCENDING)
+        await assessments_col.create_index([("created_at", pymongo.DESCENDING)])
 
         # Risk Assessments collection
         risk_col = db_manager.db[COLLECTION_RISK_ASSESSMENTS]
         await risk_col.create_index("assessment_id", unique=True)
         await risk_col.create_index([("user_id", pymongo.ASCENDING), ("created_at", pymongo.DESCENDING)])
-        await risk_col.create_index("created_at", direction=pymongo.DESCENDING)
+        await risk_col.create_index([("created_at", pymongo.DESCENDING)])
 
         logger.info("MongoDB security and user-isolation indexes verified successfully.")
     except Exception as exc:
