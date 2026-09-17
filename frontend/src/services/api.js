@@ -7,7 +7,7 @@
  */
 
 import { apiClient } from './apiClient';
-import { analyzeHealthRisk, calculateBMI } from './assessmentEngine';
+import { calculateBMI } from './assessmentEngine';
 import { assessmentService } from './assessmentService';
 
 export { assessmentService };
@@ -56,7 +56,7 @@ export const healthApi = {
         return data;
       }
     } catch (e) {
-      // Backend unavailable or unauthenticated
+      // Backend unavailable or unauthenticated, return cached profile if exists
     }
     return getStoredUser();
   },
@@ -66,32 +66,21 @@ export const healthApi = {
    * `PUT /api/users/profile`
    */
   async updateProfile(updates) {
-    const current = getStoredUser() || {};
-    const updated = {
-      ...current,
-      ...updates,
-      bmi: calculateBMI(updates.heightCm || updates.height_cm || current.height_cm, updates.weightKg || updates.weight_kg || current.weight_kg),
-    };
-    try {
-      const data = await apiClient.put('/users/profile', {
-        name: updates.name,
-        age: updates.age,
-        gender: updates.gender || updates.sex,
-        height_cm: updates.heightCm || updates.height_cm,
-        weight_kg: updates.weightKg || updates.weight_kg,
-        baseline_activity: updates.baselineActivity || updates.baseline_activity,
-        blood_type: updates.bloodType || updates.blood_type,
-        emergency_contact: updates.emergencyContact || updates.emergency_contact,
-      });
-      if (data) {
-        localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(data));
-        return data;
-      }
-    } catch (e) {
-      // Fallback
+    const data = await apiClient.put('/users/profile', {
+      name: updates.name,
+      age: updates.age,
+      gender: updates.gender || updates.sex,
+      height_cm: updates.heightCm || updates.height_cm,
+      weight_kg: updates.weightKg || updates.weight_kg,
+      baseline_activity: updates.baselineActivity || updates.baseline_activity,
+      blood_type: updates.bloodType || updates.blood_type,
+      emergency_contact: updates.emergencyContact || updates.emergency_contact,
+    });
+    if (data) {
+      localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(data));
+      return data;
     }
-    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(updated));
-    return updated;
+    throw new Error('Failed to update profile');
   },
 
   /**
@@ -99,49 +88,32 @@ export const healthApi = {
    * Calls POST /api/health/assess to execute trained Machine Learning models and persist to MongoDB.
    */
   async submitAssessment(assessmentData) {
+    let predictionDoc = await assessmentService.predictRisk(assessmentData);
+    
+    // Attempt to persist raw assessment document
     try {
-      // 1. Execute live inference on real ML pipelines (POST /api/predict)
-      let predictionDoc;
-      try {
-        predictionDoc = await assessmentService.predictRisk(assessmentData);
-      } catch (mlErr) {
-        console.warn('Direct predict API error:', mlErr);
-        predictionDoc = null;
-      }
-
-      // 2. Also persist raw assessment document (POST /api/assessments)
-      let savedAssessment;
-      try {
-        savedAssessment = await assessmentService.createAssessment(assessmentData);
-      } catch (saveErr) {
-        console.warn('Assessment save endpoint warning:', saveErr);
-      }
-
-      // If ML prediction succeeded, use genuine ML result
-      let finalResult;
-      if (predictionDoc && predictionDoc.categories) {
-        finalResult = {
-          ...predictionDoc,
-          id: predictionDoc.assessment_id || savedAssessment?.assessment_id || `HG-${Math.floor(1000 + Math.random() * 9000)}`,
-          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        };
-      } else {
-        // Fallback calculation if offline
-        finalResult = analyzeHealthRisk(assessmentData);
-        finalResult.id = savedAssessment?.assessment_id || finalResult.id;
-      }
-
-      // Save to local storage history
-      const history = getStoredAssessments();
-      const updatedHistory = [finalResult, ...history.filter((h) => h.id !== finalResult.id)];
-      localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(updatedHistory));
-      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(finalResult));
-
-      return finalResult;
-    } catch (err) {
-      console.error('API submit assessment error:', err);
-      throw err;
+      await assessmentService.createAssessment(assessmentData);
+    } catch (saveErr) {
+      console.warn('Assessment save endpoint warning:', saveErr);
     }
+
+    if (!predictionDoc || !predictionDoc.categories) {
+      throw new Error('ML Prediction failed to return expected results.');
+    }
+
+    const finalResult = {
+      ...predictionDoc,
+      id: predictionDoc.assessment_id,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    };
+
+    // Save to local storage history
+    const history = getStoredAssessments();
+    const updatedHistory = [finalResult, ...history.filter((h) => h.id !== finalResult.id)];
+    localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(updatedHistory));
+    localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(finalResult));
+
+    return finalResult;
   },
 
   /**
@@ -152,16 +124,18 @@ export const healthApi = {
     try {
       const data = await apiClient.get('/predict/latest');
       if (data && data.categories) {
-        return {
+        const result = {
           ...data,
-          id: data.assessment_id || 'HG-8942',
+          id: data.assessment_id,
           date: data.created_at
             ? new Date(data.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
             : 'Recent',
         };
+        localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(result));
+        return result;
       }
     } catch (e) {
-      // Fallback
+      // Return cached latest if backend unavailable
     }
     return getStoredLatestResult();
   },
@@ -174,10 +148,11 @@ export const healthApi = {
     try {
       const data = await apiClient.get('/assessments');
       if (data && data.length > 0) {
+        localStorage.setItem(STORAGE_KEY_ASSESSMENTS, JSON.stringify(data));
         return data;
       }
     } catch (e) {
-      // Fallback
+      // Fallback to cache
     }
     return getStoredAssessments();
   },
@@ -199,21 +174,21 @@ export const healthApi = {
       return [];
     }
 
-    // Transform history into sequential chronological trend data points
+    // Transform history into sequential chronological trend data points using ONLY real data
     return [...history]
       .reverse()
       .map((item, idx) => ({
-        id: item.assessment_id || item.id || `pt-${idx}`,
+        id: item.assessment_id || item.id,
         date: item.date || 'Recent',
         shortDate: (item.date || 'Recent').split(' ').slice(0, 2).join(' '),
-        overallRisk: item.overallScore || 50,
-        diabetesRisk: item.categories?.diabetes?.score || 50,
-        heartRisk: item.categories?.heart?.score || 50,
-        systolicBP: item.vitalsSnapshot?.systolicBP || item.vitals?.systolic_bp || 120,
-        diastolicBP: item.vitalsSnapshot?.diastolicBP || item.vitals?.diastolic_bp || 80,
-        fastingBloodSugar: item.vitalsSnapshot?.fastingBloodSugar || item.vitals?.blood_sugar || 95,
-        bmi: item.vitalsSnapshot?.bmi || item.vitals?.bmi || 23.5,
-        heartRate: item.vitalsSnapshot?.heartRate || item.vitals?.heart_rate || 72,
+        overallRisk: item.overallScore,
+        diabetesRisk: item.categories?.diabetes?.score,
+        heartRisk: item.categories?.heart?.score,
+        systolicBP: item.vitalsSnapshot?.systolicBP || item.vitals?.systolic_bp,
+        diastolicBP: item.vitalsSnapshot?.diastolicBP || item.vitals?.diastolic_bp,
+        fastingBloodSugar: item.vitalsSnapshot?.fastingBloodSugar || item.vitals?.blood_sugar,
+        bmi: item.vitalsSnapshot?.bmi || item.vitals?.bmi,
+        heartRate: item.vitalsSnapshot?.heartRate || item.vitals?.heart_rate,
       }));
   },
 

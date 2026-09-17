@@ -201,7 +201,7 @@ export function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           <MetricCard
             label="Age"
-            value={user?.age || 38}
+            value={user?.age || '--'}
             unit="yrs"
             status="Calibrated"
             statusType="neutral"
@@ -209,44 +209,44 @@ export function DashboardPage() {
           />
           <MetricCard
             label="Blood Pressure"
-            value={`${vitals.systolicBP || 128}/${vitals.diastolicBP || 84}`}
+            value={vitals.systolicBP && vitals.diastolicBP ? `${vitals.systolicBP}/${vitals.diastolicBP}` : '--/--'}
             unit="mmHg"
-            status="Stage 1 Pre"
-            statusType="warning"
+            status={vitals.systolicBP >= 130 ? 'Elevated' : (vitals.systolicBP ? 'Normal' : 'Unknown')}
+            statusType={vitals.systolicBP >= 130 ? 'warning' : 'normal'}
             icon={Heart}
             targetRange="< 120/80"
           />
           <MetricCard
             label="Blood Sugar"
-            value={vitals.fastingBloodSugar || 98}
+            value={vitals.fastingBloodSugar || '--'}
             unit="mg/dL"
-            status="Normal Range"
-            statusType="normal"
+            status={vitals.fastingBloodSugar >= 100 ? 'Elevated' : (vitals.fastingBloodSugar ? 'Normal Range' : 'Unknown')}
+            statusType={vitals.fastingBloodSugar >= 100 ? 'warning' : 'normal'}
             icon={Droplets}
             targetRange="70 - 99"
           />
           <MetricCard
             label="BMI"
-            value={vitals.bmi || 24.6}
+            value={vitals.bmi || '--'}
             unit="kg/m²"
-            status="Normal Range"
-            statusType="normal"
+            status={vitals.bmi >= 25 ? 'Elevated' : (vitals.bmi ? 'Normal Range' : 'Unknown')}
+            statusType={vitals.bmi >= 25 ? 'warning' : 'normal'}
             icon={Scale}
             targetRange="18.5 - 24.9"
           />
           <MetricCard
             label="Heart Rate"
-            value={vitals.heartRate || 74}
+            value={vitals.heartRate || '--'}
             unit="BPM"
-            status="Resting Normal"
+            status={vitals.heartRate ? 'Recorded' : 'Unknown'}
             statusType="normal"
             icon={Activity}
             targetRange="60 - 85"
           />
           <MetricCard
             label="Activity Level"
-            value="Moderate"
-            status="3-4 days/wk"
+            value={user?.baseline_activity || '--'}
+            status="Baseline"
             statusType="normal"
             icon={Sparkles}
             targetRange="150 min/wk"

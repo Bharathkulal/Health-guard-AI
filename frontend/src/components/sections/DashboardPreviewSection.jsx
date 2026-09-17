@@ -88,9 +88,7 @@ export function DashboardPreviewSection() {
                 <div>
                   <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
                     <span>Clinical Decision Overview</span>
-                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">
-                      ID: #HG-8942
-                    </span>
+                      ID: #HG----
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Last evaluation: Today at 08:30 AM • Baseline model: XGBoost + TreeSHAP
@@ -112,10 +110,10 @@ export function DashboardPreviewSection() {
                     <Gauge className="w-4 h-4 text-amber-400" />
                   </div>
                   <div className="text-2xl font-extrabold text-slate-100 mt-2">
-                    64 <span className="text-xs font-normal text-slate-400">/ 100</span>
+                    -- <span className="text-xs font-normal text-slate-400">/ 100</span>
                   </div>
-                  <div className="mt-1 text-[11px] font-semibold text-amber-400">
-                    Moderate • Multi-Factor
+                  <div className="mt-1 text-[11px] font-semibold text-slate-400">
+                    -- • Multi-Factor
                   </div>
                 </div>
 
@@ -125,10 +123,10 @@ export function DashboardPreviewSection() {
                     <Heart className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div className="text-2xl font-extrabold text-slate-100 mt-2">
-                    128 / 84 <span className="text-xs font-normal text-slate-400">mmHg</span>
+                    -- / -- <span className="text-xs font-normal text-slate-400">mmHg</span>
                   </div>
-                  <div className="mt-1 text-[11px] font-semibold text-emerald-400">
-                    Pre-Hypertensive Stage
+                  <div className="mt-1 text-[11px] font-semibold text-slate-400">
+                    Unknown
                   </div>
                 </div>
 
@@ -138,10 +136,10 @@ export function DashboardPreviewSection() {
                     <Activity className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div className="text-2xl font-extrabold text-slate-100 mt-2">
-                    24.8 <span className="text-xs font-normal text-slate-400">kg/m²</span>
+                    -- <span className="text-xs font-normal text-slate-400">kg/m²</span>
                   </div>
-                  <div className="mt-1 text-[11px] font-semibold text-emerald-400">
-                    Normal Weight Range
+                  <div className="mt-1 text-[11px] font-semibold text-slate-400">
+                    Unknown
                   </div>
                 </div>
               </div>
@@ -162,31 +160,31 @@ export function DashboardPreviewSection() {
                   <div className="space-y-3">
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-200 font-medium">Systolic Pressure Impact</span>
-                        <span className="text-amber-400 font-mono">+0.26 (Elevates)</span>
+                        <span className="text-slate-200 font-medium">Factor 1</span>
+                        <span className="text-slate-400 font-mono">-- (--)</span>
                       </div>
                       <div className="w-full bg-slate-800 rounded-full h-2">
-                        <div className="bg-amber-400 h-2 rounded-full w-[70%]" />
+                        <div className="bg-slate-500 h-2 rounded-full w-[0%]" />
                       </div>
                     </div>
 
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-200 font-medium">Aerobic Activity Regularity</span>
-                        <span className="text-emerald-400 font-mono">-0.18 (Mitigates)</span>
+                        <span className="text-slate-200 font-medium">Factor 2</span>
+                        <span className="text-slate-400 font-mono">-- (--)</span>
                       </div>
                       <div className="w-full bg-slate-800 rounded-full h-2">
-                        <div className="bg-emerald-400 h-2 rounded-full w-[50%]" />
+                        <div className="bg-slate-500 h-2 rounded-full w-[0%]" />
                       </div>
                     </div>
 
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-200 font-medium">Glycemic Baseline Impact</span>
-                        <span className="text-emerald-400 font-mono">+0.09 (Mild)</span>
+                        <span className="text-slate-200 font-medium">Factor 3</span>
+                        <span className="text-slate-400 font-mono">-- (--)</span>
                       </div>
                       <div className="w-full bg-slate-800 rounded-full h-2">
-                        <div className="bg-teal-400 h-2 rounded-full w-[30%]" />
+                        <div className="bg-slate-500 h-2 rounded-full w-[0%]" />
                       </div>
                     </div>
                   </div>
@@ -200,17 +198,17 @@ export function DashboardPreviewSection() {
                         <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
                         6-Month Risk Trend
                       </span>
-                      <span className="text-xs text-emerald-400 font-mono">-8% Net</span>
+                      <span className="text-xs text-slate-400 font-mono">--% Net</span>
                     </div>
 
                     {/* Simulated Sparkline Graph */}
                     <div className="h-20 flex items-end gap-2 pt-4">
-                      <div className="flex-1 bg-emerald-500/20 h-[75%] rounded-t-sm hover:bg-emerald-500/40 transition-colors" />
-                      <div className="flex-1 bg-emerald-500/30 h-[85%] rounded-t-sm hover:bg-emerald-500/40 transition-colors" />
-                      <div className="flex-1 bg-emerald-500/40 h-[65%] rounded-t-sm hover:bg-emerald-500/40 transition-colors" />
-                      <div className="flex-1 bg-emerald-500/50 h-[60%] rounded-t-sm hover:bg-emerald-500/40 transition-colors" />
-                      <div className="flex-1 bg-emerald-500/70 h-[50%] rounded-t-sm hover:bg-emerald-500/40 transition-colors" />
-                      <div className="flex-1 bg-emerald-400 h-[45%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
+                      <div className="flex-1 bg-slate-500/20 h-[10%] rounded-t-sm" />
                     </div>
                   </div>
 
