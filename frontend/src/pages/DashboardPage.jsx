@@ -102,7 +102,7 @@ export function DashboardPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {/* Overall Composite Risk */}
           <div
             className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
@@ -117,18 +117,45 @@ export function DashboardPage() {
                 <RiskBadge level={latestResult?.overallLevel || 'Moderate'} size="sm" />
               </div>
               <div className="text-3xl sm:text-4xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.overallScore || 64} <span className="text-xs font-normal text-slate-400">/ 100</span>
+                {latestResult?.overallScore || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
               </div>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                Multi-factor composite calculated from baseline vitals and genetics.
+                Screening estimate from trained heart disease and diabetes ML models.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-emerald-500/10 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-              <span>Confidence: 94%</span>
+              <span>ML-Computed</span>
               <Link to="/results" className="text-emerald-400 hover:underline flex items-center gap-1">
                 <span>Details</span>
                 <ArrowRight className="w-3 h-3" />
               </Link>
+            </div>
+          </div>
+
+          {/* Heart Disease Risk */}
+          <div
+            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
+              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
+            }`}
+          >
+            <div>
+              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
+                <span className="uppercase tracking-wider flex items-center gap-1.5">
+                  <Heart className="w-3.5 h-3.5 text-rose-400" />
+                  <span>HEART DISEASE</span>
+                </span>
+                <RiskBadge level={latestResult?.categories?.heart?.level || 'Moderate'} size="sm" />
+              </div>
+              <div className="text-3xl font-black text-slate-100 font-mono mt-2">
+                {latestResult?.categories?.heart?.score || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
+              </div>
+              <p className="text-xs text-slate-400 mt-2 line-clamp-2">
+                {latestResult?.categories?.heart?.summary || 'Complete an assessment to see heart disease risk estimate.'}
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
+              <span>Updated: {latestResult?.date || '--'}</span>
+              <span className="text-emerald-400 font-semibold">UCI Model</span>
             </div>
           </div>
 
@@ -147,69 +174,15 @@ export function DashboardPage() {
                 <RiskBadge level={latestResult?.categories?.diabetes?.level || 'Moderate'} size="sm" />
               </div>
               <div className="text-3xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.categories?.diabetes?.score || 58} <span className="text-xs font-normal text-slate-400">/ 100</span>
+                {latestResult?.categories?.diabetes?.score || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
               </div>
               <p className="text-xs text-slate-400 mt-2 line-clamp-2">
-                {latestResult?.categories?.diabetes?.summary || 'Fasting blood glucose within upper normal margin.'}
+                {latestResult?.categories?.diabetes?.summary || 'Complete an assessment to see diabetes risk estimate.'}
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
-              <span>Updated: {latestResult?.date || 'Today'}</span>
-              <span className="text-emerald-400 font-semibold">Stable</span>
-            </div>
-          </div>
-
-          {/* Cardiovascular Risk */}
-          <div
-            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
-              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
-            <div>
-              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
-                <span className="uppercase tracking-wider flex items-center gap-1.5">
-                  <Heart className="w-3.5 h-3.5 text-rose-400" />
-                  <span>CARDIOVASCULAR</span>
-                </span>
-                <RiskBadge level={latestResult?.categories?.cardiovascular?.level || 'Moderate'} size="sm" />
-              </div>
-              <div className="text-3xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.categories?.cardiovascular?.score || 64} <span className="text-xs font-normal text-slate-400">/ 100</span>
-              </div>
-              <p className="text-xs text-slate-400 mt-2 line-clamp-2">
-                {latestResult?.categories?.cardiovascular?.summary || 'Mildly elevated systolic blood pressure.'}
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
-              <span>Updated: {latestResult?.date || 'Today'}</span>
-              <span className="text-emerald-400 font-semibold">-3 pts</span>
-            </div>
-          </div>
-
-          {/* Hypertension Risk */}
-          <div
-            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
-              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
-            <div>
-              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
-                <span className="uppercase tracking-wider flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-amber-400" />
-                  <span>HYPERTENSION</span>
-                </span>
-                <RiskBadge level={latestResult?.categories?.hypertension?.level || 'Moderate'} size="sm" />
-              </div>
-              <div className="text-3xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.categories?.hypertension?.score || 62} <span className="text-xs font-normal text-slate-400">/ 100</span>
-              </div>
-              <p className="text-xs text-slate-400 mt-2 line-clamp-2">
-                {latestResult?.categories?.hypertension?.summary || 'Pre-hypertensive stage 1 readings.'}
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
-              <span>Updated: {latestResult?.date || 'Today'}</span>
-              <span className="text-emerald-400 font-semibold">-3 pts</span>
+              <span>Updated: {latestResult?.date || '--'}</span>
+              <span className="text-emerald-400 font-semibold">Pima Model</span>
             </div>
           </div>
         </div>

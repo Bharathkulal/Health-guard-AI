@@ -181,10 +181,9 @@ export function ResultsPage() {
           <span>Condition Risk Breakdown</span>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {categories?.heart && <CategoryRiskCard category={categories.heart} />}
           {categories?.diabetes && <CategoryRiskCard category={categories.diabetes} />}
-          {categories?.cardiovascular && <CategoryRiskCard category={categories.cardiovascular} />}
-          {categories?.hypertension && <CategoryRiskCard category={categories.hypertension} />}
         </div>
       </div>
 

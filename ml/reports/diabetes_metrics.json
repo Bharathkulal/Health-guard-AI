@@ -1,0 +1,141 @@
+{
+  "model_name": "RandomForest",
+  "dataset": "Pima Indians Diabetes Database",
+  "dataset_url": "https://archive.ics.uci.edu/dataset/34/diabetes",
+  "dataset_size": 768,
+  "train_size": 460,
+  "validation_size": 154,
+  "test_size": 154,
+  "positive_class_prevalence": 0.349,
+  "feature_names": [
+    "Pregnancies",
+    "Glucose",
+    "BloodPressure",
+    "SkinThickness",
+    "Insulin",
+    "BMI",
+    "DiabetesPedigreeFunction",
+    "Age"
+  ],
+  "target_definition": "Tested positive for diabetes (binary: 0=negative, 1=positive)",
+  "preprocessing_description": "Zero-value replacement with NaN for impossible values (Glucose, BP, SkinThickness, Insulin, BMI), median imputation, StandardScaler",
+  "selection_strategy": "Composite: 0.40*Recall + 0.30*ROC-AUC + 0.30*F1 (screening-oriented)",
+  "training_date": "2026-09-17T05:45:35.263433+00:00",
+  "sklearn_version": "1.6.1",
+  "random_state": 42,
+  "test_metrics": {
+    "accuracy": 0.7338,
+    "precision": 0.6102,
+    "recall": 0.6667,
+    "specificity": 0.77,
+    "f1": 0.6372,
+    "roc_auc": 0.8202,
+    "confusion_matrix": {
+      "true_negatives": 77,
+      "false_positives": 23,
+      "false_negatives": 18,
+      "true_positives": 36
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "Glucose",
+      "importance": 0.3433,
+      "label": "Glucose"
+    },
+    {
+      "feature": "BMI",
+      "importance": 0.1666,
+      "label": "Bmi"
+    },
+    {
+      "feature": "Age",
+      "importance": 0.1216,
+      "label": "Age"
+    },
+    {
+      "feature": "DiabetesPedigreeFunction",
+      "importance": 0.1084,
+      "label": "Diabetespedigreefunction"
+    },
+    {
+      "feature": "Insulin",
+      "importance": 0.0775,
+      "label": "Insulin"
+    },
+    {
+      "feature": "BloodPressure",
+      "importance": 0.0628,
+      "label": "Bloodpressure"
+    },
+    {
+      "feature": "Pregnancies",
+      "importance": 0.0616,
+      "label": "Pregnancies"
+    },
+    {
+      "feature": "SkinThickness",
+      "importance": 0.0581,
+      "label": "Skinthickness"
+    }
+  ],
+  "model_comparison": {
+    "LogisticRegression": {
+      "validation_metrics": {
+        "accuracy": 0.7532,
+        "precision": 0.6379,
+        "recall": 0.6852,
+        "specificity": 0.79,
+        "f1": 0.6607,
+        "roc_auc": 0.852,
+        "confusion_matrix": {
+          "true_negatives": 79,
+          "false_positives": 21,
+          "false_negatives": 17,
+          "true_positives": 37
+        }
+      },
+      "selection_score": 0.7279
+    },
+    "RandomForest": {
+      "validation_metrics": {
+        "accuracy": 0.7922,
+        "precision": 0.6833,
+        "recall": 0.7593,
+        "specificity": 0.81,
+        "f1": 0.7193,
+        "roc_auc": 0.8683,
+        "confusion_matrix": {
+          "true_negatives": 81,
+          "false_positives": 19,
+          "false_negatives": 13,
+          "true_positives": 41
+        }
+      },
+      "selection_score": 0.78
+    }
+  },
+  "cleaning_report": {
+    "original_rows": 768,
+    "zeros_replaced_with_nan": {
+      "Glucose": 5,
+      "BloodPressure": 35,
+      "SkinThickness": 227,
+      "Insulin": 374,
+      "BMI": 11
+    },
+    "duplicates_removed": 0,
+    "invalid_values_clipped": 0,
+    "missing_values_after": {
+      "Glucose": 5,
+      "BloodPressure": 35,
+      "SkinThickness": 227,
+      "Insulin": 374,
+      "BMI": 11
+    },
+    "final_rows": 768,
+    "positive_rate": 0.3489583333333333
+  },
+  "pipeline_file": "diabetes_model.joblib",
+  "population_note": "Pima Indian females aged >= 21. Model may not generalize to other populations."
+}

@@ -83,9 +83,8 @@ Rather than acting as a black-box scoring system, HealthGuard AI pairs **probabi
 
 - 🤖 **Predictive Machine Learning Engine** *(Planned)*  
   Comparative multi-model pipeline evaluating **Logistic Regression**, **Random Forest**, and **XGBoost** to determine stratified risk levels (*Low*, *Moderate*, *High*) across multiple chronic vectors:
-  - Cardiovascular Risk
+  - Heart Disease Risk
   - Type-2 Diabetes Risk
-  - Hypertension Risk
 
 - 🔍 **Explainable AI (XAI) with SHAP** *(Planned)*  
   Deconstructs predictions at the individual assessment level, identifying exact contributing factors (e.g., elevated BMI or systolic pressure) to eliminate black-box opacity.
@@ -589,36 +588,36 @@ HealthGuard AI operates on strict data responsibility principles:
 
 ### Phase 1 — Foundation & Architecture
 - [x] Initial repository structure and Git baseline setup
-- [ ] Project directory scaffolding (`frontend`, `backend`, `ml`, `docs`)
-- [ ] FastAPI backend initialization with CORS and error handling
-- [ ] React + Vite + Tailwind CSS frontend boilerplate initialization
-- [ ] MongoDB connection manager and base schemas
+- [x] Project directory scaffolding (`frontend`, `backend`, `ml`, `docs`)
+- [x] FastAPI backend initialization with CORS and error handling
+- [x] React + Vite + Tailwind CSS frontend boilerplate initialization
+- [x] MongoDB connection manager and base schemas
 
 ### Phase 2 — Machine Learning & Pipeline Engineering
-- [ ] Data sourcing, cleaning, and preprocessing pipeline
-- [ ] Baseline model training: Logistic Regression
-- [ ] Ensemble model training: Random Forest & XGBoost
-- [ ] Cross-validation and evaluation (ROC-AUC, Recall, Precision, F1-Score)
-- [ ] Model serialization and artifact packaging
+- [x] Data sourcing, cleaning, and preprocessing pipeline
+- [x] Baseline model training: Logistic Regression
+- [x] Ensemble model training: Random Forest
+- [x] Cross-validation and evaluation (ROC-AUC, Recall, Precision, F1-Score)
+- [x] Model serialization and artifact packaging
 
-### Phase 3 — Explainable AI (XAI) Integration
-- [ ] SHAP TreeExplainer / KernelExplainer pipeline implementation
-- [ ] Local factor extraction and relative importance calculation
-- [ ] Human-readable explanation generation service
-- [ ] Recommendation engine mapping rules
+### Phase 3 — Explainable AI (XAI) Integration / Interpretability
+- [x] Feature importance extraction from trained pipelines
+- [x] Local factor extraction and relative importance calculation
+- [x] Human-readable explanation generation service
+- [x] Recommendation engine mapping rules
 
 ### Phase 4 — Application Features & Dashboard
-- [ ] User authentication (Registration, Login, JWT tokens)
-- [ ] Multi-step interactive health assessment form
-- [ ] Assessment result page with dynamic risk badges
-- [ ] Interactive SHAP explanation visualizations
-- [ ] Longitudinal history tracking and dashboard trends
+- [x] User authentication (Registration, Login, JWT tokens)
+- [x] Multi-step interactive health assessment form
+- [x] Assessment result page with dynamic risk badges
+- [x] Explanatory factors and model metrics integration
+- [x] Longitudinal history tracking and dashboard trends
 
 ### Phase 5 — Quality Assurance, Polish & Deployment
-- [ ] Comprehensive unit and integration testing
-- [ ] Performance profiling and bundle optimization
+- [x] Comprehensive unit and integration testing
+- [x] Performance profiling and bundle optimization
 - [ ] Cloud deployment (Frontend: Vercel | Backend: Render | DB: MongoDB Atlas)
-- [ ] Final UI/UX review, accessibility audit, and documentation release
+- [x] Final UI/UX review, accessibility audit, and documentation release
 
 ---
 

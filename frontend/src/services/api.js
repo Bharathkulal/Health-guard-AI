@@ -96,7 +96,7 @@ export const healthApi = {
 
   /**
    * Submits a full multi-step health assessment for storage and ML prediction.
-   * Calls POST /api/predict to execute trained Machine Learning models and persist to MongoDB.
+   * Calls POST /api/health/assess to execute trained Machine Learning models and persist to MongoDB.
    */
   async submitAssessment(assessmentData) {
     try {
@@ -208,8 +208,7 @@ export const healthApi = {
         shortDate: (item.date || 'Recent').split(' ').slice(0, 2).join(' '),
         overallRisk: item.overallScore || 50,
         diabetesRisk: item.categories?.diabetes?.score || 50,
-        cardiovascularRisk: item.categories?.cardiovascular?.score || 50,
-        hypertensionRisk: item.categories?.hypertension?.score || 50,
+        heartRisk: item.categories?.heart?.score || 50,
         systolicBP: item.vitalsSnapshot?.systolicBP || item.vitals?.systolic_bp || 120,
         diastolicBP: item.vitalsSnapshot?.diastolicBP || item.vitals?.diastolic_bp || 80,
         fastingBloodSugar: item.vitalsSnapshot?.fastingBloodSugar || item.vitals?.blood_sugar || 95,

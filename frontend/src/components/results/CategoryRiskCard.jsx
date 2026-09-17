@@ -10,6 +10,7 @@ export function CategoryRiskCard({ category, className = '' }) {
   const { id, name, score, level, summary, keyDrivers = [], previousScore } = category;
 
   const icons = {
+    heart: Heart,
     diabetes: Droplets,
     cardiovascular: Heart,
     hypertension: Activity,

@@ -1,0 +1,76 @@
+{
+  "heart": {
+    "model_name": "RandomForest",
+    "training_date": "2026-09-17T05:45:03.824992+00:00",
+    "dataset_name": "UCI Heart Disease (Cleveland)",
+    "dataset_url": "https://archive.ics.uci.edu/dataset/45/heart+disease",
+    "feature_names": [
+      "age",
+      "sex",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "target_definition": "Presence of heart disease (binary: 0=absent, 1=present from original 0-4 scale)",
+    "preprocessing_description": "Median imputation for missing values + StandardScaler normalization",
+    "evaluation_metrics": {
+      "accuracy": 0.8852,
+      "precision": 0.8182,
+      "recall": 0.9643,
+      "specificity": 0.8182,
+      "f1": 0.8852,
+      "roc_auc": 0.9567,
+      "confusion_matrix": {
+        "true_negatives": 27,
+        "false_positives": 6,
+        "false_negatives": 1,
+        "true_positives": 27
+      }
+    },
+    "sklearn_version": "1.6.1",
+    "pipeline_file": "heart_model.joblib"
+  },
+  "diabetes": {
+    "model_name": "RandomForest",
+    "training_date": "2026-09-17T05:45:35.263433+00:00",
+    "dataset_name": "Pima Indians Diabetes Database",
+    "dataset_url": "https://archive.ics.uci.edu/dataset/34/diabetes",
+    "feature_names": [
+      "Pregnancies",
+      "Glucose",
+      "BloodPressure",
+      "SkinThickness",
+      "Insulin",
+      "BMI",
+      "DiabetesPedigreeFunction",
+      "Age"
+    ],
+    "target_definition": "Tested positive for diabetes (binary: 0=negative, 1=positive)",
+    "preprocessing_description": "Zero-value replacement with NaN for impossible values (Glucose, BP, SkinThickness, Insulin, BMI), median imputation, StandardScaler",
+    "evaluation_metrics": {
+      "accuracy": 0.7338,
+      "precision": 0.6102,
+      "recall": 0.6667,
+      "specificity": 0.77,
+      "f1": 0.6372,
+      "roc_auc": 0.8202,
+      "confusion_matrix": {
+        "true_negatives": 77,
+        "false_positives": 23,
+        "false_negatives": 18,
+        "true_positives": 36
+      }
+    },
+    "sklearn_version": "1.6.1",
+    "pipeline_file": "diabetes_model.joblib",
+    "population_note": "Pima Indian females aged >= 21. Model may not generalize to other populations."
+  }
+}

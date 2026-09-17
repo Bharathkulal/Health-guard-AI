@@ -1,0 +1,160 @@
+{
+  "model_name": "RandomForest",
+  "dataset": "UCI Heart Disease (Cleveland)",
+  "dataset_url": "https://archive.ics.uci.edu/dataset/45/heart+disease",
+  "dataset_size": 303,
+  "train_size": 181,
+  "validation_size": 61,
+  "test_size": 61,
+  "positive_class_prevalence": 0.4587,
+  "feature_names": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal"
+  ],
+  "target_definition": "Presence of heart disease (binary: 0=absent, 1=present from original 0-4 scale)",
+  "preprocessing_description": "Median imputation for missing values + StandardScaler normalization",
+  "selection_strategy": "Composite: 0.40*Recall + 0.30*ROC-AUC + 0.30*F1 (screening-oriented)",
+  "training_date": "2026-09-17T05:45:03.824992+00:00",
+  "sklearn_version": "1.6.1",
+  "random_state": 42,
+  "test_metrics": {
+    "accuracy": 0.8852,
+    "precision": 0.8182,
+    "recall": 0.9643,
+    "specificity": 0.8182,
+    "f1": 0.8852,
+    "roc_auc": 0.9567,
+    "confusion_matrix": {
+      "true_negatives": 27,
+      "false_positives": 6,
+      "false_negatives": 1,
+      "true_positives": 27
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "thal",
+      "importance": 0.1995,
+      "label": "Thal"
+    },
+    {
+      "feature": "thalach",
+      "importance": 0.1114,
+      "label": "Thalach"
+    },
+    {
+      "feature": "cp",
+      "importance": 0.102,
+      "label": "Cp"
+    },
+    {
+      "feature": "oldpeak",
+      "importance": 0.1005,
+      "label": "Oldpeak"
+    },
+    {
+      "feature": "ca",
+      "importance": 0.0989,
+      "label": "Ca"
+    },
+    {
+      "feature": "age",
+      "importance": 0.089,
+      "label": "Age"
+    },
+    {
+      "feature": "chol",
+      "importance": 0.0699,
+      "label": "Chol"
+    },
+    {
+      "feature": "trestbps",
+      "importance": 0.0593,
+      "label": "Trestbps"
+    },
+    {
+      "feature": "slope",
+      "importance": 0.0565,
+      "label": "Slope"
+    },
+    {
+      "feature": "exang",
+      "importance": 0.0546,
+      "label": "Exang"
+    },
+    {
+      "feature": "sex",
+      "importance": 0.0348,
+      "label": "Sex"
+    },
+    {
+      "feature": "restecg",
+      "importance": 0.0152,
+      "label": "Restecg"
+    },
+    {
+      "feature": "fbs",
+      "importance": 0.0084,
+      "label": "Fbs"
+    }
+  ],
+  "model_comparison": {
+    "LogisticRegression": {
+      "validation_metrics": {
+        "accuracy": 0.8361,
+        "precision": 0.8462,
+        "recall": 0.7857,
+        "specificity": 0.8788,
+        "f1": 0.8148,
+        "roc_auc": 0.9383,
+        "confusion_matrix": {
+          "true_negatives": 29,
+          "false_positives": 4,
+          "false_negatives": 6,
+          "true_positives": 22
+        }
+      },
+      "selection_score": 0.8402
+    },
+    "RandomForest": {
+      "validation_metrics": {
+        "accuracy": 0.8197,
+        "precision": 0.7931,
+        "recall": 0.8214,
+        "specificity": 0.8182,
+        "f1": 0.807,
+        "roc_auc": 0.9188,
+        "confusion_matrix": {
+          "true_negatives": 27,
+          "false_positives": 6,
+          "false_negatives": 5,
+          "true_positives": 23
+        }
+      },
+      "selection_score": 0.8463
+    }
+  },
+  "cleaning_report": {
+    "original_rows": 303,
+    "missing_values_before": {
+      "ca": 4,
+      "thal": 2
+    },
+    "duplicates_removed": 0,
+    "invalid_values_clipped": 0,
+    "final_rows": 303,
+    "positive_rate": 0.45874587458745875
+  },
+  "pipeline_file": "heart_model.joblib"
+}

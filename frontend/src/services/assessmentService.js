@@ -143,7 +143,7 @@ export const assessmentService = {
 
   /**
    * Submits assessment to ML prediction engine for real-time risk stratification.
-   * `POST /api/predict`
+   * `POST /api/health/assess` — Uses real trained ML models (heart disease + diabetes)
    * 
    * @param {Object} formData
    * @returns {Promise<Object>} Calculated ML risk prediction result
@@ -152,7 +152,7 @@ export const assessmentService = {
     const payload = formatAssessmentPayload(formData);
 
     try {
-      const data = await apiClient.post('/predict', payload);
+      const data = await apiClient.post('/health/assess', payload);
 
       if (data) {
         try {
