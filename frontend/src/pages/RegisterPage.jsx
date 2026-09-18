@@ -15,9 +15,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Footer } from '../components/common/Footer';
+import { triggerGoogleSignIn } from '../services/googleAuth';
 
 export function RegisterPage() {
-  const { register, loading, authError, setAuthError } = useAuth();
+  const { register, loginWithGoogle, loading, authError, setAuthError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -93,6 +94,32 @@ export function RegisterPage() {
     } catch (err) {
       setLocalError(err.message || 'Registration failed. Please check your inputs.');
     } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLocalError('');
+    if (setAuthError) setAuthError(null);
+    setSubmitting(true);
+    try {
+      await triggerGoogleSignIn({
+        onSuccess: async (googleUser) => {
+          try {
+            await loginWithGoogle(googleUser);
+            navigate(redirectPath, { replace: true });
+          } catch (err) {
+            setLocalError(err.message || 'Failed to authenticate Google user with HealthGuard AI.');
+            setSubmitting(false);
+          }
+        },
+        onError: (errMessage) => {
+          setLocalError(errMessage || 'Google Sign-In failed or was cancelled.');
+          setSubmitting(false);
+        },
+      });
+    } catch (err) {
+      setLocalError(err.message || 'Google Sign-In initialization failed.');
       setSubmitting(false);
     }
   };
@@ -318,8 +345,9 @@ export function RegisterPage() {
             <div className="mt-8 pt-6 border-t border-[#E5E0D7]">
               <button
                 type="button"
+                onClick={handleGoogleLogin}
                 disabled={submitting}
-                className="w-full py-3.5 px-4 rounded-xl text-[13px] font-bold border border-[#E5E0D7] bg-white text-[#18201C] hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl text-[13px] font-bold border border-[#E5E0D7] bg-white text-[#18201C] hover:bg-slate-50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

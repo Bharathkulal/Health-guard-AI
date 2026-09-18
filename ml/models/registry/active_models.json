@@ -1,6 +1,6 @@
 {
-  "heart": "model_heart_1b2df4_v7_0",
-  "cardiovascular": "model_heart_1b2df4_v7_0",
+  "heart": "model_heart_ef7a59_v8_0",
+  "cardiovascular": "model_heart_ef7a59_v8_0",
   "diabetes": "model_diab_baseline_v1",
   "hypertension": "model_htn_baseline_v1"
 }

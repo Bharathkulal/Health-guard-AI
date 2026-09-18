@@ -90,6 +90,26 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
+   * Logs in / registers via Google OAuth
+   */
+  const loginWithGoogle = useCallback(async (googleData) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const data = await authService.googleLogin(googleData);
+      setUser(data.user);
+      setToken(data.access_token);
+      return data;
+    } catch (err) {
+      const msg = err.message || 'Google authentication failed. Please try again.';
+      setAuthError(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
    * Logs out user session
    */
   const logout = useCallback(async () => {
@@ -157,6 +177,7 @@ export function AuthProvider({ children }) {
     setAuthError,
     login,
     register,
+    loginWithGoogle,
     logout,
     updateUserProfile,
     changePassword,

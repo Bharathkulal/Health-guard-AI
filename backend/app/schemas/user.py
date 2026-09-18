@@ -45,6 +45,15 @@ class UserLoginRequest(BaseModel):
     password: str = Field(..., min_length=1, description="Account Password")
 
 
+class GoogleAuthRequest(BaseModel):
+    token: Optional[str] = None
+    credential: Optional[str] = None
+    email: Optional[EmailStr] = None
+    name: Optional[str] = None
+    picture: Optional[str] = None
+    google_id: Optional[str] = None
+
+
 class PasswordChangeRequest(BaseModel):
     current_password: str = Field(..., min_length=1, description="Existing Password")
     new_password: str = Field(..., min_length=8, max_length=128, description="New Password")

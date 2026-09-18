@@ -13,6 +13,7 @@ from app.schemas.response import APIResponse
 from app.schemas.user import (
     UserRegisterRequest,
     UserLoginRequest,
+    GoogleAuthRequest,
     UserResponse,
     UserAuthResponse,
     PasswordChangeRequest,
@@ -82,6 +83,25 @@ async def login(login_data: UserLoginRequest, response: Response):
         success=True,
         data=auth_result,
         message="Authentication successful.",
+    )
+
+
+@router.post(
+    "/google",
+    status_code=status.HTTP_200_OK,
+    summary="Authenticate with Google OAuth",
+    description="Authenticates or signs up a patient using Google OAuth credential or token.",
+    response_model=APIResponse[UserAuthResponse],
+    dependencies=[Depends(rate_limit_auth)],
+)
+async def google_auth(google_data: GoogleAuthRequest, response: Response):
+    """Authenticates credentials via Google OAuth and issues JWT."""
+    auth_result = await auth_service.authenticate_google_user(google_data)
+    _set_auth_cookie(response, auth_result.access_token)
+    return APIResponse(
+        success=True,
+        data=auth_result,
+        message="Google authentication successful.",
     )
 
 

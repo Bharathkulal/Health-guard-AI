@@ -13,9 +13,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Footer } from '../components/common/Footer';
+import { triggerGoogleSignIn } from '../services/googleAuth';
 
 export function LoginPage() {
-  const { login, loading, authError, setAuthError } = useAuth();
+  const { login, loginWithGoogle, loading, authError, setAuthError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,7 +46,7 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate(redirectPath, { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setLocalError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
@@ -60,10 +61,36 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await login('alex.chen@healthguard.ai', 'HealthGuard2026!');
-      navigate(redirectPath, { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setLocalError(err.message || 'Demo account login failed. Please register a new account.');
     } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLocalError('');
+    if (setAuthError) setAuthError(null);
+    setSubmitting(true);
+    try {
+      await triggerGoogleSignIn({
+        onSuccess: async (googleUser) => {
+          try {
+            await loginWithGoogle(googleUser);
+            navigate('/dashboard', { replace: true });
+          } catch (err) {
+            setLocalError(err.message || 'Failed to authenticate Google user with HealthGuard AI.');
+            setSubmitting(false);
+          }
+        },
+        onError: (errMessage) => {
+          setLocalError(errMessage || 'Google Sign-In failed or was cancelled.');
+          setSubmitting(false);
+        },
+      });
+    } catch (err) {
+      setLocalError(err.message || 'Google Sign-In initialization failed.');
       setSubmitting(false);
     }
   };
@@ -212,8 +239,9 @@ export function LoginPage() {
             <div className="mt-8 pt-6 border-t border-[#E5E0D7] space-y-3">
               <button
                 type="button"
+                onClick={handleGoogleLogin}
                 disabled={submitting}
-                className="w-full py-3.5 px-4 rounded-xl text-[13px] font-bold border border-[#E5E0D7] bg-white text-[#18201C] hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl text-[13px] font-bold border border-[#E5E0D7] bg-white text-[#18201C] hover:bg-slate-50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

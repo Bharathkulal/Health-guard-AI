@@ -43,6 +43,18 @@ export const authService = {
   },
 
   /**
+   * Authenticates user via Google OAuth.
+   * `POST /api/auth/google`
+   */
+  async googleLogin(googleData) {
+    const data = await apiClient.post('/auth/google', googleData);
+    if (data?.access_token) {
+      setStoredToken(data.access_token);
+    }
+    return data;
+  },
+
+  /**
    * Restores active user session.
    * `GET /api/auth/me`
    */

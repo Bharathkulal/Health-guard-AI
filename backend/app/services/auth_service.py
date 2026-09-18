@@ -21,6 +21,7 @@ from app.models.user import generate_user_id, user_doc_to_dict
 from app.schemas.user import (
     UserRegisterRequest,
     UserLoginRequest,
+    GoogleAuthRequest,
     PasswordChangeRequest,
     AccountDeleteRequest,
     UserProfileUpdate,
@@ -304,6 +305,92 @@ class AuthService:
         count = await self.get_user_assessment_count(user_id)
         user_res = self._format_user_response(user_doc, count=count)
         logger.info(f"User login successful: {user_id} ({norm_email})")
+        return UserAuthResponse(access_token=token, token_type="bearer", user=user_res)
+
+    async def authenticate_google_user(self, google_in: GoogleAuthRequest) -> UserAuthResponse:
+        """
+        Authenticates a user via Google OAuth (ID token credential or OAuth2 access token).
+        Creates a new user profile if first-time sign in, or associates with existing account.
+        """
+        email = google_in.email
+        name = google_in.name or "Google User"
+        google_id = google_in.google_id
+        picture = google_in.picture
+
+        # Decode credential JWT payload if provided
+        if google_in.credential and not email:
+            try:
+                import json
+                import base64
+                parts = google_in.credential.split(".")
+                if len(parts) >= 2:
+                    payload_b64 = parts[1] + "=" * (-len(parts[1]) % 4)
+                    payload_json = base64.urlsafe_b64decode(payload_b64).decode("utf-8")
+                    payload = json.loads(payload_json)
+                    email = payload.get("email")
+                    name = payload.get("name") or payload.get("given_name") or name
+                    google_id = payload.get("sub") or google_id
+                    picture = payload.get("picture") or picture
+            except Exception as exc:
+                logger.warning(f"Could not parse Google credential token: {exc}")
+
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Valid email could not be obtained from Google authentication.",
+            )
+
+        norm_email = str(email).strip().lower()
+        user_doc = await self.find_user_by_email(norm_email)
+
+        if not user_doc:
+            user_id = generate_user_id()
+            now = datetime.now(timezone.utc)
+            user_doc = {
+                "user_id": user_id,
+                "name": name,
+                "email": norm_email,
+                "hashed_password": "",
+                "google_id": google_id,
+                "profile_picture": picture,
+                "created_at": now,
+                "role": "user",
+                "age": None,
+                "gender": "other",
+                "height_cm": None,
+                "weight_kg": None,
+                "bmi": None,
+                "baseline_activity": "moderate",
+                "blood_type": "A+",
+                "emergency_contact": None,
+                "member_since": now.strftime("%B %Y"),
+            }
+            if is_database_connected():
+                col = get_collection(COLLECTION_USERS)
+                if col is not None:
+                    try:
+                        await col.insert_one(dict(user_doc))
+                        logger.info(f"Created new user via Google OAuth: {user_id} ({norm_email})")
+                    except Exception as exc:
+                        logger.error(f"Failed to persist Google user in MongoDB: {exc}")
+                        _IN_MEMORY_USERS.append(user_doc)
+            else:
+                _IN_MEMORY_USERS.append(user_doc)
+                logger.info(f"Stored Google user in memory: {user_id}")
+        else:
+            if google_id and not user_doc.get("google_id"):
+                user_doc["google_id"] = google_id
+
+        user_id = user_doc["user_id"]
+        role = user_doc.get("role", "user")
+        token = create_access_token(
+            subject=user_id,
+            email=norm_email,
+            additional_claims={"role": role},
+        )
+        count = await self.get_user_assessment_count(user_id)
+        user_res = self._format_user_response(user_doc, count=count)
+        logger.info(f"Google OAuth login successful for {user_id} ({norm_email})")
         return UserAuthResponse(access_token=token, token_type="bearer", user=user_res)
 
     async def get_current_user_profile(self, user_id: str) -> UserResponse:

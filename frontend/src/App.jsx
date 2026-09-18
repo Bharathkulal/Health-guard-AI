@@ -78,31 +78,10 @@ export default function App() {
                 {/* Public Landing Page */}
                 <Route path="/" element={<LandingPage />} />
 
-                {/* Public-Only Auth Routes (Redirect to /dashboard if logged in) */}
-                <Route
-                  path="/login"
-                  element={
-                    <PublicOnlyRoute>
-                      <LoginPage />
-                    </PublicOnlyRoute>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <PublicOnlyRoute>
-                      <RegisterPage />
-                    </PublicOnlyRoute>
-                  }
-                />
-                <Route
-                  path="/forgot-password"
-                  element={
-                    <PublicOnlyRoute>
-                      <ForgotPasswordPage />
-                    </PublicOnlyRoute>
-                  }
-                />
+                {/* Public Auth Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
                 {/* Protected Clinical Application Routes */}
                 <Route
