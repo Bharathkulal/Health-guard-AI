@@ -45,7 +45,7 @@ export function HeroSection() {
             {/* CTAs */}
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <Link
-                to="/assessment"
+                to="/login"
                 className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full text-sm font-semibold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-lg transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 <span>Start Health Assessment</span>

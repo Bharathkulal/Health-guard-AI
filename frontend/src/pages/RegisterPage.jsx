@@ -90,7 +90,7 @@ export function RegisterPage() {
     setSubmitting(true);
     try {
       await register(formData.name, formData.email, formData.password, formData.confirmPassword);
-      navigate(redirectPath, { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setLocalError(err.message || 'Registration failed. Please check your inputs.');
     } finally {
@@ -107,7 +107,7 @@ export function RegisterPage() {
         onSuccess: async (googleUser) => {
           try {
             await loginWithGoogle(googleUser);
-            navigate(redirectPath, { replace: true });
+            navigate('/dashboard', { replace: true });
           } catch (err) {
             setLocalError(err.message || 'Failed to authenticate Google user with HealthGuard AI.');
             setSubmitting(false);

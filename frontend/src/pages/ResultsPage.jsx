@@ -15,6 +15,8 @@ import {
   Droplets,
   Activity,
   Download,
+  LayoutDashboard,
+  Home,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useHealth } from '../context/HealthContext';
@@ -40,7 +42,7 @@ export function ResultsPage() {
         title="No Assessment Results Available"
         description="Complete the guided health assessment to generate your personalized multi-factor risk report."
         actionText="Start Assessment"
-        actionHref={isAuthenticated ? "/assessment" : "/login?redirect=/assessment"}
+        actionHref="/assessment"
       />
     );
   }
@@ -70,17 +72,25 @@ export function ResultsPage() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-3 print:hidden">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border border-[#E5E0D7] text-[#18201C] hover:bg-white hover:border-[#16805F]/30 transition-all bg-[#FFFDF9] shadow-sm"
+          >
+            <LayoutDashboard className="w-4 h-4 text-[#16805F]" />
+            <span>Home Dashboard</span>
+          </Link>
+
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-[#E5E0D7] text-[#18201C] hover:bg-white hover:border-[#16805F]/30 transition-all bg-[#FFFDF9] shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border border-[#E5E0D7] text-[#18201C] hover:bg-white hover:border-[#16805F]/30 transition-all bg-[#FFFDF9] shadow-sm"
           >
             <Printer className="w-4 h-4 text-[#66706A]" />
             <span>Print Report</span>
           </button>
 
           <Link
-            to={isAuthenticated ? "/assessment" : "/login?redirect=/assessment"}
+            to="/assessment"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#16805F] text-white hover:bg-[#126b4f] transition-all shadow-md"
           >
             <RotateCcw className="w-4 h-4" />
@@ -251,6 +261,48 @@ export function ResultsPage() {
 
       {/* 6. Clinical Safety Callout: When to seek professional help */}
       <ClinicalActionNotice />
+
+      {/* 7. Home Dashboard & Next Actions Navigation */}
+      <div className="p-6 sm:p-8 rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 print:hidden">
+        <div className="space-y-1.5 text-center md:text-left">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold uppercase bg-[#E8F2ED] text-[#16805F]">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Assessment Complete</span>
+          </div>
+          <h3 className="text-xl font-black text-[#18201C]">
+            Ready to explore your complete health overview?
+          </h3>
+          <p className="text-xs text-[#66706A] font-medium max-w-xl">
+            Return to your personalized Home Dashboard to inspect longitudinal trends, review recommended interventions, or initiate further evaluations.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-3 w-full md:w-auto">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold bg-[#16805F] text-white hover:bg-[#126b4f] transition-all shadow-md active:scale-[0.99] flex-1 md:flex-initial"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>Go to Home Dashboard</span>
+          </Link>
+
+          <Link
+            to="/trends"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-bold border border-[#E5E0D7] text-[#18201C] bg-white hover:bg-slate-50 transition-all flex-1 md:flex-initial"
+          >
+            <TrendingUp className="w-4 h-4 text-[#16805F]" />
+            <span>View Health Trends</span>
+          </Link>
+
+          <Link
+            to="/assessment"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-sm font-semibold text-[#66706A] hover:text-[#18201C] transition-colors flex-1 md:flex-initial"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>New Assessment</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

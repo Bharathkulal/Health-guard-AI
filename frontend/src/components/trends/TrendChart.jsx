@@ -11,8 +11,9 @@ export function TrendChart({ data = [], className = '' }) {
   const metricsConfig = {
     overallRisk: {
       label: 'Composite Risk Score',
+      shortLabel: 'Composite',
       unit: '/ 100',
-      color: '#10b981',
+      color: '#16805F',
       icon: TrendingUp,
       min: 0,
       max: 100,
@@ -21,9 +22,10 @@ export function TrendChart({ data = [], className = '' }) {
     },
     bloodPressure: {
       label: 'Blood Pressure',
+      shortLabel: 'Blood Pressure',
       unit: 'mmHg',
-      color: '#34d399',
-      secondaryColor: '#60a5fa',
+      color: '#E11D48',
+      secondaryColor: '#2563EB',
       icon: Heart,
       min: 50,
       max: 180,
@@ -33,8 +35,9 @@ export function TrendChart({ data = [], className = '' }) {
     },
     fastingBloodSugar: {
       label: 'Fasting Blood Glucose',
+      shortLabel: 'Glucose',
       unit: 'mg/dL',
-      color: '#f59e0b',
+      color: '#D97706',
       icon: Droplets,
       min: 60,
       max: 160,
@@ -43,8 +46,9 @@ export function TrendChart({ data = [], className = '' }) {
     },
     bmi: {
       label: 'Body Mass Index (BMI)',
+      shortLabel: 'BMI',
       unit: 'kg/m²',
-      color: '#a78bfa',
+      color: '#7C3AED',
       icon: Scale,
       min: 15,
       max: 38,
@@ -53,8 +57,9 @@ export function TrendChart({ data = [], className = '' }) {
     },
     heartRate: {
       label: 'Resting Heart Rate',
+      shortLabel: 'Heart Rate',
       unit: 'BPM',
-      color: '#f43f5e',
+      color: '#DC2626',
       icon: Activity,
       min: 45,
       max: 120,
@@ -68,7 +73,7 @@ export function TrendChart({ data = [], className = '' }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="p-8 text-center text-slate-400 text-xs">
+      <div className={`p-8 text-center rounded-3xl border ${isDark ? 'bg-[#07130e]/80 border-emerald-500/20 text-slate-400' : 'bg-[#FFFDF9] border-[#E5E0D7] text-[#66706A] text-xs'}`}>
         No historical telemetry points available for chart rendering.
       </div>
     );
@@ -77,8 +82,8 @@ export function TrendChart({ data = [], className = '' }) {
   // SVG Chart Geometry
   const width = 800;
   const height = 260;
-  const paddingX = 40;
-  const paddingY = 30;
+  const paddingX = 45;
+  const paddingY = 32;
   const chartWidth = width - paddingX * 2;
   const chartHeight = height - paddingY * 2;
 
@@ -108,7 +113,7 @@ export function TrendChart({ data = [], className = '' }) {
   }, '');
 
   // Fill area under path
-  const areaPathD = primaryPoints.length > 0
+  const areaPathD = primaryPoints.length > 1
     ? `${primaryPathD} L ${primaryPoints[primaryPoints.length - 1].x},${height - paddingY} L ${primaryPoints[0].x},${height - paddingY} Z`
     : '';
 
@@ -130,28 +135,36 @@ export function TrendChart({ data = [], className = '' }) {
 
   return (
     <div
-      className={`p-5 sm:p-7 rounded-3xl border space-y-6 ${
-        isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
+      className={`p-6 sm:p-8 rounded-3xl border space-y-6 ${
+        isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-[#FFFDF9] border-[#E5E0D7] shadow-sm'
       } ${className}`}
     >
-      {/* Metric Selector Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-emerald-500/10">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <Icon className="w-4 h-4" />
+      {/* Metric Selector & Header */}
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${isDark ? 'border-emerald-500/10' : 'border-[#E5E0D7]'}`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+            isDark
+              ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+              : 'bg-[#E8F2ED] border border-[#16805F]/20 text-[#16805F]'
+          }`}>
+            <Icon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-slate-100">
+            <h3 className={`text-base sm:text-lg font-black tracking-tight ${isDark ? 'text-slate-100' : 'text-[#18201C]'}`}>
               {currentConfig.label}
             </h3>
-            <span className="text-[11px] text-slate-400 font-mono">
-              {data.length} Longitudinal Assessments
+            <span className={`text-xs font-semibold ${isDark ? 'text-slate-400 font-mono' : 'text-[#66706A]'}`}>
+              {data.length} {data.length === 1 ? 'Longitudinal Assessment' : 'Longitudinal Assessments'}
             </span>
           </div>
         </div>
 
-        {/* Tab Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-900/60 border border-emerald-500/15">
+        {/* Tab Switcher Buttons */}
+        <div className={`flex flex-wrap items-center gap-1.5 p-1 rounded-2xl border ${
+          isDark
+            ? 'bg-slate-900/60 border-emerald-500/15'
+            : 'bg-[#F7F4EE] border-[#E5E0D7]'
+        }`}>
           {Object.entries(metricsConfig).map(([key, cfg]) => {
             const isSelected = activeMetric === key;
             return (
@@ -162,13 +175,17 @@ export function TrendChart({ data = [], className = '' }) {
                   setActiveMetric(key);
                   setHoveredIndex(null);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   isSelected
-                    ? 'bg-emerald-500 text-black shadow-emerald-soft'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-emerald-950/30'
+                    ? isDark
+                      ? 'bg-emerald-500 text-black shadow-emerald-soft'
+                      : 'bg-[#16805F] text-white shadow-sm'
+                    : isDark
+                    ? 'text-slate-400 hover:text-slate-200 hover:bg-emerald-950/30'
+                    : 'text-[#66706A] hover:text-[#18201C] hover:bg-white/80'
                 }`}
               >
-                {cfg.label.split(' ')[0]}
+                {cfg.shortLabel}
               </button>
             );
           })}
@@ -181,7 +198,7 @@ export function TrendChart({ data = [], className = '' }) {
           <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto overflow-visible">
             <defs>
               <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={currentConfig.color} stopOpacity="0.3" />
+                <stop offset="0%" stopColor={currentConfig.color} stopOpacity="0.25" />
                 <stop offset="100%" stopColor={currentConfig.color} stopOpacity="0.0" />
               </linearGradient>
             </defs>
@@ -197,14 +214,14 @@ export function TrendChart({ data = [], className = '' }) {
                     y1={y}
                     x2={width - paddingX}
                     y2={y}
-                    stroke={isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
+                    stroke={isDark ? 'rgba(255,255,255,0.08)' : '#E5E0D7'}
                     strokeDasharray="4 4"
                   />
                   <text
-                    x={paddingX - 8}
-                    y={y + 3}
+                    x={paddingX - 10}
+                    y={y + 4}
                     textAnchor="end"
-                    className="text-[10px] fill-slate-500 font-mono"
+                    className={`text-[11px] font-bold ${isDark ? 'fill-slate-500 font-mono' : 'fill-[#66706A]'}`}
                   >
                     {val}
                   </text>
@@ -226,7 +243,7 @@ export function TrendChart({ data = [], className = '' }) {
                 d={primaryPathD}
                 fill="none"
                 stroke={currentConfig.color}
-                strokeWidth="3"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -265,21 +282,32 @@ export function TrendChart({ data = [], className = '' }) {
                       y1={paddingY}
                       x2={pt.x}
                       y2={height - paddingY}
-                      stroke="rgba(16, 185, 129, 0.4)"
+                      stroke={currentConfig.color}
                       strokeWidth="1.5"
                       strokeDasharray="3 3"
+                      opacity="0.5"
                     />
                   )}
 
-                  {/* Circle Node */}
+                  {/* Outer Glowing Ring */}
                   <circle
                     cx={pt.x}
                     cy={pt.y}
-                    r={isHovered ? 7 : 4.5}
+                    r={isHovered ? 10 : 7}
                     fill={currentConfig.color}
-                    stroke={isDark ? '#040c08' : '#ffffff'}
-                    strokeWidth={2}
+                    fillOpacity={isHovered ? 0.35 : 0.2}
                     className="transition-all duration-200"
+                  />
+
+                  {/* Inner Solid Node */}
+                  <circle
+                    cx={pt.x}
+                    cy={pt.y}
+                    r={isHovered ? 6 : 4.5}
+                    fill={currentConfig.color}
+                    stroke={isDark ? '#07130e' : '#FFFFFF'}
+                    strokeWidth={2.5}
+                    className="transition-all duration-200 shadow-sm"
                   />
 
                   {/* X-Axis Date Label */}
@@ -287,7 +315,7 @@ export function TrendChart({ data = [], className = '' }) {
                     x={pt.x}
                     y={height - 8}
                     textAnchor="middle"
-                    className="text-[10px] fill-slate-400 font-mono"
+                    className={`text-[11px] font-bold ${isDark ? 'fill-slate-400 font-mono' : 'fill-[#18201C]'}`}
                   >
                     {pt.dataPoint?.shortDate || pt.dataPoint?.date}
                   </text>
@@ -300,25 +328,33 @@ export function TrendChart({ data = [], className = '' }) {
 
       {/* Dynamic Hover Tooltip Banner */}
       <div
-        className={`p-3 rounded-2xl border flex items-center justify-between text-xs font-mono transition-all ${
+        className={`p-4 rounded-2xl border flex items-center justify-between text-xs transition-all ${
           hoveredIndex !== null
-            ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
-            : 'bg-slate-900/30 border-slate-800 text-slate-400'
+            ? isDark
+              ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
+              : 'bg-[#E8F2ED] border-[#16805F]/30 text-[#16805F] shadow-xs'
+            : isDark
+            ? 'bg-slate-900/40 border-slate-800 text-slate-400 font-mono'
+            : 'bg-[#F7F4EE] border-[#E5E0D7] text-[#66706A] font-medium'
         }`}
       >
-        <div className="flex items-center gap-2">
-          <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-          <span>
+        <div className="flex items-center gap-2.5">
+          <Calendar className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-[#16805F]'}`} />
+          <span className="font-semibold">
             {hoveredIndex !== null
               ? `Assessment on ${data[hoveredIndex]?.date}`
               : 'Hover over data points to inspect historical readings'}
           </span>
         </div>
 
-        {hoveredIndex !== null && (
-          <div className="font-bold text-slate-100">
+        {hoveredIndex !== null ? (
+          <div className={`font-black text-sm ${isDark ? 'text-slate-100 font-mono' : 'text-[#18201C]'}`}>
             {currentConfig.formatter(primaryValues[hoveredIndex], data[hoveredIndex])}
           </div>
+        ) : (
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#16805F]">
+            {currentConfig.shortLabel}
+          </span>
         )}
       </div>
     </div>

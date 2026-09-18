@@ -40,7 +40,7 @@ export function FinalCtaSection() {
 
             <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
               <Link
-                to="/assessment"
+                to="/login"
                 className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full text-sm font-semibold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-lg transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 <span>Start Risk Assessment</span>
