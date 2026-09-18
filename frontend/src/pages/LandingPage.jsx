@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Shield, Activity, ArrowRight, ArrowDown, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { Footer } from '../components/common/Footer';
+import { useAuth } from '../context/AuthContext';
 
 export function LandingPage() {
   const { scrollYProgress } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -60,7 +62,7 @@ export function LandingPage() {
           </nav>
 
           <Link
-            to="/assessment"
+            to={isAuthenticated ? "/assessment" : "/login?redirect=/assessment"}
             className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-[15px] font-semibold bg-[#16805F] text-white hover:bg-[#126b4f] transition-all shadow-sm"
           >
             Start Assessment <ArrowRight className="w-4 h-4 ml-2" />
@@ -94,7 +96,7 @@ export function LandingPage() {
               
               <motion.div variants={fadeUp} className="pt-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <Link
-                  to="/assessment"
+                  to={isAuthenticated ? "/assessment" : "/login?redirect=/assessment"}
                   className="px-8 py-3.5 rounded-full font-semibold bg-[#16805F] text-white hover:bg-[#126b4f] transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   Begin Assessment <ArrowRight className="w-4 h-4" />
@@ -463,7 +465,7 @@ export function LandingPage() {
             </p>
             
             <Link
-              to="/assessment"
+              to={isAuthenticated ? "/assessment" : "/login?redirect=/assessment"}
               className="inline-flex items-center justify-center px-10 py-5 rounded-full text-lg font-black bg-[#16805F] text-white hover:bg-[#126b4f] transition-all transform hover:-translate-y-1 hover:shadow-lg shadow-md group gap-3"
             >
               Begin Health Assessment 

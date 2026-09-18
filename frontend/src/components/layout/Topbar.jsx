@@ -44,8 +44,8 @@ export function Topbar({ onMenuClick = null }) {
 
         <div className="flex items-center gap-4">
           <Link
-            to="/assessment"
-            className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold bg-clinical-green text-white hover:bg-emerald-700 transition-colors"
+            to={user ? "/assessment" : "/login?redirect=/assessment"}
+            className="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold bg-clinical-green text-white hover:bg-[#126b4f] transition-colors"
           >
             Start Assessment
           </Link>

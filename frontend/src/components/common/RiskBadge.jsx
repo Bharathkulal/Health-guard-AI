@@ -4,32 +4,32 @@ import { ShieldCheck, AlertCircle, AlertTriangle, ShieldAlert } from 'lucide-rea
 export function RiskBadge({ level = 'Low', size = 'md', className = '' }) {
   const normalized = String(level).toLowerCase();
 
-  const configs = {
-    low: {
-      label: 'Low Risk',
-      icon: ShieldCheck,
-      classes: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-      dotClass: 'bg-emerald-400',
-    },
-    moderate: {
-      label: 'Moderate Risk',
-      icon: AlertCircle,
-      classes: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-      dotClass: 'bg-amber-400',
-    },
-    elevated: {
-      label: 'Elevated Risk',
-      icon: AlertTriangle,
-      classes: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-      dotClass: 'bg-orange-400',
-    },
-    high: {
-      label: 'High Risk',
-      icon: ShieldAlert,
-      classes: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
-      dotClass: 'bg-rose-400',
-    },
-  };
+    const configs = {
+      low: {
+        label: 'Low Risk',
+        icon: ShieldCheck,
+        classes: 'bg-[#E8F2ED] text-[#16805F] border-[#16805F]/20',
+        dotClass: 'bg-[#16805F]',
+      },
+      moderate: {
+        label: 'Moderate Risk',
+        icon: AlertCircle,
+        classes: 'bg-[#B7791F]/10 text-[#B7791F] border-[#B7791F]/20',
+        dotClass: 'bg-[#B7791F]',
+      },
+      elevated: {
+        label: 'Elevated Risk',
+        icon: AlertTriangle,
+        classes: 'bg-[#B7791F]/10 text-[#B7791F] border-[#B7791F]/20',
+        dotClass: 'bg-[#B7791F]',
+      },
+      high: {
+        label: 'High Risk',
+        icon: ShieldAlert,
+        classes: 'bg-[#C24141]/10 text-[#C24141] border-[#C24141]/20',
+        dotClass: 'bg-[#C24141]',
+      },
+    };
 
   const config = configs[normalized] || configs.low;
   const Icon = config.icon;
