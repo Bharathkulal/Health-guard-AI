@@ -15,7 +15,6 @@ import {
   Gauge,
   Clock,
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
 import { useHealth } from '../context/HealthContext';
 import { MetricCard } from '../components/common/MetricCard';
 import { RiskBadge } from '../components/common/RiskBadge';
@@ -23,7 +22,6 @@ import { EmptyState } from '../components/common/EmptyState';
 import { TrendChart } from '../components/trends/TrendChart';
 
 export function DashboardPage() {
-  const { isDark } = useTheme();
   const { user, latestResult, history, trends, viewHistoricalAssessment } = useHealth();
 
   // Dynamic time-based greeting
@@ -38,29 +36,23 @@ export function DashboardPage() {
   const vitals = latestResult?.vitalsSnapshot || user || {};
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300 bg-[#F7F4EE] min-h-screen p-4 md:p-8">
       {/* 1. Top Hero Section */}
-      <div
-        className={`p-6 sm:p-10 rounded-3xl border relative overflow-hidden ${
-          isDark
-            ? 'bg-gradient-to-r from-emerald-950/40 via-[#06140d] to-[#020704] border-emerald-500/20 shadow-2xl'
-            : 'bg-gradient-to-r from-emerald-50 via-white to-slate-50 border-emerald-200 shadow-sm'
-        }`}
-      >
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -z-0 pointer-events-none" />
+      <div className="p-6 sm:p-10 rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] relative overflow-hidden shadow-sm">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#16805F]/5 rounded-full blur-3xl -z-0 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[#E8F2ED] border border-[#16805F]/10 text-[#16805F]">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Personalized Clinical Intelligence</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-100">
-              {getGreeting()}, <span className="text-emerald-400">{userName}</span>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#18201C]">
+              {getGreeting()}, <span className="text-[#16805F]">{userName}</span>
             </h1>
 
-            <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+            <p className="text-sm sm:text-base font-medium leading-relaxed text-[#66706A]">
               Understand your health risks. Make informed decisions.
             </p>
           </div>
@@ -69,7 +61,7 @@ export function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/assessment"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-xs sm:text-sm font-bold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm font-bold bg-[#16805F] text-white hover:bg-[#126b4f] transition-all duration-300 transform hover:-translate-y-0.5 shadow-md"
             >
               <ClipboardCheck className="w-4 h-4" />
               <span>Start Health Assessment</span>
@@ -77,11 +69,7 @@ export function DashboardPage() {
 
             <Link
               to="/results"
-              className={`inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-xs sm:text-sm font-semibold border transition-all ${
-                isDark
-                  ? 'border-emerald-500/25 text-slate-200 bg-emerald-950/30 hover:bg-emerald-900/40 hover:border-emerald-400/40'
-                  : 'border-slate-300 text-slate-800 bg-white hover:bg-slate-100 hover:border-emerald-400'
-              }`}
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sm font-bold border border-[#E5E0D7] text-[#18201C] bg-[#FFFDF9] hover:bg-slate-50 transition-all"
             >
               <span>View Latest Results</span>
               <ArrowRight className="w-4 h-4" />
@@ -93,96 +81,82 @@ export function DashboardPage() {
       {/* 2. Health Overview Cards */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <Gauge className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-black text-[#18201C] flex items-center gap-2">
+            <Gauge className="w-5 h-5 text-[#16805F]" />
             <span>Health Risk Overview</span>
           </h2>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-[11px] text-[#66706A] font-bold uppercase tracking-wider">
             Evaluated: {latestResult?.date || 'Recent'}
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {/* Overall Composite Risk */}
-          <div
-            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
-              isDark
-                ? 'bg-gradient-to-b from-emerald-950/30 to-[#07130e] border-emerald-500/30 shadow-lg'
-                : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
+          <div className="p-6 rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] shadow-sm flex flex-col justify-between transition-all hover:shadow-md hover:border-[#16805F]/30">
             <div>
-              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
-                <span className="uppercase tracking-wider">OVERALL RISK</span>
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] text-[#66706A] font-bold uppercase tracking-widest">OVERALL RISK</span>
                 <RiskBadge level={latestResult?.overallLevel || 'Moderate'} size="sm" />
               </div>
-              <div className="text-3xl sm:text-4xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.overallScore || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
+              <div className="text-4xl font-black text-[#18201C] mt-2">
+                {latestResult?.overallScore || '--'} <span className="text-sm font-bold text-[#66706A]">/ 100</span>
               </div>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+              <p className="text-[13px] font-medium text-[#66706A] mt-3 leading-relaxed">
                 Screening estimate from trained heart disease and diabetes ML models.
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-emerald-500/10 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <div className="mt-5 pt-4 border-t border-[#E5E0D7] flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#66706A]">
               <span>ML-Computed</span>
-              <Link to="/results" className="text-emerald-400 hover:underline flex items-center gap-1">
+              <Link to="/results" className="text-[#16805F] hover:text-[#126b4f] flex items-center gap-1 group">
                 <span>Details</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
           </div>
 
           {/* Heart Disease Risk */}
-          <div
-            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
-              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
+          <div className="p-6 rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] shadow-sm flex flex-col justify-between transition-all hover:shadow-md hover:border-[#16805F]/30">
             <div>
-              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
-                <span className="uppercase tracking-wider flex items-center gap-1.5">
-                  <Heart className="w-3.5 h-3.5 text-rose-400" />
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] text-[#66706A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                  <Heart className="w-3.5 h-3.5 text-[#C24141]" />
                   <span>HEART DISEASE</span>
                 </span>
                 <RiskBadge level={latestResult?.categories?.heart?.level || 'Moderate'} size="sm" />
               </div>
-              <div className="text-3xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.categories?.heart?.score || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
+              <div className="text-4xl font-black text-[#18201C] mt-2">
+                {latestResult?.categories?.heart?.score || '--'} <span className="text-sm font-bold text-[#66706A]">/ 100</span>
               </div>
-              <p className="text-xs text-slate-400 mt-2 line-clamp-2">
+              <p className="text-[13px] font-medium text-[#66706A] mt-3 line-clamp-2">
                 {latestResult?.categories?.heart?.summary || 'Complete an assessment to see heart disease risk estimate.'}
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
+            <div className="mt-5 pt-4 border-t border-[#E5E0D7] flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#66706A]">
               <span>Updated: {latestResult?.date || '--'}</span>
-              <span className="text-emerald-400 font-semibold">UCI Model</span>
+              <span className="text-[#16805F]">UCI Model</span>
             </div>
           </div>
 
           {/* Diabetes Risk */}
-          <div
-            className={`p-5 rounded-3xl border flex flex-col justify-between transition-all glass-panel-interactive ${
-              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
+          <div className="p-6 rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] shadow-sm flex flex-col justify-between transition-all hover:shadow-md hover:border-[#16805F]/30">
             <div>
-              <div className="flex justify-between items-start text-xs text-slate-400 font-mono mb-2">
-                <span className="uppercase tracking-wider flex items-center gap-1.5">
-                  <Droplets className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] text-[#66706A] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                  <Droplets className="w-3.5 h-3.5 text-[#16805F]" />
                   <span>DIABETES RISK</span>
                 </span>
                 <RiskBadge level={latestResult?.categories?.diabetes?.level || 'Moderate'} size="sm" />
               </div>
-              <div className="text-3xl font-black text-slate-100 font-mono mt-2">
-                {latestResult?.categories?.diabetes?.score || '--'} <span className="text-xs font-normal text-slate-400">/ 100</span>
+              <div className="text-4xl font-black text-[#18201C] mt-2">
+                {latestResult?.categories?.diabetes?.score || '--'} <span className="text-sm font-bold text-[#66706A]">/ 100</span>
               </div>
-              <p className="text-xs text-slate-400 mt-2 line-clamp-2">
+              <p className="text-[13px] font-medium text-[#66706A] mt-3 line-clamp-2">
                 {latestResult?.categories?.diabetes?.summary || 'Complete an assessment to see diabetes risk estimate.'}
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-emerald-500/10 text-[11px] text-slate-400 font-mono flex justify-between">
+            <div className="mt-5 pt-4 border-t border-[#E5E0D7] flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#66706A]">
               <span>Updated: {latestResult?.date || '--'}</span>
-              <span className="text-emerald-400 font-semibold">Pima Model</span>
+              <span className="text-[#16805F]">Pima Model</span>
             </div>
           </div>
         </div>
@@ -191,11 +165,11 @@ export function DashboardPage() {
       {/* 3. Health Snapshot Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-black text-[#18201C] flex items-center gap-2">
+            <Activity className="w-5 h-5 text-[#16805F]" />
             <span>Health Snapshot</span>
           </h2>
-          <span className="text-xs text-slate-400">Baseline Biometric Readings</span>
+          <span className="text-[11px] font-bold text-[#66706A] uppercase tracking-wider">Baseline Biometric Readings</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -257,13 +231,13 @@ export function DashboardPage() {
       {/* 4. Risk Trend Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-black text-[#18201C] flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-[#16805F]" />
             <span>Longitudinal Risk Trend</span>
           </h2>
-          <Link to="/trends" className="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-semibold">
+          <Link to="/trends" className="text-xs text-[#16805F] hover:text-[#126b4f] flex items-center gap-1 font-bold uppercase tracking-wider group">
             <span>Full Analysis</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
@@ -283,74 +257,66 @@ export function DashboardPage() {
       {/* 5. Recent Assessments Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-black text-[#18201C] flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-[#16805F]" />
             <span>Assessment History</span>
           </h2>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-[11px] font-bold text-[#66706A] uppercase tracking-widest">
             {history.length} Saved Records
           </span>
         </div>
 
         {history.length > 0 ? (
-          <div
-            className={`rounded-3xl border overflow-hidden ${
-              isDark ? 'bg-[#07130e]/80 border-emerald-500/20' : 'bg-white border-slate-200 shadow-sm'
-            }`}
-          >
+          <div className="rounded-3xl border border-[#E5E0D7] bg-[#FFFDF9] overflow-hidden shadow-sm">
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className={`border-b font-mono uppercase tracking-wider text-slate-400 ${
-                    isDark ? 'bg-[#030906] border-emerald-500/10' : 'bg-slate-50 border-slate-200'
-                  }`}>
-                    <th className="py-3.5 px-5">Date</th>
-                    <th className="py-3.5 px-4">Overall Risk</th>
-                    <th className="py-3.5 px-4">Diabetes</th>
-                    <th className="py-3.5 px-4">Cardiovascular</th>
-                    <th className="py-3.5 px-4">Hypertension</th>
-                    <th className="py-3.5 px-4">Status</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
+                  <tr className="border-b border-[#E5E0D7] bg-[#F7F4EE] font-bold uppercase tracking-wider text-[#66706A]">
+                    <th className="py-4 px-6">Date</th>
+                    <th className="py-4 px-5">Overall Risk</th>
+                    <th className="py-4 px-5">Diabetes</th>
+                    <th className="py-4 px-5">Cardiovascular</th>
+                    <th className="py-4 px-5">Hypertension</th>
+                    <th className="py-4 px-5">Status</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-emerald-500/10">
+                <tbody className="divide-y divide-[#E5E0D7]">
                   {history.map((record) => (
                     <tr
                       key={record.id}
-                      className={`transition-colors hover:${
-                        isDark ? 'bg-emerald-950/20' : 'bg-slate-50'
-                      }`}
+                      className="transition-colors hover:bg-slate-50"
                     >
-                      <td className="py-4 px-5 font-semibold text-slate-100 flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                      <td className="py-4 px-6 font-bold text-[#18201C] flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-[#16805F]" />
                         <span>{record.date}</span>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-5">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-slate-100">{record.overallScore}</span>
+                          <span className="font-black text-[#18201C]">{record.overallScore}</span>
                           <RiskBadge level={record.overallLevel} size="sm" />
                         </div>
                       </td>
-                      <td className="py-4 px-4 font-mono">
-                        {record.categories?.diabetes?.score || '--'} <span className="text-slate-500 text-[11px]">({record.categories?.diabetes?.level})</span>
+                      <td className="py-4 px-5 font-bold text-[#18201C]">
+                        {record.categories?.diabetes?.score || '--'} <span className="text-[#66706A] text-[10px] font-bold uppercase ml-1">({record.categories?.diabetes?.level})</span>
                       </td>
-                      <td className="py-4 px-4 font-mono">
-                        {record.categories?.cardiovascular?.score || '--'} <span className="text-slate-500 text-[11px]">({record.categories?.cardiovascular?.level})</span>
+                      <td className="py-4 px-5 font-bold text-[#18201C]">
+                        {record.categories?.cardiovascular?.score || '--'} <span className="text-[#66706A] text-[10px] font-bold uppercase ml-1">({record.categories?.cardiovascular?.level})</span>
                       </td>
-                      <td className="py-4 px-4 font-mono">
-                        {record.categories?.hypertension?.score || '--'} <span className="text-slate-500 text-[11px]">({record.categories?.hypertension?.level})</span>
+                      <td className="py-4 px-5 font-bold text-[#18201C]">
+                        {record.categories?.hypertension?.score || '--'} <span className="text-[#66706A] text-[10px] font-bold uppercase ml-1">({record.categories?.hypertension?.level})</span>
                       </td>
-                      <td className="py-4 px-4">
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-mono">
-                          Verified Complete
+                      <td className="py-4 px-5">
+                        <span className="px-2 py-1 rounded bg-[#E8F2ED] text-[#16805F] border border-[#16805F]/20 text-[10px] font-bold uppercase tracking-widest">
+                          Verified
                         </span>
                       </td>
-                      <td className="py-4 px-5 text-right">
+                      <td className="py-4 px-6 text-right">
                         <Link
                           to="/results"
                           onClick={() => viewHistoricalAssessment(record.id)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500 hover:text-black transition-all"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#E8F2ED] text-[#16805F] border border-[#16805F]/10 hover:bg-[#16805F] hover:text-white transition-all"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>View</span>
@@ -363,39 +329,39 @@ export function DashboardPage() {
             </div>
 
             {/* Mobile Card Transform View */}
-            <div className="md:hidden divide-y divide-emerald-500/10 p-2 space-y-2">
+            <div className="md:hidden divide-y divide-[#E5E0D7] p-2 space-y-2 bg-[#FFFDF9]">
               {history.map((record) => (
                 <div key={record.id} className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-100">
-                      <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#18201C]">
+                      <Calendar className="w-4 h-4 text-[#16805F]" />
                       <span>{record.date}</span>
                     </div>
                     <RiskBadge level={record.overallLevel} size="sm" />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-xs pt-1">
-                    <div className="p-2 rounded-xl bg-slate-900/40 border border-emerald-500/10 text-center">
-                      <span className="text-[10px] text-slate-400 block">Diabetes</span>
-                      <span className="font-bold text-slate-100 font-mono">{record.categories?.diabetes?.score}</span>
+                  <div className="grid grid-cols-3 gap-2 text-xs pt-2">
+                    <div className="p-2 rounded-xl bg-white border border-[#E5E0D7] text-center shadow-sm">
+                      <span className="text-[9px] text-[#66706A] font-bold uppercase tracking-wider block mb-1">Diabetes</span>
+                      <span className="font-black text-[#18201C] text-sm">{record.categories?.diabetes?.score}</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-900/40 border border-emerald-500/10 text-center">
-                      <span className="text-[10px] text-slate-400 block">CVD</span>
-                      <span className="font-bold text-slate-100 font-mono">{record.categories?.cardiovascular?.score}</span>
+                    <div className="p-2 rounded-xl bg-white border border-[#E5E0D7] text-center shadow-sm">
+                      <span className="text-[9px] text-[#66706A] font-bold uppercase tracking-wider block mb-1">CVD</span>
+                      <span className="font-black text-[#18201C] text-sm">{record.categories?.cardiovascular?.score}</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-900/40 border border-emerald-500/10 text-center">
-                      <span className="text-[10px] text-slate-400 block">Hypertension</span>
-                      <span className="font-bold text-slate-100 font-mono">{record.categories?.hypertension?.score}</span>
+                    <div className="p-2 rounded-xl bg-white border border-[#E5E0D7] text-center shadow-sm">
+                      <span className="text-[9px] text-[#66706A] font-bold uppercase tracking-wider block mb-1">Hypertension</span>
+                      <span className="font-black text-[#18201C] text-sm">{record.categories?.hypertension?.score}</span>
                     </div>
                   </div>
 
-                  <div className="pt-2 flex justify-end">
+                  <div className="pt-3 flex justify-end">
                     <Link
                       to="/results"
                       onClick={() => viewHistoricalAssessment(record.id)}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#E8F2ED] text-[#16805F] border border-[#16805F]/10 hover:bg-[#16805F] hover:text-white transition-all w-full justify-center"
                     >
-                      <Eye className="w-3.5 h-3.5" />
+                      <Eye className="w-4 h-4" />
                       <span>View Full Assessment</span>
                     </Link>
                   </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../context/ThemeContext';
 
 export function MetricCard({
   label,
@@ -11,41 +10,23 @@ export function MetricCard({
   targetRange = '',
   className = '',
 }) {
-  const { isDark } = useTheme();
-
   const statusStyles = {
-    normal: isDark
-      ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-      : 'text-emerald-700 bg-emerald-50 border-emerald-200',
-    warning: isDark
-      ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-      : 'text-amber-700 bg-amber-50 border-amber-200',
-    alert: isDark
-      ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-      : 'text-rose-700 bg-rose-50 border-rose-200',
-    neutral: isDark
-      ? 'text-slate-400 bg-slate-800/40 border-slate-700/50'
-      : 'text-slate-600 bg-slate-100 border-slate-200',
+    normal: 'text-[#16805F] bg-[#16805F]/10 border-[#16805F]/20',
+    warning: 'text-[#B7791F] bg-[#B7791F]/10 border-[#B7791F]/20',
+    alert: 'text-[#C24141] bg-[#C24141]/10 border-[#C24141]/20',
+    neutral: 'text-[#66706A] bg-[#F7F4EE] border-[#E5E0D7]',
   }[statusType] || '';
 
   return (
     <div
-      className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 glass-panel-interactive flex flex-col justify-between ${
-        isDark
-          ? 'bg-[#07130e]/80 border-emerald-500/15 hover:border-emerald-500/30'
-          : 'bg-white/90 border-slate-200 hover:border-emerald-300 shadow-sm'
-      } ${className}`}
+      className={`p-4 sm:p-5 rounded-2xl border border-[#E5E0D7] bg-[#FFFDF9] shadow-sm flex flex-col justify-between transition-all hover:shadow-md hover:border-[#16805F]/30 ${className}`}
     >
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="text-xs font-mono tracking-wider uppercase text-slate-400 font-medium truncate">
+        <span className="text-[10px] font-bold tracking-widest uppercase text-[#66706A] truncate">
           {label}
         </span>
         {Icon && (
-          <div
-            className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-              isDark ? 'bg-emerald-950/40 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
-            }`}
-          >
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-[#E8F2ED] text-[#16805F]">
             <Icon className="w-3.5 h-3.5" />
           </div>
         )}
@@ -53,25 +34,25 @@ export function MetricCard({
 
       <div className="my-1">
         <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100">
+          <span className="text-2xl sm:text-3xl font-black text-[#18201C]">
             {value}
           </span>
           {unit && (
-            <span className="text-xs font-medium text-slate-400 font-mono">
+            <span className="text-xs font-bold text-[#66706A] uppercase tracking-wider">
               {unit}
             </span>
           )}
         </div>
       </div>
 
-      <div className="mt-2 pt-2 border-t border-emerald-500/10 flex items-center justify-between gap-2 text-xs">
+      <div className="mt-3 pt-3 border-t border-[#E5E0D7] flex items-center justify-between gap-2 text-xs">
         {status && (
-          <span className={`px-2 py-0.5 rounded-md border text-[11px] font-medium ${statusStyles}`}>
+          <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${statusStyles}`}>
             {status}
           </span>
         )}
         {targetRange && (
-          <span className="text-[11px] text-slate-400 font-mono ml-auto truncate">
+          <span className="text-[10px] text-[#66706A] font-bold uppercase tracking-widest ml-auto truncate">
             Target: {targetRange}
           </span>
         )}
