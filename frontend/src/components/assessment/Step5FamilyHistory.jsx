@@ -1,9 +1,7 @@
 import React from 'react';
 import { Users, Shield, Check, X } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
 
 export function Step5FamilyHistory({ data, onChange }) {
-  const { isDark } = useTheme();
   const history = data.familyHistory || {};
 
   const setCondition = (key, value) => {
@@ -45,11 +43,11 @@ export function Step5FamilyHistory({ data, onChange }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="space-y-1">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-          <Users className="w-5 h-5 text-emerald-400" />
+        <h2 className="text-xl font-bold text-clinical-text flex items-center gap-2">
+          <Users className="w-5 h-5 text-clinical-green" />
           <span>Family Health & Hereditary Indicators</span>
         </h2>
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-clinical-textMuted">
           Hereditary factors establish baseline susceptibility for chronic cardiometabolic conditions.
         </p>
       </div>
@@ -63,22 +61,18 @@ export function Step5FamilyHistory({ data, onChange }) {
               key={item.key}
               className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                 isPositive
-                  ? isDark
-                    ? 'bg-emerald-950/30 border-emerald-500/30'
-                    : 'bg-emerald-50/70 border-emerald-300'
-                  : isDark
-                  ? 'bg-slate-900/60 border-emerald-500/15'
-                  : 'bg-white border-slate-200'
+                  ? 'bg-clinical-greenLight border-clinical-green/40 shadow-sm'
+                  : 'bg-white border-clinical-border'
               }`}
             >
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isPositive ? 'text-clinical-green' : 'text-clinical-textMuted'}`}>
                   {item.category}
                 </span>
-                <p className="text-sm font-semibold text-slate-100">
+                <p className="text-sm font-bold text-clinical-text">
                   {item.label}
                 </p>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className={`text-xs leading-relaxed ${isPositive ? 'text-emerald-800' : 'text-clinical-textMuted'}`}>
                   {item.desc}
                 </p>
               </div>
@@ -88,12 +82,10 @@ export function Step5FamilyHistory({ data, onChange }) {
                 <button
                   type="button"
                   onClick={() => setCondition(item.key, false)}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
                     !isPositive
-                      ? isDark
-                        ? 'bg-slate-800 text-slate-200 border border-slate-600 shadow-sm'
-                        : 'bg-slate-200 text-slate-800 border border-slate-300'
-                      : 'border border-transparent text-slate-400 hover:text-slate-200'
+                      ? 'bg-slate-200 text-slate-800 border border-slate-300 shadow-sm'
+                      : 'border border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   <X className="w-3.5 h-3.5" />
@@ -105,10 +97,8 @@ export function Step5FamilyHistory({ data, onChange }) {
                   onClick={() => setCondition(item.key, true)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
                     isPositive
-                      ? 'bg-emerald-500 text-black border border-emerald-400 shadow-emerald-soft'
-                      : isDark
-                      ? 'border border-emerald-500/20 text-slate-400 hover:text-emerald-300 hover:border-emerald-500/40'
-                      : 'border border-slate-300 text-slate-600 hover:text-emerald-700'
+                      ? 'bg-clinical-green text-white border-emerald-700 shadow-sm'
+                      : 'border border-slate-300 text-slate-600 hover:text-clinical-green hover:border-clinical-green hover:bg-clinical-greenLight/50'
                   }`}
                 >
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
@@ -120,16 +110,10 @@ export function Step5FamilyHistory({ data, onChange }) {
         })}
       </div>
 
-      <div
-        className={`p-4 rounded-xl border flex items-center gap-3 text-xs ${
-          isDark
-            ? 'bg-emerald-950/20 border-emerald-500/20 text-slate-400'
-            : 'bg-emerald-50/80 border-emerald-200 text-slate-700'
-        }`}
-      >
-        <Shield className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-        <span>
-          If you are unsure of specific conditions in extended relatives, leave the selection as &quot;No&quot;.
+      <div className="p-4 rounded-xl border flex items-center gap-3 text-xs bg-clinical-primary border-clinical-border text-clinical-text">
+        <Shield className="w-5 h-5 text-clinical-green flex-shrink-0" />
+        <span className="font-medium">
+          If you are unsure of specific conditions in extended relatives, leave the selection as "No".
         </span>
       </div>
     </div>

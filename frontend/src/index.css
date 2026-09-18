@@ -14,14 +14,14 @@
 }
 
 html:not(.dark) {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-subtle: rgba(16, 185, 129, 0.25);
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --card-glow: rgba(16, 185, 129, 0.08);
-  --accent-emerald: #059669;
+  --bg-primary: #F7F4EE;
+  --bg-secondary: #FFFDF9;
+  --text-primary: #18201C;
+  --text-secondary: #66706A;
+  --border-subtle: #E5E0D7;
+  --card-bg: #FFFDF9;
+  --card-glow: rgba(22, 128, 95, 0.05);
+  --accent-emerald: #16805F;
 }
 
 body {
@@ -34,27 +34,17 @@ body {
   overflow-x: hidden;
 }
 
-/* Background fine tech grid */
-.tech-grid {
+/* Background fine tech grid (Admin/Dark only) */
+.dark .tech-grid {
   background-size: 40px 40px;
   background-image: 
     linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
 }
 
-html:not(.dark) .tech-grid {
-  background-image: 
-    linear-gradient(to right, rgba(16, 185, 129, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
-}
-
-/* Radial ambient lighting */
-.radial-glow {
+/* Radial ambient lighting (Admin/Dark only) */
+.dark .radial-glow {
   background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.12) 0%, rgba(3, 8, 6, 0) 70%);
-}
-
-html:not(.dark) .radial-glow {
-  background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.08) 0%, rgba(248, 250, 252, 0) 70%);
 }
 
 /* Glassmorphism Card Style */

@@ -28,6 +28,18 @@ export default {
             850: '#0f172a',
             950: '#020617',
           }
+        },
+        clinical: {
+          primary: '#F7F4EE',      // Warm Ivory Background
+          card: '#FFFDF9',         // Card surface
+          green: '#16805F',        // Primary Green
+          greenLight: '#E8F2ED',   // Light Green accents
+          text: '#18201C',         // Dark text
+          textMuted: '#66706A',    // Secondary text
+          border: '#E5E0D7',       // Borders
+          lowRisk: '#16805F',      
+          moderateRisk: '#B7791F', 
+          highRisk: '#C24141',     
         }
       },
       fontFamily: {

@@ -12,18 +12,18 @@ export function AppShell() {
   const location = useLocation();
 
   return (
-    <div className={`min-h-screen flex tech-grid ${isDark ? 'bg-[#030806] text-slate-100' : 'bg-[#f8fafc] text-slate-900'}`}>
-      {/* Background Ambient Glow */}
-      <div className="fixed inset-0 radial-glow pointer-events-none -z-10" />
+    <div className={`min-h-screen flex ${isDark ? 'tech-grid bg-[#030806] text-slate-100' : 'bg-clinical-primary text-clinical-text'}`}>
+      {/* Background Ambient Glow (Admin Only) */}
+      {isDark && <div className="fixed inset-0 radial-glow pointer-events-none -z-10" />}
 
-      {/* Desktop Sidebar (hidden on mobile) */}
-      <Sidebar className="hidden md:flex" />
+      {/* Desktop Sidebar (hidden on mobile, and ONLY for admin) */}
+      {isDark && <Sidebar className="hidden md:flex" />}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:ml-64 min-w-0 pb-20 md:pb-8">
+      <div className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-8 ${isDark ? 'md:ml-64' : ''}`}>
         <Topbar />
 
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        <main className="flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -43,8 +43,8 @@ export function AppShell() {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation (hidden on desktop) */}
-      <MobileNav />
+      {/* Mobile Bottom Navigation (Admin only) */}
+      {isDark && <MobileNav />}
     </div>
   );
 }

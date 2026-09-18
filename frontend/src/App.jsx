@@ -27,12 +27,31 @@ import { SettingsPage } from './pages/SettingsPage';
 // Admin Pages
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // Helper component for Admin Login redirection
 function AdminLoginRoute() {
   const { isAdminAuth, loading } = useAdmin();
   if (loading) return null;
   return isAdminAuth ? <Navigate to="/admin/dashboard" replace /> : <AdminLogin />;
+}
+
+// Component to enforce theme classes without flickering
+function ThemeEnforcer() {
+  const location = useLocation();
+  
+  useEffect(() => {
+    const isDarkRoute = location.pathname.startsWith('/admin');
+    const root = document.documentElement;
+    if (isDarkRoute) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [location.pathname]);
+
+  return null;
 }
 
 export default function App() {
@@ -42,6 +61,7 @@ export default function App() {
         <AuthProvider>
           <HealthProvider>
             <BrowserRouter>
+              <ThemeEnforcer />
               <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

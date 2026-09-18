@@ -1,9 +1,7 @@
 import React from 'react';
-import { Zap, Moon, Flame, Wine, Salad, Clock } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
+import { Zap, Moon } from 'lucide-react';
 
 export function Step4Lifestyle({ data, onChange }) {
-  const { isDark } = useTheme();
   const lifestyle = data.lifestyle || {};
 
   const handleFieldChange = (field, value) => {
@@ -46,11 +44,11 @@ export function Step4Lifestyle({ data, onChange }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="space-y-1">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-emerald-400" />
+        <h2 className="text-xl font-bold text-clinical-text flex items-center gap-2">
+          <Zap className="w-5 h-5 text-clinical-green" />
           <span>Lifestyle & Behavioral Factors</span>
         </h2>
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-clinical-textMuted">
           Daily lifestyle metrics provide essential feature inputs for cardiovascular and metabolic risk stratification.
         </p>
       </div>
@@ -58,10 +56,10 @@ export function Step4Lifestyle({ data, onChange }) {
       <div className="space-y-6 pt-2">
         {/* Physical Activity */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Physical Activity Level <span className="text-emerald-400">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            Physical Activity Level <span className="text-clinical-green">*</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {activityOptions.map((opt) => {
               const isSelected = (lifestyle.physical_activity || lifestyle.physicalActivity || 'moderate') === opt.id;
               return (
@@ -71,14 +69,12 @@ export function Step4Lifestyle({ data, onChange }) {
                   onClick={() => handleFieldChange('physicalActivity', opt.id)}
                   className={`p-3.5 rounded-xl border text-left transition-all ${
                     isSelected
-                      ? 'bg-emerald-500 text-black border-emerald-400 shadow-emerald-soft'
-                      : isDark
-                      ? 'bg-slate-900/60 border-emerald-500/15 text-slate-300 hover:border-emerald-500/30'
-                      : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+                      ? 'bg-clinical-green text-white border-emerald-700 shadow-sm'
+                      : 'bg-white border-clinical-border text-clinical-text hover:border-clinical-green hover:bg-clinical-greenLight/50'
                   }`}
                 >
                   <p className="text-xs font-bold">{opt.label}</p>
-                  <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-slate-900/90 font-medium' : 'text-slate-400'}`}>
+                  <p className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-50 font-medium' : 'text-clinical-textMuted'}`}>
                     {opt.desc}
                   </p>
                 </button>
@@ -91,8 +87,8 @@ export function Step4Lifestyle({ data, onChange }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Smoking */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Smoking Status <span className="text-emerald-400">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+              Smoking Status <span className="text-clinical-green">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
               {smokingOptions.map((opt) => {
@@ -103,12 +99,10 @@ export function Step4Lifestyle({ data, onChange }) {
                     key={opt.id}
                     type="button"
                     onClick={() => handleFieldChange('smoking', opt.id)}
-                    className={`py-3 px-2 rounded-xl border text-xs font-semibold transition-all text-center ${
+                    className={`py-3 px-2 rounded-xl border text-xs font-bold transition-all text-center ${
                       isSelected
-                        ? 'bg-emerald-500 text-black border-emerald-400 font-bold shadow-emerald-soft'
-                        : isDark
-                        ? 'bg-slate-900/60 border-emerald-500/15 text-slate-300 hover:border-emerald-500/30'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+                        ? 'bg-clinical-green text-white border-emerald-700 shadow-sm'
+                        : 'bg-white border-clinical-border text-clinical-text hover:border-clinical-green hover:bg-clinical-greenLight/50'
                     }`}
                   >
                     <span>{opt.label}</span>
@@ -120,8 +114,8 @@ export function Step4Lifestyle({ data, onChange }) {
 
           {/* Alcohol */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Alcohol Consumption <span className="text-emerald-400">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+              Alcohol Consumption <span className="text-clinical-green">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
               {alcoholOptions.map((opt) => {
@@ -132,12 +126,10 @@ export function Step4Lifestyle({ data, onChange }) {
                     key={opt.id}
                     type="button"
                     onClick={() => handleFieldChange('alcohol', opt.id)}
-                    className={`py-3 px-2 rounded-xl border text-xs font-semibold transition-all text-center ${
+                    className={`py-3 px-2 rounded-xl border text-xs font-bold transition-all text-center ${
                       isSelected
-                        ? 'bg-emerald-500 text-black border-emerald-400 font-bold shadow-emerald-soft'
-                        : isDark
-                        ? 'bg-slate-900/60 border-emerald-500/15 text-slate-300 hover:border-emerald-500/30'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+                        ? 'bg-clinical-green text-white border-emerald-700 shadow-sm'
+                        : 'bg-white border-clinical-border text-clinical-text hover:border-clinical-green hover:bg-clinical-greenLight/50'
                     }`}
                   >
                     <span>{opt.label}</span>
@@ -150,14 +142,14 @@ export function Step4Lifestyle({ data, onChange }) {
 
         {/* Sleep Duration */}
         <div className="space-y-2">
-          <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Average Sleep Duration <span className="text-emerald-400">*</span></span>
-            <span className="text-emerald-400 font-mono font-bold text-sm">
+          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Average Sleep Duration <span className="text-clinical-green">*</span></span>
+            <span className="text-clinical-green font-mono font-bold text-sm">
               {lifestyle.sleep_hours || lifestyle.sleepHours || 7} Hours / night
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Moon className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <Moon className="w-4 h-4 text-clinical-green flex-shrink-0" />
             <input
               type="range"
               min="3"
@@ -165,18 +157,18 @@ export function Step4Lifestyle({ data, onChange }) {
               step="0.5"
               value={lifestyle.sleep_hours || lifestyle.sleepHours || 7}
               onChange={(e) => handleFieldChange('sleepHours', parseFloat(e.target.value))}
-              className="w-full accent-emerald-500 h-2 bg-slate-800 rounded-lg cursor-pointer"
+              className="w-full accent-clinical-green h-2 bg-clinical-border rounded-lg cursor-pointer"
             />
-            <span className="text-xs font-mono text-slate-400 whitespace-nowrap">14 hrs</span>
+            <span className="text-xs font-mono text-clinical-textMuted whitespace-nowrap">14 hrs</span>
           </div>
         </div>
 
         {/* Diet */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-            Primary Diet Pattern <span className="text-emerald-400">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            Primary Diet Pattern <span className="text-clinical-green">*</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {dietOptions.map((opt) => {
               const currentDiet = lifestyle.diet || lifestyle.dietPattern || 'balanced';
               const isSelected = currentDiet === opt.id;
@@ -187,14 +179,12 @@ export function Step4Lifestyle({ data, onChange }) {
                   onClick={() => handleFieldChange('dietPattern', opt.id)}
                   className={`p-3.5 rounded-xl border text-left transition-all ${
                     isSelected
-                      ? 'bg-emerald-500 text-black border-emerald-400 shadow-emerald-soft'
-                      : isDark
-                      ? 'bg-slate-900/60 border-emerald-500/15 text-slate-300 hover:border-emerald-500/30'
-                      : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
+                      ? 'bg-clinical-green text-white border-emerald-700 shadow-sm'
+                      : 'bg-white border-clinical-border text-clinical-text hover:border-clinical-green hover:bg-clinical-greenLight/50'
                   }`}
                 >
                   <p className="text-xs font-bold">{opt.label}</p>
-                  <p className={`text-[10px] mt-0.5 leading-tight ${isSelected ? 'text-slate-900/90 font-medium' : 'text-slate-400'}`}>
+                  <p className={`text-[10px] mt-0.5 leading-tight ${isSelected ? 'text-emerald-50 font-medium' : 'text-clinical-textMuted'}`}>
                     {opt.desc}
                   </p>
                 </button>

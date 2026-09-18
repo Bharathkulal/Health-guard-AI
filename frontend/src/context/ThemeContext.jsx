@@ -3,24 +3,23 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('hg_theme');
-    if (saved) return saved;
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  });
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
+    const isDarkRoute = window.location.pathname.startsWith('/admin');
+    const activeTheme = isDarkRoute ? 'dark' : 'light';
+    setTheme(activeTheme);
+    
     const root = document.documentElement;
-    if (theme === 'dark') {
+    if (activeTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('hg_theme', theme);
-  }, [theme]);
+  }, [window.location.pathname]);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    // Disabled in forced route-based theme mode
   };
 
   return (

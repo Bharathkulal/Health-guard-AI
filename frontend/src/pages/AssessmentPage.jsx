@@ -139,91 +139,75 @@ export function AssessmentPage() {
     return (
       <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
         {/* Success Card */}
-        <div
-          className={`p-6 sm:p-10 rounded-3xl border shadow-2xl relative overflow-hidden ${
-            isDark
-              ? 'bg-[#040c08] border-emerald-500/30 shadow-[0_0_80px_-10px_rgba(16,185,129,0.2)]'
-              : 'bg-white border-slate-200 shadow-xl'
-          }`}
-        >
-          {/* Top ambient glow */}
-          <div className="absolute top-0 right-0 w-96 h-48 bg-emerald-500/15 blur-3xl -z-10 pointer-events-none" />
-
-          <div className="space-y-6">
+        <div className="p-6 sm:p-10 rounded-3xl border border-clinical-border bg-clinical-card shadow-sm relative overflow-hidden">
+          <div className="space-y-6 relative z-10">
             {/* Header Badge & Title */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-500/20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-clinical-border">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                <div className="w-14 h-14 rounded-2xl bg-clinical-greenLight border border-clinical-green/20 flex items-center justify-center text-clinical-green flex-shrink-0">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold uppercase bg-clinical-greenLight text-clinical-green mb-1">
                     <Database className="w-3.5 h-3.5" />
-                    <span>Assessment Stored in Database</span>
+                    <span>Assessment Stored</span>
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-100">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-clinical-text">
                     Assessment Received Successfully
                   </h1>
                 </div>
               </div>
 
               <div className="text-left sm:text-right">
-                <span className="text-xs text-slate-400 block font-mono">Record Reference ID</span>
-                <span className="text-lg font-black text-emerald-400 font-mono tracking-wider">
+                <span className="text-xs text-clinical-textMuted block font-semibold uppercase tracking-wider">Reference ID</span>
+                <span className="text-lg font-black text-clinical-text tracking-wider">
                   {submissionResult.assessment_id || 'HG-A8921'}
-                </span>
-                <span className="text-[11px] text-slate-500 block">
-                  Status: <strong className="text-emerald-400 uppercase font-mono">{submissionResult.status || 'received'}</strong>
                 </span>
               </div>
             </div>
 
             {/* Stage Explanation Alert */}
-            <div
-              className={`p-4 sm:p-5 rounded-2xl border ${
-                isDark ? 'bg-emerald-950/30 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
-              }`}
-            >
+            <div className="p-4 sm:p-5 rounded-2xl border bg-clinical-greenLight border-clinical-green/20">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div className="space-y-1 text-xs">
-                  <h4 className="font-bold text-slate-100 text-sm">
+                <ShieldCheck className="w-5 h-5 text-clinical-green flex-shrink-0 mt-0.5" />
+                <div className="space-y-1 text-sm">
+                  <h4 className="font-bold text-clinical-text">
                     Clinical Data Securely Recorded
                   </h4>
-                  <p className="text-slate-300 leading-relaxed">
-                    Your multi-factor physiological markers, lifestyle habits, and family medical history have been verified and persisted in MongoDB. This foundation is structured for direct ingestion into the upcoming Machine Learning risk prediction pipeline.
+                  <p className="text-clinical-textMuted leading-relaxed">
+                    Your multi-factor physiological markers, lifestyle habits, and family medical history have been verified. This foundation is structured for direct ingestion into the upcoming Machine Learning risk prediction pipeline.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Biometric Summary Grid */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
                 Recorded Biomarker Summary
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 rounded-xl border border-emerald-500/15 bg-slate-900/60">
-                  <span className="text-[11px] text-slate-400 block">Demographics</span>
-                  <span className="text-sm font-bold text-slate-100 capitalize">
+                <div className="p-4 rounded-xl border border-clinical-border bg-clinical-primary">
+                  <span className="text-[11px] font-bold text-clinical-textMuted uppercase tracking-wider block mb-1">Demographics</span>
+                  <span className="text-sm font-bold text-clinical-text capitalize">
                     {submissionResult.age || activeDraft.age} yrs • {submissionResult.gender || activeDraft.gender || activeDraft.sex}
                   </span>
                 </div>
-                <div className="p-3 rounded-xl border border-emerald-500/15 bg-slate-900/60">
-                  <span className="text-[11px] text-slate-400 block">Blood Pressure</span>
-                  <span className="text-sm font-bold text-slate-100">
-                    {submissionResult.systolic_bp || activeDraft.vitals?.systolicBP} / {submissionResult.diastolic_bp || activeDraft.vitals?.diastolicBP} mmHg
+                <div className="p-4 rounded-xl border border-clinical-border bg-clinical-primary">
+                  <span className="text-[11px] font-bold text-clinical-textMuted uppercase tracking-wider block mb-1">Blood Pressure</span>
+                  <span className="text-sm font-bold text-clinical-text">
+                    {submissionResult.systolic_bp || activeDraft.vitals?.systolicBP} / {submissionResult.diastolic_bp || activeDraft.vitals?.diastolicBP}
                   </span>
                 </div>
-                <div className="p-3 rounded-xl border border-emerald-500/15 bg-slate-900/60">
-                  <span className="text-[11px] text-slate-400 block">Blood Glucose</span>
-                  <span className="text-sm font-bold text-slate-100">
+                <div className="p-4 rounded-xl border border-clinical-border bg-clinical-primary">
+                  <span className="text-[11px] font-bold text-clinical-textMuted uppercase tracking-wider block mb-1">Blood Glucose</span>
+                  <span className="text-sm font-bold text-clinical-text">
                     {submissionResult.blood_sugar || activeDraft.vitals?.fastingBloodSugar} mg/dL
                   </span>
                 </div>
-                <div className="p-3 rounded-xl border border-emerald-500/15 bg-slate-900/60">
-                  <span className="text-[11px] text-slate-400 block">Calculated BMI</span>
-                  <span className="text-sm font-bold text-emerald-400 font-mono">
+                <div className="p-4 rounded-xl border border-clinical-border bg-clinical-primary">
+                  <span className="text-[11px] font-bold text-clinical-textMuted uppercase tracking-wider block mb-1">Calculated BMI</span>
+                  <span className="text-sm font-bold text-clinical-green">
                     {submissionResult.bmi || activeDraft.vitals?.bmi} kg/m²
                   </span>
                 </div>
@@ -231,21 +215,21 @@ export function AssessmentPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
+            <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
               <button
                 type="button"
                 onClick={() => navigate('/results')}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 text-black font-bold text-sm hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-emerald-soft"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-clinical-green text-white font-bold text-sm hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>View ML Risk Analysis & Report</span>
+                <span>View ML Risk Analysis</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                className="w-full sm:w-auto px-5 py-3 rounded-xl border border-slate-700 text-slate-300 font-semibold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-clinical-border text-clinical-text font-bold text-sm hover:bg-clinical-primary transition-all flex items-center justify-center gap-2"
               >
                 <span>Dashboard</span>
               </button>
@@ -253,7 +237,7 @@ export function AssessmentPage() {
               <button
                 type="button"
                 onClick={handleStartNew}
-                className="w-full sm:w-auto px-4 py-3 rounded-xl text-slate-400 font-semibold text-xs hover:text-slate-200 transition-all flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-4 py-3.5 rounded-xl text-clinical-textMuted font-semibold text-xs hover:text-clinical-text transition-all flex items-center justify-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>New Assessment</span>
@@ -268,23 +252,17 @@ export function AssessmentPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300">
       {/* Top Header Card */}
-      <div
-        className={`p-6 sm:p-8 rounded-3xl border relative overflow-hidden ${
-          isDark
-            ? 'bg-[#07130e]/90 border-emerald-500/25 shadow-xl'
-            : 'bg-white border-slate-200 shadow-sm'
-        }`}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-500/15">
+      <div className="p-6 sm:p-8 rounded-3xl border border-clinical-border bg-clinical-card shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-clinical-border">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold uppercase bg-clinical-greenLight text-clinical-green border border-clinical-border">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Multi-Factor Clinical Assessment</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-100">
+            <h1 className="text-2xl font-bold text-clinical-text">
               HealthGuard AI Clinical Assessment
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-sm text-clinical-textMuted">
               Complete the guided clinical evaluation to establish your baseline health markers.
             </p>
           </div>
@@ -292,7 +270,7 @@ export function AssessmentPage() {
           <button
             type="button"
             onClick={resetDraft}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 text-slate-400 hover:text-slate-200 text-xs font-semibold self-start sm:self-auto transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-clinical-border text-clinical-textMuted hover:bg-clinical-primary hover:text-clinical-text text-xs font-bold self-start sm:self-auto transition-colors"
             title="Reset form to default draft"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -313,20 +291,14 @@ export function AssessmentPage() {
 
       {/* Submission Error Banner if any */}
       {submissionError && (
-        <div className="p-4 rounded-2xl border border-rose-500/40 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+        <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 text-sm font-medium flex items-center gap-3 shadow-sm">
+          <AlertTriangle className="w-5 h-5 text-rose-500 flex-shrink-0" />
           <p>{submissionError}</p>
         </div>
       )}
 
       {/* Main Active Form Step Card */}
-      <div
-        className={`p-6 sm:p-10 rounded-3xl border min-h-[440px] flex flex-col justify-between relative ${
-          isDark
-            ? 'bg-[#040c08]/90 border-emerald-500/20 shadow-2xl'
-            : 'bg-white border-slate-200 shadow-md'
-        }`}
-      >
+      <div className="p-6 sm:p-10 rounded-3xl border border-clinical-border bg-clinical-card shadow-sm min-h-[440px] flex flex-col justify-between">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -386,17 +358,15 @@ export function AssessmentPage() {
 
         {/* Navigation Step Buttons (Hidden on Step 6 where Review has submit CTA) */}
         {currentStep < 6 && (
-          <div className="pt-8 mt-6 border-t border-emerald-500/10 flex items-center justify-between gap-4">
+          <div className="pt-8 mt-6 border-t border-clinical-border flex items-center justify-between gap-4">
             <button
               type="button"
               onClick={handleBack}
               disabled={currentStep === 1}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold border transition-all ${
+              className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold border transition-all ${
                 currentStep === 1
-                  ? 'opacity-30 border-slate-800 text-slate-600 cursor-not-allowed'
-                  : isDark
-                  ? 'border-emerald-500/20 text-slate-300 hover:bg-emerald-950/40 hover:border-emerald-500/40'
-                  : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                  ? 'opacity-40 border-clinical-border text-clinical-textMuted cursor-not-allowed bg-clinical-primary/50'
+                  : 'border-clinical-border text-clinical-text hover:bg-clinical-primary'
               }`}
             >
               <ArrowLeft className="w-4 h-4" />
@@ -406,7 +376,7 @@ export function AssessmentPage() {
             <button
               type="button"
               onClick={handleNext}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-emerald-soft transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold bg-clinical-green text-white hover:bg-emerald-700 transition-all shadow-sm"
             >
               <span>Continue</span>
               <ArrowRight className="w-4 h-4" />

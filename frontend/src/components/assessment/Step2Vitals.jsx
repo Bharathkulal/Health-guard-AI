@@ -1,10 +1,8 @@
 import React from 'react';
-import { Heart, Activity, Scale, Ruler, Droplets, Info, Sparkles } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
+import { Activity, Scale } from 'lucide-react';
 import { calculateBMI, getBMICategory } from '../../services/assessmentEngine';
 
 export function Step2Vitals({ data, onChange, errors = {} }) {
-  const { isDark } = useTheme();
   const vitals = data.vitals || {};
 
   const handleVitalChange = (field, rawValue) => {
@@ -30,11 +28,11 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="space-y-1">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-emerald-400" />
+        <h2 className="text-xl font-bold text-clinical-text flex items-center gap-2">
+          <Activity className="w-5 h-5 text-clinical-green" />
           <span>Vital Indicators & Biometrics</span>
         </h2>
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-clinical-textMuted">
           Enter your current or most recent clinical readings. Target reference ranges are indicated for clarity.
         </p>
       </div>
@@ -42,9 +40,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
         {/* Systolic BP */}
         <div className="space-y-1.5">
-          <label htmlFor="systolic-bp" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Systolic Pressure <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Target: 90-120</span>
+          <label htmlFor="systolic-bp" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Systolic Pressure <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Target: 90-120</span>
           </label>
           <div className="relative">
             <input
@@ -57,26 +55,24 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 120"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.systolicBP']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               mmHg
             </span>
           </div>
           {errors['vitals.systolicBP'] && (
-            <p className="text-xs text-rose-400">{errors['vitals.systolicBP']}</p>
+            <p className="text-xs font-semibold text-rose-500">{errors['vitals.systolicBP']}</p>
           )}
         </div>
 
         {/* Diastolic BP */}
         <div className="space-y-1.5">
-          <label htmlFor="diastolic-bp" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Diastolic Pressure <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Target: 60-80</span>
+          <label htmlFor="diastolic-bp" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Diastolic Pressure <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Target: 60-80</span>
           </label>
           <div className="relative">
             <input
@@ -89,26 +85,24 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 80"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.diastolicBP']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               mmHg
             </span>
           </div>
           {errors['vitals.diastolicBP'] && (
-            <p className="text-xs text-rose-400">{errors['vitals.diastolicBP']}</p>
+            <p className="text-xs font-semibold text-rose-500">{errors['vitals.diastolicBP']}</p>
           )}
         </div>
 
         {/* Fasting Blood Sugar */}
         <div className="space-y-1.5">
-          <label htmlFor="fasting-glucose" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Fasting Blood Glucose <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Target: 70-99</span>
+          <label htmlFor="fasting-glucose" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Fasting Blood Glucose <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Target: 70-99</span>
           </label>
           <div className="relative">
             <input
@@ -121,26 +115,24 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 95"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.fastingBloodSugar']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               mg/dL
             </span>
           </div>
           {errors['vitals.fastingBloodSugar'] && (
-            <p className="text-xs text-rose-400">{errors['vitals.fastingBloodSugar']}</p>
+            <p className="text-xs font-semibold text-rose-500">{errors['vitals.fastingBloodSugar']}</p>
           )}
         </div>
 
         {/* Resting Heart Rate */}
         <div className="space-y-1.5">
-          <label htmlFor="heart-rate" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Resting Heart Rate <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Target: 60-85</span>
+          <label htmlFor="heart-rate" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Resting Heart Rate <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Target: 60-85</span>
           </label>
           <div className="relative">
             <input
@@ -153,26 +145,24 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 72"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.heartRate']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               BPM
             </span>
           </div>
           {errors['vitals.heartRate'] && (
-            <p className="text-xs text-rose-400">{errors['vitals.heartRate']}</p>
+            <p className="text-xs font-semibold text-rose-500">{errors['vitals.heartRate']}</p>
           )}
         </div>
 
         {/* Height in CM */}
         <div className="space-y-1.5">
-          <label htmlFor="height-cm" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Height <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Metric</span>
+          <label htmlFor="height-cm" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Height <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Metric</span>
           </label>
           <div className="relative">
             <input
@@ -185,13 +175,11 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 178"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.heightCm']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               cm
             </span>
           </div>
@@ -199,9 +187,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Weight in KG */}
         <div className="space-y-1.5">
-          <label htmlFor="weight-kg" className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>Weight <span className="text-emerald-400">*</span></span>
-            <span className="text-[11px] text-slate-400 font-mono">Metric</span>
+          <label htmlFor="weight-kg" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span>Weight <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono">Metric</span>
           </label>
           <div className="relative">
             <input
@@ -215,13 +203,11 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
               placeholder="e.g. 78"
               className={`w-full px-4 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors['vitals.weightKg']
-                  ? 'border-rose-500 bg-rose-500/10 focus:ring-rose-500/30'
-                  : isDark
-                  ? 'bg-slate-900/80 border-emerald-500/20 focus:border-emerald-400 focus:ring-emerald-500/20 text-slate-100'
-                  : 'bg-white border-slate-300 focus:border-emerald-500 focus:ring-emerald-500/20 text-slate-900'
+                  ? 'border-rose-300 bg-rose-50 focus:ring-rose-200'
+                  : 'bg-white border-clinical-border focus:border-clinical-green focus:ring-clinical-green/20 text-clinical-text placeholder:text-slate-400'
               }`}
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-clinical-textMuted text-xs font-bold">
               kg
             </span>
           </div>
@@ -229,27 +215,21 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
       </div>
 
       {/* Real-time Calculated BMI Card */}
-      <div
-        className={`p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-          isDark
-            ? 'bg-emerald-950/20 border-emerald-500/25'
-            : 'bg-emerald-50/70 border-emerald-200'
-        }`}
-      >
+      <div className="p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-clinical-greenLight border-clinical-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 rounded-xl bg-white border border-clinical-border flex items-center justify-center text-clinical-green shadow-sm">
             <Scale className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              <span className="text-xs font-bold uppercase tracking-wider text-clinical-text">
                 Calculated Body Mass Index (BMI)
               </span>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white text-clinical-green border border-clinical-border font-bold shadow-sm">
                 Auto-Computed
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-clinical-textMuted mt-0.5">
               Computed automatically from height ({vitals.heightCm || '--'} cm) and weight ({vitals.weightKg || '--'} kg).
             </p>
           </div>
@@ -257,12 +237,14 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
           <div className="text-right">
-            <div className="text-2xl font-black text-slate-100 font-mono">
-              {currentBMI > 0 ? currentBMI : '--'} <span className="text-xs text-slate-400 font-normal">kg/m²</span>
+            <div className="text-2xl font-black text-clinical-text font-mono">
+              {currentBMI > 0 ? currentBMI : '--'} <span className="text-xs text-clinical-textMuted font-normal">kg/m²</span>
             </div>
-            <div className={`text-xs font-bold ${bmiCategory.color}`}>
-              {bmiCategory.label}
-            </div>
+            {currentBMI > 0 && (
+              <div className="text-xs font-bold text-clinical-textMuted">
+                {bmiCategory.label}
+              </div>
+            )}
           </div>
         </div>
       </div>

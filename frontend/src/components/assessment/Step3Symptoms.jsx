@@ -1,6 +1,5 @@
 import React from 'react';
-import { Activity, CheckCircle2, AlertCircle, ShieldAlert, Check } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
+import { AlertCircle, CheckCircle2, Check } from 'lucide-react';
 
 const SYMPTOM_OPTIONS = [
   { id: 'fatigue', label: 'Fatigue', desc: 'Persistent low energy or exhaustion', category: 'Metabolic' },
@@ -16,19 +15,15 @@ const SYMPTOM_OPTIONS = [
 ];
 
 export function Step3Symptoms({ data, onChange }) {
-  const { isDark } = useTheme();
   const selectedSymptoms = data.symptoms || [];
-
   const isNoneSelected = selectedSymptoms.includes('none') || selectedSymptoms.length === 0;
 
   const toggleSymptom = (id) => {
     if (id === 'none') {
-      // If clicking "None", reset to empty/none
       onChange({ symptoms: ['none'] });
       return;
     }
 
-    // If selecting any active symptom, remove 'none'
     const withoutNone = selectedSymptoms.filter((s) => s !== 'none');
 
     if (withoutNone.includes(id)) {
@@ -49,12 +44,12 @@ export function Step3Symptoms({ data, onChange }) {
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="space-y-1">
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-xl font-bold text-clinical-text flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-clinical-green" />
             <span>Presenting Symptoms & Clinical Sensations</span>
           </h2>
-          <p className="text-xs text-slate-400">
-            Select any symptoms you have experienced in the past 30 days. You may select multiple items, or choose &quot;None&quot;.
+          <p className="text-sm text-clinical-textMuted">
+            Select any symptoms you have experienced in the past 30 days. You may select multiple items, or choose "None".
           </p>
         </div>
 
@@ -62,7 +57,7 @@ export function Step3Symptoms({ data, onChange }) {
           <button
             type="button"
             onClick={handleSelectNone}
-            className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline self-start sm:self-auto"
+            className="text-xs text-clinical-green hover:text-emerald-700 font-bold underline self-start sm:self-auto"
           >
             Clear and set to None ({activeSymptomCount} selected)
           </button>
@@ -86,26 +81,20 @@ export function Step3Symptoms({ data, onChange }) {
               className={`p-4 rounded-2xl border text-left transition-all duration-200 flex items-start justify-between gap-3 ${
                 isSelected
                   ? isNoneCard
-                    ? isDark
-                      ? 'bg-slate-800/80 border-slate-500 text-slate-100 ring-1 ring-slate-400/30'
-                      : 'bg-slate-100 border-slate-400 text-slate-900'
-                    : isDark
-                    ? 'bg-emerald-950/40 border-emerald-400 text-slate-100 shadow-emerald-soft ring-1 ring-emerald-400/40'
-                    : 'bg-emerald-50 border-emerald-500 text-slate-900 shadow-sm'
-                  : isDark
-                  ? 'bg-slate-900/60 border-emerald-500/15 text-slate-300 hover:border-emerald-500/30 hover:bg-emerald-950/20'
-                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-slate-50'
+                    ? 'bg-slate-100 border-slate-300 text-clinical-text ring-1 ring-slate-200 shadow-sm'
+                    : 'bg-clinical-greenLight border-clinical-green text-clinical-text ring-1 ring-clinical-green/20 shadow-sm'
+                  : 'bg-white border-clinical-border text-clinical-text hover:border-clinical-green hover:bg-clinical-greenLight/50'
               }`}
               aria-pressed={isSelected}
             >
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400/80">
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected && !isNoneCard ? 'text-clinical-green' : 'text-clinical-textMuted'}`}>
                   {option.category}
                 </span>
-                <p className="text-xs sm:text-sm font-semibold text-slate-100">
+                <p className="text-xs sm:text-sm font-bold text-clinical-text">
                   {option.label}
                 </p>
-                <p className="text-[11px] text-slate-400 leading-snug">
+                <p className={`text-[11px] leading-snug ${isSelected && !isNoneCard ? 'text-emerald-800' : 'text-clinical-textMuted'}`}>
                   {option.desc}
                 </p>
               </div>
@@ -114,9 +103,9 @@ export function Step3Symptoms({ data, onChange }) {
                 className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors mt-0.5 ${
                   isSelected
                     ? isNoneCard
-                      ? 'bg-slate-400 text-black'
-                      : 'bg-emerald-500 text-black'
-                    : 'border border-slate-600 bg-slate-800/40'
+                      ? 'bg-slate-400 text-white'
+                      : 'bg-clinical-green text-white'
+                    : 'border-2 border-slate-300 bg-white'
                 }`}
               >
                 {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -127,15 +116,9 @@ export function Step3Symptoms({ data, onChange }) {
       </div>
 
       {/* Helper Notification */}
-      <div
-        className={`p-3.5 rounded-xl border flex items-center gap-2.5 text-xs ${
-          isDark
-            ? 'bg-slate-900/50 border-emerald-500/15 text-slate-400'
-            : 'bg-slate-50 border-slate-200 text-slate-600'
-        }`}
-      >
-        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-        <span>
+      <div className="p-4 rounded-xl border flex items-center gap-2.5 text-xs bg-clinical-primary border-clinical-border text-clinical-text">
+        <CheckCircle2 className="w-5 h-5 text-clinical-green flex-shrink-0" />
+        <span className="font-medium">
           {activeSymptomCount > 0
             ? `${activeSymptomCount} clinical symptom(s) will be structured as individual risk factors for assessment.`
             : 'Currently marked as Asymptomatic (None). No active acute symptoms reported.'}
