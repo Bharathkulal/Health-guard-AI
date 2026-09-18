@@ -84,23 +84,23 @@ export function AdminProvider({ children }) {
       if (token) {
         try {
           const res = await adminApi.get('/auth/me');
-          if (res?.success && (res.data?.role === 'admin' || res.data?.name === 'System Administrator')) {
+          const userData = res?.data || res;
+          if (userData && (userData.role === 'admin' || userData.name === 'System Administrator' || userData.is_admin)) {
             setIsAdminAuth(true);
-            setAdminUser(res.data);
+            setAdminUser(userData);
           } else {
-            setIsAdminAuth(true);
-            setAdminUser(res?.data || { name: 'System Administrator', role: 'admin' });
-          }
-        } catch (error) {
-          if (error.status === 401 || error.status === 403) {
             setIsAdminAuth(false);
             setAdminUser(null);
             localStorage.removeItem('hg_admin_token');
-          } else {
-            setIsAdminAuth(true);
-            setAdminUser({ name: 'System Administrator', role: 'admin' });
           }
+        } catch (error) {
+          setIsAdminAuth(false);
+          setAdminUser(null);
+          localStorage.removeItem('hg_admin_token');
         }
+      } else {
+        setIsAdminAuth(false);
+        setAdminUser(null);
       }
       setLoading(false);
     };

@@ -1,15 +1,19 @@
 import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { PlusCircle, Activity, Bell, Search, ShieldCheck } from 'lucide-react';
+import { PlusCircle, Activity, Bell, Search, ShieldCheck, LogOut } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useHealth } from '../../context/HealthContext';
+import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 
 export function Topbar({ onMenuClick = null }) {
   const { isDark } = useTheme();
-  const { user, latestResult } = useHealth();
+  const { user: healthUser, latestResult } = useHealth();
+  const { user: authUser, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const user = authUser || healthUser;
 
   const routeTitles = {
     '/dashboard': { title: 'Health Intelligence Dashboard', subtitle: 'Longitudinal risk stratification & biometric telemetry' },
@@ -51,15 +55,26 @@ export function Topbar({ onMenuClick = null }) {
           </Link>
           
           {user ? (
-            <Link
-              to="/dashboard"
-              className="w-9 h-9 rounded-full bg-clinical-greenLight border border-clinical-border flex items-center justify-center text-sm font-bold text-clinical-green hover:scale-105 transition-transform"
-              title={user.name || 'Dashboard'}
-            >
-              {user.name
-                ? user.name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2)
-                : 'HG'}
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/profile"
+                className="w-9 h-9 rounded-full bg-clinical-greenLight border border-clinical-border flex items-center justify-center text-sm font-bold text-clinical-green hover:scale-105 transition-transform"
+                title={user.name ? `${user.name} (View Profile)` : 'Profile'}
+              >
+                {user.name
+                  ? user.name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                  : 'HG'}
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                className="p-2 rounded-lg text-clinical-textMuted hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                title="Log Out"
+                aria-label="Log Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           ) : (
             <Link to="/login" className="text-sm font-medium text-clinical-text hover:text-clinical-green transition-colors">
               Log in

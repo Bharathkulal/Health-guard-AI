@@ -27,7 +27,10 @@ export function LoginPage() {
 
   const searchParams = new URLSearchParams(location.search);
   const redirectParam = searchParams.get('redirect');
-  const redirectPath = redirectParam || location.state?.from?.pathname || '/dashboard';
+  const fromLocation = location.state?.from;
+  const fromPath = fromLocation ? `${fromLocation.pathname}${fromLocation.search}` : null;
+  const redirectPath = redirectParam || fromPath || '/dashboard';
+  const registerUrl = redirectParam ? `/register?redirect=${encodeURIComponent(redirectParam)}` : '/register';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +93,7 @@ export function LoginPage() {
           </nav>
 
           <Link
-            to="/register"
+            to={registerUrl}
             className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-[15px] font-semibold bg-[#E8F2ED] text-[#16805F] hover:bg-[#d1e8dd] transition-all"
           >
             Create Account
@@ -237,7 +240,7 @@ export function LoginPage() {
           <div className="text-center text-sm font-medium text-[#66706A]">
             <span>Don't have an account? </span>
             <Link
-              to="/register"
+              to={registerUrl}
               className="font-bold text-[#16805F] hover:text-[#126b4f] transition-colors"
             >
               Create one now

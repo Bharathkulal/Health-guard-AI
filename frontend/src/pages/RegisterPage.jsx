@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Activity,
   Lock,
@@ -19,6 +19,13 @@ import { Footer } from '../components/common/Footer';
 export function RegisterPage() {
   const { register, loading, authError, setAuthError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const redirectParam = searchParams.get('redirect');
+  const fromLocation = location.state?.from;
+  const fromPath = fromLocation ? `${fromLocation.pathname}${fromLocation.search}` : null;
+  const redirectPath = redirectParam || fromPath || '/dashboard';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -82,7 +89,7 @@ export function RegisterPage() {
     setSubmitting(true);
     try {
       await register(formData.name, formData.email, formData.password, formData.confirmPassword);
-      navigate('/dashboard', { replace: true });
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       setLocalError(err.message || 'Registration failed. Please check your inputs.');
     } finally {
@@ -91,6 +98,7 @@ export function RegisterPage() {
   };
 
   const displayError = localError || authError;
+  const loginUrl = redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login';
 
   return (
     <div className="min-h-screen bg-[#F7F4EE] text-[#18201C] font-sans flex flex-col selection:bg-[#16805F] selection:text-white">
@@ -114,7 +122,7 @@ export function RegisterPage() {
           </nav>
 
           <Link
-            to="/login"
+            to={loginUrl}
             className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-[15px] font-semibold bg-[#E8F2ED] text-[#16805F] hover:bg-[#d1e8dd] transition-all"
           >
             Sign In
@@ -328,7 +336,7 @@ export function RegisterPage() {
           <div className="text-center text-sm font-medium text-[#66706A]">
             <span>Already have an account? </span>
             <Link
-              to="/login"
+              to={loginUrl}
               className="font-bold text-[#16805F] hover:text-[#126b4f] transition-colors"
             >
               Sign in

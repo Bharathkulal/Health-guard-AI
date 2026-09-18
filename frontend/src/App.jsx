@@ -113,10 +113,12 @@ export default function App() {
                   }
                 >
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/home" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/assessment" element={<AssessmentPage />} />
                   <Route path="/results" element={<ResultsPage />} />
                   <Route path="/results/:id" element={<ResultsPage />} />
                   <Route path="/trends" element={<TrendsPage />} />
+                  <Route path="/history" element={<Navigate to="/trends" replace />} />
                   <Route path="/recommendations" element={<RecommendationsPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
