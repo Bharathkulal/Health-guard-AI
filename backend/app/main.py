@@ -56,13 +56,28 @@ app = FastAPI(
 app.add_middleware(SecurityHeadersMiddleware)
 
 # Configure Cross-Origin Resource Sharing (CORS)
+cors_origins = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS],
+    allow_origins=cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.onrender\.com|http://localhost:\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/", summary="Root Health & Info Endpoint", tags=["System"])
+async def root_endpoint():
+    """Returns basic service information and confirmation that backend is active."""
+    return {
+        "success": True,
+        "service": "HealthGuard AI API",
+        "version": settings.VERSION,
+        "status": "healthy",
+        "docs_url": "/docs",
+    }
 
 
 # Custom Exception Handlers for Unified API Response Envelope
