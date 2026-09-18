@@ -126,5 +126,20 @@ def get_collection(name: str):
 
 
 def is_database_connected() -> bool:
-    """Returns True if the MongoDB connection is alive."""
+    """Returns True if the MongoDB connection is alive and bound to active event loop."""
+    if not db_manager.connected or db_manager.client is None or db_manager.db is None:
+        return False
+    try:
+        import asyncio
+        try:
+            loop = asyncio.get_running_loop()
+            client_loop = getattr(db_manager.client, "io_loop", None)
+            if client_loop is None and hasattr(db_manager.client, "get_io_loop"):
+                client_loop = db_manager.client.get_io_loop()
+            if client_loop is not None and (client_loop.is_closed() or client_loop != loop):
+                return False
+        except RuntimeError:
+            pass
+    except Exception:
+        pass
     return db_manager.connected

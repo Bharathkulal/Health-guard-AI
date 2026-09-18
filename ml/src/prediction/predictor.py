@@ -18,7 +18,7 @@ import os
 import sys
 import json
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -44,28 +44,46 @@ class HealthRiskPredictor:
         self._load_models()
 
     def _load_models(self):
-        """Loads trained pipeline artifacts and metadata from disk."""
+        """Loads trained pipeline artifacts and metadata from disk, checking active model registry."""
+        try:
+            from src.training.model_registry import model_registry
+            active_heart = model_registry.get_active_model_for_condition("heart")
+            active_diabetes = model_registry.get_active_model_for_condition("diabetes")
+        except Exception:
+            active_heart = None
+            active_diabetes = None
+
         # Load heart model
-        heart_path = os.path.join(self.models_dir, "heart_model.joblib")
+        heart_path = active_heart.get("pipeline_path") if (active_heart and active_heart.get("pipeline_path") and os.path.exists(active_heart["pipeline_path"])) else os.path.join(self.models_dir, "heart_model.joblib")
+        if not os.path.exists(heart_path):
+            alt_path = os.path.join(self.models_dir, "cardiovascular_pipeline.joblib")
+            if os.path.exists(alt_path):
+                heart_path = alt_path
+
         if os.path.exists(heart_path):
             try:
                 self.heart_pipeline = joblib.load(heart_path)
-                logger.info(f"Loaded heart disease model: {heart_path}")
+                logger.info(f"Loaded active heart disease model: {heart_path}")
             except Exception as exc:
                 logger.error(f"Failed to load heart model: {exc}")
         else:
-            logger.warning(f"Heart model not found: {heart_path}. Run train_heart.py first.")
+            logger.warning(f"Heart model not found: {heart_path}.")
 
         # Load diabetes model
-        diabetes_path = os.path.join(self.models_dir, "diabetes_model.joblib")
+        diabetes_path = active_diabetes.get("pipeline_path") if (active_diabetes and active_diabetes.get("pipeline_path") and os.path.exists(active_diabetes["pipeline_path"])) else os.path.join(self.models_dir, "diabetes_model.joblib")
+        if not os.path.exists(diabetes_path):
+            alt_path = os.path.join(self.models_dir, "diabetes_pipeline.joblib")
+            if os.path.exists(alt_path):
+                diabetes_path = alt_path
+
         if os.path.exists(diabetes_path):
             try:
                 self.diabetes_pipeline = joblib.load(diabetes_path)
-                logger.info(f"Loaded diabetes model: {diabetes_path}")
+                logger.info(f"Loaded active diabetes model: {diabetes_path}")
             except Exception as exc:
                 logger.error(f"Failed to load diabetes model: {exc}")
         else:
-            logger.warning(f"Diabetes model not found: {diabetes_path}. Run train_diabetes.py first.")
+            logger.warning(f"Diabetes model not found: {diabetes_path}.")
 
         # Load metadata
         meta_path = os.path.join(self.models_dir, "metadata.json")
@@ -76,6 +94,11 @@ class HealthRiskPredictor:
                 logger.info("Loaded model metadata")
             except Exception as exc:
                 logger.error(f"Failed to load metadata: {exc}")
+        
+        if active_heart:
+            self.metadata["heart"] = active_heart
+        if active_diabetes:
+            self.metadata["diabetes"] = active_diabetes
 
     def reload_models(self) -> bool:
         """Forces reloading of pipeline artifacts and metadata from disk."""
@@ -90,166 +113,151 @@ class HealthRiskPredictor:
         """Returns metadata for all loaded models."""
         return self.metadata
 
-    def predict_heart_risk(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Predicts heart disease risk from assessment form data.
+    def _align_dataframe_to_pipeline(self, pipeline, input_data: Dict[str, Any], condition: str) -> Tuple[pd.DataFrame, int, int]:
+        """Aligns assessment data to the exact feature signature expected by the trained pipeline."""
+        from src.features import extract_features_from_assessment
+        extracted = extract_features_from_assessment(input_data)
+        base_df = extracted.get("cardiovascular" if condition == "heart" else condition)
 
-        Feature Mapping (Assessment Form → UCI Heart Disease features):
-            age         → age
-            gender      → sex (male=1, female=0)
-            systolic_bp → trestbps (resting blood pressure)
-            blood_sugar → fbs (1 if > 120 mg/dL, else 0)
-            heart_rate  → thalach (used as proxy for max heart rate)
-            cp, chol, restecg, exang, oldpeak, slope, ca, thal → NaN (imputed)
+        expected_features = None
+        if hasattr(pipeline, "feature_names_in_"):
+            expected_features = list(pipeline.feature_names_in_)
+        elif hasattr(pipeline, "named_steps"):
+            for step_name in ["preprocessor", "scaler", "imputer", "classifier"]:
+                step = pipeline.named_steps.get(step_name)
+                if step and hasattr(step, "feature_names_in_"):
+                    expected_features = list(step.feature_names_in_)
+                    break
 
-        Returns:
-            {
-                "prediction": 0 or 1,
-                "probability": float (0.0 to 1.0),
-                "model_name": str,
-                "model_version": str,
-                "features_available": int,
-                "features_imputed": int
+        if expected_features:
+            row = {}
+            for col in expected_features:
+                col_lower = col.lower()
+                if base_df is not None and col in base_df.columns:
+                    row[col] = base_df[col].iloc[0]
+                elif base_df is not None and col_lower in [c.lower() for c in base_df.columns]:
+                    matching_c = [c for c in base_df.columns if c.lower() == col_lower][0]
+                    row[col] = base_df[matching_c].iloc[0]
+                elif col in input_data:
+                    row[col] = input_data[col]
+                elif col_lower in ("trestbps", "systolic_bp"):
+                    row[col] = float(input_data.get("systolic_bp") or 120.0)
+                elif col_lower in ("glucose", "blood_sugar"):
+                    row[col] = float(input_data.get("blood_sugar") or 95.0)
+                elif col_lower in ("bloodpressure", "diastolic_bp"):
+                    row[col] = float(input_data.get("diastolic_bp") or 80.0)
+                elif col_lower in ("bmi",):
+                    row[col] = float(input_data.get("bmi") or 24.5)
+                elif col_lower in ("age",):
+                    row[col] = float(input_data.get("age") or 40.0)
+                elif col_lower in ("sex", "gender"):
+                    row[col] = 1.0 if str(input_data.get("gender", "")).lower() in ("male", "m") else 0.0
+                elif col_lower in ("thalach", "heart_rate"):
+                    row[col] = float(input_data.get("heart_rate") or 72.0)
+                elif col_lower in ("fbs",):
+                    row[col] = 1.0 if float(input_data.get("blood_sugar", 0) or 0) > 120 else 0.0
+                elif col_lower in ("diabetespedigreefunction",):
+                    row[col] = 0.5 if input_data.get("family_history", {}).get("diabetes") else 0.2
+                else:
+                    row[col] = np.nan
+
+            df = pd.DataFrame([row])[expected_features]
+            available = int(df.notna().sum(axis=1).iloc[0])
+            imputed = len(expected_features) - available
+            return df, available, imputed
+
+        # Fallback UCI Heart / Pima layout
+        if condition == "heart":
+            f_names = ["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"]
+            gender_raw = str(input_data.get("gender", "")).lower()
+            sex = 1.0 if gender_raw in ("male", "m") else 0.0
+            blood_sugar_val = float(input_data.get("blood_sugar", 0) or 0)
+            fbs = 1.0 if blood_sugar_val > 120 else 0.0
+            row = {
+                "age": float(input_data.get("age", 40)),
+                "sex": sex,
+                "cp": np.nan,
+                "trestbps": float(input_data.get("systolic_bp", 120)),
+                "chol": np.nan,
+                "fbs": fbs,
+                "restecg": np.nan,
+                "thalach": float(input_data.get("heart_rate", 72)),
+                "exang": np.nan,
+                "oldpeak": np.nan,
+                "slope": np.nan,
+                "ca": np.nan,
+                "thal": np.nan,
             }
-        """
+            df = pd.DataFrame([row])[f_names]
+            available = int(df.notna().sum(axis=1).iloc[0])
+            return df, available, len(f_names) - available
+        else:
+            f_names = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"]
+            dpf = 0.5 if input_data.get("family_history", {}).get("diabetes") else 0.2
+            row = {
+                "Pregnancies": np.nan,
+                "Glucose": float(input_data.get("blood_sugar", 95)),
+                "BloodPressure": float(input_data.get("diastolic_bp", 80)),
+                "SkinThickness": np.nan,
+                "Insulin": np.nan,
+                "BMI": float(input_data.get("bmi", 24.5)),
+                "DiabetesPedigreeFunction": dpf,
+                "Age": float(input_data.get("age", 40)),
+            }
+            df = pd.DataFrame([row])[f_names]
+            available = int(df.notna().sum(axis=1).iloc[0])
+            return df, available, len(f_names) - available
+
+    def predict_heart_risk(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Predicts heart disease risk using active model."""
         if self.heart_pipeline is None:
             self._load_models()
         if self.heart_pipeline is None:
-            raise RuntimeError("Heart disease model not loaded. Run train_heart.py first.")
+            raise RuntimeError("Heart disease model not loaded.")
 
-        # Extract values from assessment data
-        lifestyle = input_data.get("lifestyle", {}) if isinstance(input_data.get("lifestyle"), dict) else {}
-        symptoms = input_data.get("symptoms", []) if isinstance(input_data.get("symptoms"), list) else []
+        df, available, imputed = self._align_dataframe_to_pipeline(self.heart_pipeline, input_data, condition="heart")
 
-        # Map gender
-        gender_raw = str(input_data.get("gender", "")).lower()
-        sex = 1 if gender_raw in ("male", "m") else 0
-
-        # Map blood sugar to fbs (binary: >120 = 1)
-        blood_sugar_val = float(input_data.get("blood_sugar", 0) or 0)
-        fbs = 1 if blood_sugar_val > 120 else 0
-
-        # Try to infer chest pain type from symptoms
-        cp_val = np.nan
-        symptom_set = set(s.lower().replace(" ", "_") for s in symptoms if s)
-        if "chest_pain" in symptom_set or "chest_pressure" in symptom_set:
-            cp_val = 2.0  # atypical angina as default when chest pain reported
-        elif "angina" in symptom_set:
-            cp_val = 1.0  # typical angina
-
-        # Build feature DataFrame matching UCI Heart Disease column order
-        features = {
-            "age": float(input_data.get("age", np.nan)),
-            "sex": float(sex),
-            "cp": cp_val,  # chest pain type — may be NaN (imputed)
-            "trestbps": float(input_data.get("systolic_bp", np.nan)),
-            "chol": np.nan,  # cholesterol — not in form (imputed)
-            "fbs": float(fbs),
-            "restecg": np.nan,  # resting ECG — not in form (imputed)
-            "thalach": float(input_data.get("heart_rate", np.nan)),  # proxy
-            "exang": np.nan,  # exercise angina — not in form (imputed)
-            "oldpeak": np.nan,  # ST depression — not in form (imputed)
-            "slope": np.nan,  # ST slope — not in form (imputed)
-            "ca": np.nan,  # vessels by fluoroscopy — not in form (imputed)
-            "thal": np.nan,  # thalassemia — not in form (imputed)
-        }
-
-        feature_names = [
-            "age", "sex", "cp", "trestbps", "chol", "fbs", "restecg",
-            "thalach", "exang", "oldpeak", "slope", "ca", "thal"
-        ]
-
-        df = pd.DataFrame([features])[feature_names]
-
-        # Count available vs imputed features
-        available = int(df.notna().sum(axis=1).iloc[0])
-        imputed = len(feature_names) - available
-
-        # Run prediction through the pipeline (imputer handles NaN)
         prediction = int(self.heart_pipeline.predict(df)[0])
-        probabilities = self.heart_pipeline.predict_proba(df)[0]
-        prob_positive = float(probabilities[1])
+        if hasattr(self.heart_pipeline, "predict_proba"):
+            probabilities = self.heart_pipeline.predict_proba(df)[0]
+            prob_positive = float(probabilities[1])
+        else:
+            prob_positive = float(prediction)
 
         heart_meta = self.metadata.get("heart", {})
 
         return {
             "prediction": prediction,
             "probability": round(prob_positive, 4),
-            "model_name": heart_meta.get("model_name", "RandomForest"),
-            "model_version": heart_meta.get("training_date", "unknown"),
+            "model_name": heart_meta.get("name") or heart_meta.get("model_name", "RandomForest"),
+            "model_version": heart_meta.get("version") or heart_meta.get("training_date", "v1.0"),
             "features_available": available,
             "features_imputed": imputed,
         }
 
     def predict_diabetes_risk(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Predicts diabetes risk from assessment form data.
-
-        Feature Mapping (Assessment Form → Pima Diabetes features):
-            blood_sugar → Glucose (plasma glucose, used directly)
-            diastolic_bp → BloodPressure (diastolic)
-            bmi → BMI
-            age → Age
-            family_history.diabetes → DiabetesPedigreeFunction (0.5 if yes, 0.2 if no)
-            Pregnancies, SkinThickness, Insulin → NaN (imputed)
-
-        Returns:
-            {
-                "prediction": 0 or 1,
-                "probability": float (0.0 to 1.0),
-                "model_name": str,
-                "model_version": str,
-                "features_available": int,
-                "features_imputed": int
-            }
-        """
+        """Predicts diabetes risk using active model."""
         if self.diabetes_pipeline is None:
             self._load_models()
         if self.diabetes_pipeline is None:
-            raise RuntimeError("Diabetes model not loaded. Run train_diabetes.py first.")
+            raise RuntimeError("Diabetes model not loaded.")
 
-        # Extract family history
-        family = input_data.get("family_history", {}) if isinstance(input_data.get("family_history"), dict) else {}
+        df, available, imputed = self._align_dataframe_to_pipeline(self.diabetes_pipeline, input_data, condition="diabetes")
 
-        # Map family history to pedigree function proxy
-        has_family_diabetes = bool(family.get("diabetes", False))
-        dpf = 0.5 if has_family_diabetes else 0.2  # rough proxy for DiabetesPedigreeFunction
-
-        # Build feature DataFrame matching Pima dataset column order
-        features = {
-            "Pregnancies": np.nan,  # not in form (imputed)
-            "Glucose": float(input_data.get("blood_sugar", np.nan)),
-            "BloodPressure": float(input_data.get("diastolic_bp", np.nan)),
-            "SkinThickness": np.nan,  # not in form (imputed)
-            "Insulin": np.nan,  # not in form (imputed)
-            "BMI": float(input_data.get("bmi", np.nan)),
-            "DiabetesPedigreeFunction": dpf,
-            "Age": float(input_data.get("age", np.nan)),
-        }
-
-        feature_names = [
-            "Pregnancies", "Glucose", "BloodPressure", "SkinThickness",
-            "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"
-        ]
-
-        df = pd.DataFrame([features])[feature_names]
-
-        # Count available vs imputed features
-        available = int(df.notna().sum(axis=1).iloc[0])
-        imputed = len(feature_names) - available
-
-        # Run prediction through the pipeline
         prediction = int(self.diabetes_pipeline.predict(df)[0])
-        probabilities = self.diabetes_pipeline.predict_proba(df)[0]
-        prob_positive = float(probabilities[1])
+        if hasattr(self.diabetes_pipeline, "predict_proba"):
+            probabilities = self.diabetes_pipeline.predict_proba(df)[0]
+            prob_positive = float(probabilities[1])
+        else:
+            prob_positive = float(prediction)
 
         diabetes_meta = self.metadata.get("diabetes", {})
 
         return {
             "prediction": prediction,
             "probability": round(prob_positive, 4),
-            "model_name": diabetes_meta.get("model_name", "RandomForest"),
-            "model_version": diabetes_meta.get("training_date", "unknown"),
+            "model_name": diabetes_meta.get("name") or diabetes_meta.get("model_name", "RandomForest"),
+            "model_version": diabetes_meta.get("version") or diabetes_meta.get("training_date", "v1.0"),
             "features_available": available,
             "features_imputed": imputed,
         }

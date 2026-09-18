@@ -68,6 +68,28 @@ class AuthService:
         from app.services.assessment_service import _IN_MEMORY_ASSESSMENTS
         return sum(1 for a in _IN_MEMORY_ASSESSMENTS if a.get("user_id") == user_id)
 
+    def _get_admin_doc(self) -> Dict[str, Any]:
+        """Returns synthesized profile document for system administrator."""
+        from app.core.config import settings
+        return {
+            "user_id": "admin_user",
+            "name": "System Administrator",
+            "email": settings.ADMIN_USERNAME,
+            "role": "admin",
+            "hashed_password": "",
+            "created_at": "2026-01-01T00:00:00",
+            "member_since": "System Init",
+            "age": None,
+            "gender": "other",
+            "height_cm": None,
+            "weight_kg": None,
+            "bmi": None,
+            "baseline_activity": "moderate",
+            "blood_type": "A+",
+            "emergency_contact": None,
+            "assessment_count": 0,
+        }
+
     def _format_user_response(self, user_doc: Dict[str, Any], count: int = 0) -> UserResponse:
         """Converts a raw user document into a sanitized UserResponse schema."""
         created_at_str = None
@@ -86,6 +108,7 @@ class AuthService:
             user_id=user_doc["user_id"],
             name=user_doc.get("name", "User"),
             email=user_doc.get("email"),
+            role=user_doc.get("role", "user"),
             created_at=created_at_str,
             member_since=member_since or "Recent",
             age=user_doc.get("age"),
@@ -102,6 +125,9 @@ class AuthService:
     async def find_user_by_email(self, email: str, include_sensitive: bool = True) -> Optional[Dict[str, Any]]:
         """Finds a user document by normalized lowercase email."""
         norm_email = email.strip().lower()
+        from app.core.config import settings
+        if norm_email in (settings.ADMIN_USERNAME.lower(), "admin@healthguard.ai", "admin"):
+            return self._get_admin_doc()
 
         if not is_database_connected():
             from app.database.mongodb import connect_to_mongo
@@ -129,6 +155,9 @@ class AuthService:
 
     async def find_user_by_id(self, user_id: str, include_sensitive: bool = False) -> Optional[Dict[str, Any]]:
         """Finds a user document by unique user_id."""
+        if user_id == "admin_user":
+            return self._get_admin_doc()
+
         if not is_database_connected():
             from app.database.mongodb import connect_to_mongo
             try:
@@ -216,7 +245,7 @@ class AuthService:
 
         # Admin Intercept
         from app.core.config import settings
-        if norm_email == settings.ADMIN_USERNAME.lower():
+        if norm_email in (settings.ADMIN_USERNAME.lower(), "admin@healthguard.ai", "admin"):
             if login_in.password != settings.ADMIN_PASSWORD:
                 logger.warning(f"Failed admin authentication attempt.")
                 raise HTTPException(
@@ -237,6 +266,7 @@ class AuthService:
                 user_id=user_id,
                 name="System Administrator",
                 email=norm_email,
+                role="admin",
                 created_at=datetime.now(timezone.utc).isoformat(),
                 member_since="System Init",
                 age=None,

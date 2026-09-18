@@ -1,7 +1,7 @@
 import asyncio
 from app.database.mongodb import connect_to_mongo, close_mongo_connection, db_manager
 
-async def test():
+async def run_test():
     print("Testing connection to MongoDB Atlas...")
     connected = await connect_to_mongo()
     if connected and db_manager.db is not None:
@@ -16,4 +16,4 @@ async def test():
     await close_mongo_connection()
 
 if __name__ == "__main__":
-    asyncio.run(test())
+    asyncio.run(run_test())

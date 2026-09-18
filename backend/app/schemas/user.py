@@ -79,6 +79,7 @@ class UserResponse(BaseModel):
     user_id: str
     name: str
     email: str
+    role: Optional[str] = "user"
     created_at: Optional[str] = None
     member_since: Optional[str] = None
     age: Optional[int] = Field(default=None, ge=18, le=120)
