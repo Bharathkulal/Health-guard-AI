@@ -41,10 +41,10 @@ export function AdminLogin() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-2">
             <Shield className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-100 tracking-tight">
-            Admin <span className="text-emerald-400">Portal</span>
+          <h1 className={`text-3xl font-extrabold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+            Admin <span className={`font-extrabold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Portal</span>
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Secure access for authorized personnel only.
           </p>
         </div>
@@ -62,7 +62,7 @@ export function AdminLogin() {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Username / Email</label>
+                <label className={`text-xs font-bold uppercase tracking-wider ml-1 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>Username / Email</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input
@@ -79,7 +79,7 @@ export function AdminLogin() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider ml-1">Master Password</label>
+                <label className={`text-xs font-bold uppercase tracking-wider ml-1 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>Master Password</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <input

@@ -117,7 +117,7 @@ export function AdminSidebar({ currentSection, currentSubSection, onSelectNaviga
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="font-extrabold text-sm text-slate-100 tracking-tight">HealthGuard AI</h1>
+              <h1 className={`font-extrabold text-sm tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>HealthGuard AI</h1>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 font-mono">
                 ADMIN
               </span>
@@ -211,10 +211,10 @@ export function AdminSidebar({ currentSection, currentSubSection, onSelectNaviga
             <User className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold truncate text-slate-200">
+            <p className={`text-xs font-bold truncate ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>
               {adminUser?.name || 'System Administrator'}
             </p>
-            <p className="text-[10px] text-slate-400 font-mono truncate">
+            <p className={`text-[10px] font-mono truncate ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {adminUser?.email || 'admin@healthguard.ai'}
             </p>
           </div>
