@@ -33,7 +33,7 @@ export function EmptyState({
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-lg sm:text-xl font-bold text-slate-100">
+        <h3 className={`text-lg sm:text-xl font-bold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
           {title}
         </h3>
         <p className={`text-xs sm:text-sm max-w-md mx-auto leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
