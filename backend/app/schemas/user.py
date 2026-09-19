@@ -96,8 +96,8 @@ class UserResponse(BaseModel):
     height_cm: Optional[float] = Field(default=None)
     weight_kg: Optional[float] = Field(default=None)
     bmi: Optional[float] = Field(default=None)
-    baseline_activity: Optional[str] = Field(default="moderate")
-    blood_type: Optional[str] = Field(default="A+")
+    baseline_activity: Optional[str] = Field(default=None)
+    blood_type: Optional[str] = Field(default=None)
     emergency_contact: Optional[str] = Field(default=None)
     assessment_count: Optional[int] = Field(default=0)
 

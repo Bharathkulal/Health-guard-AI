@@ -12,24 +12,24 @@ import { useAuth } from './AuthContext';
 const HealthContext = createContext(null);
 
 const INITIAL_DRAFT = {
-  age: 35,
-  sex: 'male',
+  age: '',
+  sex: '',
   vitals: {
-    systolicBP: 120,
-    diastolicBP: 80,
-    fastingBloodSugar: 95,
-    heartRate: 72,
-    heightCm: 175,
-    weightKg: 75,
-    bmi: 24.5,
+    systolicBP: '',
+    diastolicBP: '',
+    fastingBloodSugar: '',
+    heartRate: '',
+    heightCm: '',
+    weightKg: '',
+    bmi: '',
   },
   symptoms: [],
   lifestyle: {
-    physicalActivity: 'moderate',
-    smoking: 'never',
-    alcohol: 'occasional',
-    sleepHours: 7.5,
-    dietPattern: 'balanced',
+    physicalActivity: '',
+    smoking: '',
+    alcohol: '',
+    sleepHours: '',
+    dietPattern: '',
   },
   familyHistory: {
     diabetes: false,

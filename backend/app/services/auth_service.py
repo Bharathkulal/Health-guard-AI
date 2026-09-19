@@ -85,8 +85,8 @@ class AuthService:
             "height_cm": None,
             "weight_kg": None,
             "bmi": None,
-            "baseline_activity": "moderate",
-            "blood_type": "A+",
+            "baseline_activity": None,
+            "blood_type": None,
             "emergency_contact": None,
             "assessment_count": 0,
         }
@@ -117,8 +117,8 @@ class AuthService:
             height_cm=user_doc.get("height_cm"),
             weight_kg=user_doc.get("weight_kg"),
             bmi=user_doc.get("bmi"),
-            baseline_activity=user_doc.get("baseline_activity", "moderate"),
-            blood_type=user_doc.get("blood_type", "A+"),
+            baseline_activity=user_doc.get("baseline_activity"),
+            blood_type=user_doc.get("blood_type"),
             emergency_contact=user_doc.get("emergency_contact"),
             assessment_count=count,
         )
@@ -214,8 +214,8 @@ class AuthService:
             "height_cm": None,
             "weight_kg": None,
             "bmi": None,
-            "baseline_activity": "moderate",
-            "blood_type": "A+",
+            "baseline_activity": None,
+            "blood_type": None,
             "emergency_contact": None,
         }
 
@@ -275,8 +275,8 @@ class AuthService:
                 height_cm=None,
                 weight_kg=None,
                 bmi=None,
-                baseline_activity="moderate",
-                blood_type="A+",
+                baseline_activity=None,
+                blood_type=None,
                 emergency_contact=None,
                 assessment_count=0
             )
@@ -360,8 +360,8 @@ class AuthService:
                 "height_cm": None,
                 "weight_kg": None,
                 "bmi": None,
-                "baseline_activity": "moderate",
-                "blood_type": "A+",
+                "baseline_activity": None,
+                "blood_type": None,
                 "emergency_contact": None,
                 "member_since": now.strftime("%B %Y"),
             }
