@@ -60,24 +60,24 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
 
           {/* Heading */}
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+            <div className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-mono uppercase border ${isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
               <span>Secure Clinical Transmission</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
+            <h3 className={`text-xl sm:text-2xl font-bold tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
               {LOADING_STAGES[currentStageIndex].label}
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {LOADING_STAGES[currentStageIndex].detail}
             </p>
           </div>
 
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-xs font-mono text-slate-400">
+            <div className={`flex justify-between text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               <span>Step {currentStageIndex + 1} of {LOADING_STAGES.length}</span>
-              <span className="text-emerald-400 font-bold">{progressPercent}%</span>
+              <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{progressPercent}%</span>
             </div>
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
               <motion.div
                 className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300"
                 initial={{ width: '0%' }}
@@ -93,20 +93,26 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
               const isDone = idx < currentStageIndex;
               const isCurrent = idx === currentStageIndex;
 
+              const isCurrentStyle = isDark
+                ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-sm'
+                : 'bg-emerald-50 border-emerald-500/30 text-emerald-800 shadow-sm';
+              const isDoneStyle = isDark
+                ? 'bg-emerald-950/20 border-emerald-500/20 text-slate-400'
+                : 'bg-emerald-50/50 border-emerald-200 text-slate-600';
+              const isNotDoneStyle = isDark
+                ? 'bg-transparent border-transparent text-slate-600 opacity-60'
+                : 'bg-transparent border-transparent text-slate-400 opacity-60';
+
               return (
                 <div
                   key={stage.id}
                   className={`flex items-center gap-3 p-3 rounded-xl border text-xs transition-all duration-300 ${
-                    isCurrent
-                      ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300 shadow-sm'
-                      : isDone
-                      ? 'bg-emerald-950/20 border-emerald-500/20 text-slate-400'
-                      : 'bg-transparent border-transparent text-slate-600 opacity-60'
+                    isCurrent ? isCurrentStyle : isDone ? isDoneStyle : isNotDoneStyle
                   }`}
                 >
                   <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
                     {isDone ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <CheckCircle2 className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
                     ) : isCurrent ? (
                       <motion.div
                         animate={{ rotate: 360 }}
@@ -114,10 +120,10 @@ export function LoadingOverlay({ onComplete, isSubmitting = true }) {
                         className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full"
                       />
                     ) : (
-                      <div className="w-2 h-2 rounded-full bg-slate-700" />
+                      <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-300'}`} />
                     )}
                   </div>
-                  <span className={`font-medium ${isCurrent ? 'text-slate-100 font-semibold' : ''}`}>
+                  <span className={`font-medium ${isCurrent ? (isDark ? 'text-slate-100 font-semibold' : 'text-slate-900 font-semibold') : ''}`}>
                     {stage.label}
                   </span>
                 </div>

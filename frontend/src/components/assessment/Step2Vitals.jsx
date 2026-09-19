@@ -40,9 +40,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
         {/* Systolic BP */}
         <div className="space-y-1.5">
-          <label htmlFor="systolic-bp" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Systolic Pressure <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Target: 90-120</span>
+          <label htmlFor="systolic-bp" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Systolic Pressure <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Target: 90-120</span>
           </label>
           <div className="relative">
             <input
@@ -70,9 +70,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Diastolic BP */}
         <div className="space-y-1.5">
-          <label htmlFor="diastolic-bp" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Diastolic Pressure <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Target: 60-80</span>
+          <label htmlFor="diastolic-bp" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Diastolic Pressure <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Target: 60-80</span>
           </label>
           <div className="relative">
             <input
@@ -100,9 +100,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Fasting Blood Sugar */}
         <div className="space-y-1.5">
-          <label htmlFor="fasting-glucose" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Fasting Blood Glucose <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Target: 70-99</span>
+          <label htmlFor="fasting-glucose" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Fasting Blood Glucose <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Target: 70-99</span>
           </label>
           <div className="relative">
             <input
@@ -130,9 +130,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Resting Heart Rate */}
         <div className="space-y-1.5">
-          <label htmlFor="heart-rate" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Resting Heart Rate <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Target: 60-85</span>
+          <label htmlFor="heart-rate" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Resting Heart Rate <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Target: 60-85</span>
           </label>
           <div className="relative">
             <input
@@ -160,9 +160,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Height in CM */}
         <div className="space-y-1.5">
-          <label htmlFor="height-cm" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Height <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Metric</span>
+          <label htmlFor="height-cm" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Height <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Metric</span>
           </label>
           <div className="relative">
             <input
@@ -187,9 +187,9 @@ export function Step2Vitals({ data, onChange, errors = {} }) {
 
         {/* Weight in KG */}
         <div className="space-y-1.5">
-          <label htmlFor="weight-kg" className="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
-            <span>Weight <span className="text-clinical-green">*</span></span>
-            <span className="text-[11px] font-mono">Metric</span>
+          <label htmlFor="weight-kg" className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs font-bold uppercase tracking-wider text-clinical-textMuted">
+            <span className="whitespace-nowrap">Weight <span className="text-clinical-green">*</span></span>
+            <span className="text-[11px] font-mono whitespace-nowrap">Metric</span>
           </label>
           <div className="relative">
             <input
